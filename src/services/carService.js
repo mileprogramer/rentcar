@@ -1,3 +1,5 @@
+import modal from "bootstrap/js/src/modal";
+
 class CarService {
     static allCars = [
         { id: 1, brand: 'Mercedes', model: 'G Class', year: 2005, pricePerDay: 150, airConditioner: true, available: false, returnDate: '12.6.2024' },
@@ -12,7 +14,7 @@ class CarService {
         { id: 9, brand: 'Chevrolet', model: 'Camaro', year: 2016, pricePerDay: 190, airConditioner: true, available: true, returnDate: '' },
         { id: 10, brand: 'Subaru', model: 'Forester', year: 2019, pricePerDay: 110, airConditioner: true, available: true, returnDate: '' },
         { id: 11, brand: 'Volvo', model: 'XC90', year: 2020, pricePerDay: 220, airConditioner: true, available: true, returnDate: '' },
-        { id: 12, brand: 'Fiat', model: 'Multipla', year: 2001, pricePerDay: 25, airConditioner: false, available: false, returnDate: '' }
+        { id: 13, brand: 'Fiat', model: 'Multipla', year: 2001, pricePerDay: 25, airConditioner: false, available: false, returnDate: '' }
     ];
 
 
@@ -57,13 +59,26 @@ class CarService {
 
     static addCar(carInfo){
         let modelCar = {
-            id: parseInt(carInfo.id),
+            id: this.generateId(),
             brand: carInfo.brand,
             model: carInfo.model,
             year: carInfo.year,
-
         }
+        console.log(modelCar);
+        this.allCars.push(modelCar);
+        return true;
     }
+
+    static generateId(){
+        let max = this.allCars[0].id;
+        for(let i = 1; i<this.allCars.length; i++){
+            if(max < this.allCars[i].id){
+                max = this.allCars[i].id;
+            }
+        }
+        return ++max;
+    }
+
 }
 
 export default CarService;
