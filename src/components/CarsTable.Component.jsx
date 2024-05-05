@@ -16,11 +16,10 @@ function CarsTable(props) {
             setLoader(true);
         }
         fetchCars();
-    }, []);
+    }, [cars]);
 
     const isAvailable = (car) =>{
         if(car.available === true){
-            console.log("radi");
             return (
                 <>
                     <td> <button className="btn btn-success">Yes</button> </td>
