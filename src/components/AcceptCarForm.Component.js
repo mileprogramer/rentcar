@@ -1,79 +1,119 @@
-import React from 'react';
+import React, {useState} from 'react';
+import carService from "../services/carService";
 
 function AcceptCarForm(props) {
+    const [inputData, setInputData] = useState({
+        license : '',
+        review: '',
+        userRating: ''
+    });
+
+    const [returnedCar, setReturnedCar] = useState(false);
+    const [mistakes, setMistakes] = useState([]);
+
+    const handleInput = (event) => {
+        const { name, value } = event.target;
+        setInputData({
+            ...inputData,
+            [name]: value
+        });
+    };
+
+    const acceptCar = () => {
+        const newMistakes = [];
+
+        for (let prop in inputData) {
+            if (inputData[prop] === '') {
+                newMistakes.push(`You did not fill ${prop} field`);
+            }
+        }
+
+        if (newMistakes.length > 0) {
+            setMistakes(newMistakes);
+            return;
+        }
+
+        // add the car
+        if(carService.addCar(inputData)){
+            setReturnedCar(true);
+            setMistakes([]);
+            setInputData({
+                license : '',
+                review: '',
+                date: ''
+            });
+        }
+        else{
+            setMistakes(["Some mistake happened contact support"]);
+        }
+    };
     return (
         <div className="container">
-            <h3>Fill the form to return a car</h3>
+            <h3 className="w-50 offset-3 my-3">Fill the form to return a car</h3>
+
             <div className="form-group w-50 offset-3">
-                <label htmlFor="brand">Type brand of car</label>
+                <label htmlFor="brand">Type license</label>
                 <input
-                    id="brand"
-                    name="brand"
+                    id="license"
+                    name="license"
                     type="text"
                     className="form-control"
-                    value={inputData.brand}
+                    value={inputData.license}
                     onChange={handleInput}
                 />
             </div>
 
             <div className="form-group w-50 offset-3">
-                <label htmlFor="model">Type model</label>
+                <label htmlFor="brand">Date of taking --- Date of returning car</label>
                 <input
-                    id="model"
-                    name="model"
+                    disabled="true"
+                    id="totalPrize"
+                    name="totalPrize"
                     type="text"
                     className="form-control"
-                    value={inputData.model}
+                    value={inputData.date}
                     onChange={handleInput}
                 />
             </div>
 
             <div className="form-group w-50 offset-3">
-                <label htmlFor="year">Type year</label>
+                <label htmlFor="brand">Total price to pay</label>
                 <input
-                    id="year"
-                    name="year"
+                    disabled="true"
+                    id="totalPrize"
+                    name="totalPrize"
                     type="text"
                     className="form-control"
-                    value={inputData.year}
+                    value={inputData.date}
                     onChange={handleInput}
                 />
             </div>
 
-            <div className="form-group w-50 offset-3">
-                <label htmlFor="price">Price per day</label>
-                <input
-                    id="price"
-                    name="price"
-                    type="number"
+            <div className="form-group w-50 offset-3 my-3">
+                <label htmlFor="userRating">Insert user rating</label>
+                <select name="userRating" id="userRating" className="form-select">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+
+            <div className="form-group w-50 offset-3 my-3">
+                <label htmlFor="license">User review</label>
+                <textarea
+                    id="review"
+                    name="review"
                     className="form-control"
-                    value={inputData.price}
+                    value={inputData.review}
                     onChange={handleInput}
                 />
             </div>
 
-            <div className="form-group w-50 offset-3 d-flex gap-3 my-3">
-                <label htmlFor="airConditioner">Air conditioner</label>
-                <input
-                    id="airConditionerYes"
-                    name="airConditioner"
-                    type="radio"
-                    value="true"
-                    onChange={handleInput}
-                    checked={inputData.airConditioner === 'true'}
-                /> Yes
-                <input
-                    id="airConditionerNo"
-                    name="airConditioner"
-                    type="radio"
-                    value="false"
-                    onChange={handleInput}
-                    checked={inputData.airConditioner === 'false'}
-                /> No
-            </div>
-
-            <button className="btn btn-primary w-50 offset-3" onClick={addCar}>
-                Add Car
+            <button className="btn btn-primary w-50 offset-3 my-3" onClick={acceptCar}>
+                Accept Car
             </button>
         </div>
     );

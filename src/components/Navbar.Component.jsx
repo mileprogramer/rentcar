@@ -1,4 +1,5 @@
 import React from 'react';
+import {Link} from "react-router-dom";
 
 function Navbar(props) {
     return (
@@ -6,11 +7,11 @@ function Navbar(props) {
             <div className="container">
                 <h1>Rent a car agency</h1>
                 <ul className="navbar-nav d-flex gap-3">
-                    <li className="nav-item"> All Cars </li>
-                    <li className="nav-item"> Accept Car </li>
-                    <li className="nav-item"> Add Car </li>
-                    <li className="nav-item"> Edit/Delete cars </li>
-                    <li className="nav-item"> Best Selling Cars </li>
+                    <li className="nav-item"><Link to="/"> All Cars </Link></li>
+                    <li className="nav-item"><Link to="/accept-car"> Accept Car </Link></li>
+                    <li className="nav-item"><Link to="/add-car"> Add Car </Link></li>
+                    <li className="nav-item"><Link to="/best-selling-cars"> Best Selling Cars </Link></li>
+                    <li className="nav-item"><Link to="/edit-delete-cars"> Edit/Delete Cars </Link></li>
                 </ul>
             </div>
         </nav>
