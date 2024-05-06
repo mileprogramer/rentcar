@@ -3,6 +3,7 @@ import carService from "../services/carService";
 
 function AddCarForm(props) {
     const [inputData, setInputData] = useState({
+        license: '',
         brand: '',
         model: '',
         year: '',
@@ -40,6 +41,7 @@ function AddCarForm(props) {
             setAddedCar(true);
             setMistakes([]);
             setInputData({
+                license: '',
                 brand: '',
                 model: '',
                 year: '',
@@ -48,7 +50,8 @@ function AddCarForm(props) {
             });
         }
         else{
-            setMistakes(["Some mistake happened contact support"]);
+            setAddedCar(false);
+            setMistakes(["You can not add car with same license change"]);
         }
     };
 
@@ -63,6 +66,19 @@ function AddCarForm(props) {
             )}
 
             {addedCar && <div className="alert alert-success" role="alert">You successfully added a car</div>}
+
+            <div className="form-group w-50 offset-3">
+                <label htmlFor="brand">Type license</label>
+                <input
+                    id="license"
+                    name="license"
+                    type="text"
+                    className="form-control"
+                    value={inputData.license}
+                    onChange={handleInput}
+                />
+            </div>
+
             <div className="form-group w-50 offset-3">
                 <label htmlFor="brand">Type brand</label>
                 <input
@@ -76,7 +92,7 @@ function AddCarForm(props) {
             </div>
 
             <div className="form-group w-50 offset-3">
-                <label htmlFor="model">Type model</label>
+                <label htmlFor="brand">Type model</label>
                 <input
                     id="model"
                     name="model"
@@ -117,7 +133,7 @@ function AddCarForm(props) {
                     id="airConditionerYes"
                     name="airConditioner"
                     type="radio"
-                    value="true"
+                    value= "true"
                     onChange={handleInput}
                     checked={inputData.airConditioner === 'true'}
                 /> Yes
@@ -125,7 +141,7 @@ function AddCarForm(props) {
                     id="airConditionerNo"
                     name="airConditioner"
                     type="radio"
-                    value="false"
+                    value= "false"
                     onChange={handleInput}
                     checked={inputData.airConditioner === 'false'}
                 /> No
