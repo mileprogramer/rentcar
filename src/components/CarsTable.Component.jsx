@@ -7,11 +7,29 @@ import "../css/table.css"
 
 function CarsTable({cars, setRentCarModal, setModalCar}) {
 
+    const [averageRating, setAverageRating] = useState([]);
+    const [tdReturnDate, setTdReturnDate] = useState(false);
+
+    useEffect(() => {
+        const calculateRating = async (cars)=>{
+            const ratingPromises = cars.map(async (car) => {
+                return await carService.averageRating(car.license);
+            });
+
+            const ratings = await Promise.all(ratingPromises);
+
+            // Set the averageRatings state with the resolved ratings array
+            setAverageRating(ratings);
+        }
+        calculateRating(cars);
+    }, []);
+
     const openRentCarModal = async (event)=>{
         setRentCarModal(true);
         let car = await carService.find(event.target.name);
         setModalCar(car);
     }
+
 
 
     const isAvailable = (car) => {
@@ -31,12 +49,13 @@ function CarsTable({cars, setRentCarModal, setModalCar}) {
                 </>
             )
         }
+
         return (
             <>
                 <td>
                     <button className="btn btn-danger">No</button>
                 </td>
-                <td>{null}</td>
+                <td> {null} </td>
             </>
         )
     }
@@ -51,8 +70,10 @@ function CarsTable({cars, setRentCarModal, setModalCar}) {
                 <td>Years old</td>
                 <td>Air Conditioner</td>
                 <td>Prize per day</td>
+                <td>Return day</td>
+                <td>Average rating</td>
                 <td>Available</td>
-                <td> Reservation</td>
+                <td>Reservation</td>
             </tr>
             </thead>
             <tbody>
@@ -72,6 +93,8 @@ function CarsTable({cars, setRentCarModal, setModalCar}) {
                             </td>
                         }
                         <td>{car.pricePerDay}</td>
+                        <td>{car.returnDate ? car.returnDate :"---"}</td>
+                        <td>{averageRating[index]}</td>
                         {isAvailable(car)}
                     </tr>)
                 })

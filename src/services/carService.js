@@ -76,6 +76,19 @@ class CarService {
         });
     }
 
+    static acceptCar(carInfo){
+        return new Promise((resolve, reject)=>{
+            this.statsCars.push(carInfo);
+            let indexOfCar = null;
+            this.allCars.find((car, index) =>{
+                if(carInfo.license === car.license) indexOfCar = index;
+            });
+            this.allCars[indexOfCar].returnDate = "";
+            this.allCars[indexOfCar].available = true;
+            resolve(true);
+        })
+    }
+
     static addCar(carInfo){
         if(this.isSameLicense(carInfo.license) === true) return false;
         let modelCar = {
@@ -102,6 +115,39 @@ class CarService {
             this.allCars[indexOfCar].returnDate = carInfo.returnDate;
             this.allCars[indexOfCar].available = false;
             resolve(true);
+        })
+    }
+
+    static addPriceAndDays(license){
+        return new Promise((resolve, reject)=>{
+            let car = this.rentedCars.find((car, index) =>{
+                return car.license === license
+            });
+            if(car === undefined) reject(new Error("No car with that license"))
+            let carPrice = null;
+            this.allCars.find((car, index) =>{
+                if(car.license === license) carPrice = parseInt(car.pricePerDay);
+            });
+            let daysOfUsing = this.calculateDateDiff(car.startDate, car.returnDate);
+            let startDate = car.startDate;
+            let returnDate = car.returnDate;
+            resolve({daysOfUsing, startDate, returnDate, carPrice});
+        })
+    }
+
+    static averageRating(license){
+        return new Promise((resolve, reject)=>{
+            let sum = 0;
+            let allRatings = 0;
+            for(let i = 0; i<this.statsCars.length; i++){
+                if(this.statsCars[i].license === license){
+                    sum+= this.statsCars[i].userRating;
+                    allRatings++;
+                }
+            }
+            if(sum === 0) return resolve(0);
+            let result = sum / allRatings;
+            resolve(result.toFixed(2));
         })
     }
 
@@ -167,7 +213,6 @@ class CarService {
         let carExist = this.allCars.find((car)=>{
             return car.license === license;
         })
-        console.log(carExist);
         if(carExist === undefined) return false;
         return true;
     }
@@ -176,6 +221,18 @@ class CarService {
         return new Promise( (resolve, reject)=>{
             resolve(this.allCars.find((car)=>{return car.license === license}));
         })
+    }
+
+    static calculateDateDiff(date1, date2){
+        const [year1, month1, day1] = date1.split('-').map(Number);
+        const [year2, month2, day2] = date2.split('-').map(Number);
+
+        const date1Date = new Date(year1, month1 - 1, day1);
+        const date2Date = new Date(year2, month2 - 1, day2);
+
+        const diffInMs = date2Date.getTime() - date1Date.getTime();
+
+        return  Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
     }
 
 }

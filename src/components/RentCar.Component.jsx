@@ -19,9 +19,17 @@ function RentCar({car, modalRentCar, setModalRentCar}) {
         setInputData({
             ...inputData,
             [name]: value,
-            startDate: new Date()
+            startDate: generateNowDate()
         });
     };
+
+    function generateNowDate(){
+        let date = new Date();
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${year}-${month}-${day}`;
+    }
 
     const emptyInputFields = ()=>{
         setInputData({
@@ -37,14 +45,13 @@ function RentCar({car, modalRentCar, setModalRentCar}) {
         setModalRentCar(false);
     }
 
-    const rentCar = async ()=>{
+    const rentCar = async (event)=>{
         let mistakes = FormValidation.validateInputFields(inputData);
         if(mistakes.length !== 0){
             setMistakes(mistakes);
             return ;
         }
-
-        let result = await carService.rentCar({ ...inputData, license: car.license });
+        let result = await carService.rentCar({ ...inputData, license: event.target.name });
         if(result === true){
             setRentedCar(true);
         }
@@ -120,8 +127,15 @@ function RentCar({car, modalRentCar, setModalRentCar}) {
                     </div>
                 </div>
                 <div className="card-footer">
-                    <div onClick={()=> closeModal()} className="btn btn-danger">Close modal</div>
-                    <div onClick={()=> rentCar()} className="btn btn-primary float-end">Rent</div>
+                    <div onClick={() => closeModal()} className="btn btn-danger">Close modal</div>
+                    <button
+                        className="btn btn-primary float-end"
+                        onClick={(event) => rentCar(event)} // onClick handler directly within the button element
+                        name={car.license}
+                    >
+                        Rent
+                    </button>
+
                 </div>
             </div>
         </div>
