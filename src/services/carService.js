@@ -44,34 +44,47 @@ class CarService {
             }, 1000);
         });
     }
-    static getCar(id) {
+    static getCar(id, license) {
         return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve(this.allCars.find((car,index)=>{return car.id === id}));
-            }, 1000);
-        });
-    }
-
-    static updateCar(updatedCar) {
-        return new Promise((resolve, reject) => {
-            const index = this.allCars.findIndex(car => car.id === updatedCar.id);
-            if (index !== -1) {
-                this.allCars[index] = { ...this.allCars[index], ...updatedCar };
-                resolve(updatedCar);
-            } else {
-                reject(new Error('Car not found'));
+            if(id){
+                let res = this.allCars.find((car,index) =>{
+                    if(car.id === id) return car;
+                })
+                if(!res) reject(new Error("NO car with that id or license"));
+                resolve(res);
+            }
+            else{
+                let res = this.allCars.find((car,index) =>{
+                    if(car.license === license) return car;
+                })
+                if(!res) reject(new Error("NO car with that id or license"));
+                resolve(res);
             }
         });
     }
 
-    static deleteCar(carId) {
-        return new Promise((resolve, reject) => {
-            const index = this.allCars.findIndex(car => car.id === carId);
-            if (index !== -1) {
-                this.allCars.splice(index, 1);
-                resolve();
-            } else {
-                reject(new Error('Car not found'));
+    static updateCar(license, carInfo) {
+        return new Promise(async (resolve, reject) => {
+            let car = await this.getCar(null, license);
+            let positionOfCar = await this.findIndex(car.license);
+            this.allCars[positionOfCar] = carInfo;
+            resolve(true);
+        });
+    }
+
+    static deleteCar(id, license) {
+        return new Promise(async (resolve, reject) => {
+            if(id){
+                this.allCars = this.allCars.filter((car, index)=>{
+                    return car.id !== id
+                })
+                return resolve(true);
+            }
+            else{
+                this.allCars = this.allCars.filter((car, index)=>{
+                    return car.license !== license
+                })
+                return resolve(true);
             }
         });
     }
@@ -235,6 +248,17 @@ class CarService {
         return  Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
     }
 
+    static findIndex(license) {
+        return new Promise((resolve, reject)=>{
+            let index = null;
+            for(let i = 0; i<this.allCars.length; i++){
+                if(this.allCars[i].license === license){
+                    index = i;
+                }
+            }
+            resolve(index)
+        })
+    }
 }
 
 export default CarService;

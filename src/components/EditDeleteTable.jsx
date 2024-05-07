@@ -2,66 +2,92 @@ import React, {useEffect, useState} from 'react';
 import Loader from "./Loader.Component";
 import carService from "../services/carService";
 
-function EditDeleteTable(props) {
-    const [cars, setCars] = useState([]);
-    const [loader, setLoader] = useState(false);
+function EditDeleteTable({setDeleteCarModal, setDataDeleteModal, setEditCarModal, setDataEditModal ,cars, loader}) {
 
-    useEffect( () => {
-        let fetchCars = async ()=>{
-            let carsData = await carService.getCars();
-            setCars(carsData);
-            setLoader(true);
+    const handleDeleteCar = async (event) => {
+        setDeleteCarModal(true);
+        try{
+            let car = await carService.getCar(null,event.target.name);
+            setDataDeleteModal(car);
+        }catch (error){
+            alert(error);
         }
-        fetchCars();
-    }, [cars]);
+    }
 
-    const handleDeleteCar = (event)=>{
-        // go to the db
-        // find a car
-        // insert car into prompt
-
-
+    const handleEditCar = async (event) => {
+        console.log("radi handleEditCar");
+        setEditCarModal(true);
+        try{
+            let car = await carService.getCar(null,event.target.name);
+            setDataEditModal(car);
+        }catch (error){
+            alert(error);
+        }
     }
 
     return (
-        <table className="table">
-            <thead>
-            <tr>
-                <td>Number of car</td>
-                <td>Brand</td>
-                <td>Model</td>
-                <td>Years old</td>
-                <td>Quantity</td>
-                <td>Air Conditioner</td>
-                <td>Prize per day</td>
-                <td>Edit car</td>
-                <td>Delete car</td>
-            </tr>
-            </thead>
-            <tbody>
-            {loader === false ? <Loader/> :
-                cars.map((car, index) => {
-                    return (<tr key={index}>
-                        <td>{index}</td>
-                        <td>{car.brand}</td>
-                        <td>{car.model}</td>
-                        <td>{car.year}</td>
-                        <td>{car.quantity}</td>
-                        {car.airConditioner ?
+        <>
+            {loader === false ? (
+                <Loader/>
+            ) : (
+                <table className="table">
+                    <thead>
+                    <tr>
+                        <td>License</td>
+                        <td>Brand</td>
+                        <td>Model</td>
+                        <td>Years old</td>
+                        <td>Quantity</td>
+                        <td>Air Conditioner</td>
+                        <td>Prize per day</td>
+                        <td>Edit car</td>
+                        <td>Delete car</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {cars.map((car, index) => (
+                        <tr key={index}>
+                            <td>{car.license}</td>
+                            <td>{car.brand}</td>
+                            <td>{car.model}</td>
+                            <td>{car.year}</td>
+                            <td>{car.quantity}</td>
                             <td>
-                                <button className="btn btn-success">Yes</button>
-                            </td> :
-                            <td>
-                                <button className="btn btn-danger">No</button>
+                                {car.airConditioner ? (
+                                    <button className="btn btn-success">Yes</button>
+                                ) : (
+                                    <button className="btn btn-danger">No</button>
+                                )}
                             </td>
-                        }
-                        <td>{car.pricePerDay}</td>
-                        <td> <button className="btn btn-warning"> Edit </button> </td>
-                        <td> <button onClick={(event)=>{handleDeleteCar(event)}} className="btn btn-danger"> Delete </button> </td>
-                    </tr>)
-                })}
-            </tbody>
-        </table>
+                            <td>{car.pricePerDay}</td>
+                            <td>
+                                <button
+                                    onClick={(event) => {
+                                        handleEditCar(event);
+                                    }}
+                                    name={car.license}
+                                    className="btn btn-warning"
+                                >
+                                    Edit car
+                                </button>
+                            </td>
+                            <td>
+                                <button
+                                    onClick={(event) => {
+                                        handleDeleteCar(event);
+                                    }}
+                                    name={car.license}
+                                    className="btn btn-danger"
+                                >
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+            )}
+        </>
     );
 }
 

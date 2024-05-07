@@ -2,3 +2,10 @@
     transform: translate(-50%, -50%);
     width: 600px;
 }
+.edit-delete-modal{
+    transform: translate(-50%, -50%);
+}
+.edit-modal{
+    width: 600px;
+    transform: translate(-50%, -50%);
+}
