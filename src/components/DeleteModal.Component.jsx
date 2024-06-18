@@ -11,25 +11,23 @@ function DeleteModal({modalActive, setModalActive, setCars, car}) {
         setModalActive(false);
     }
 
-    const deleteCar = async (event)=>{
-        try{
-            let result = await carService.deleteCar(null, car.license);
-            if(result){
-                setCars(await carService.getCars());
-                setDeletedCar(true);
-                setTimeout(() =>{
+    const deleteCar = (event)=>{
+        carService.deleteCar(event.target.name)
+            .then(data =>{
+                setDeletedCar(data);
+                setCars("delete", null, event.target.name);
+                setTimeout(()=>{
                     setModalActive(false);
-                    setDeletedCar(false)
-                }, 3000);
-            }
-        }catch (error){
-            setMistakes(["Some mistake happend"]);
-        }
+                })
+            })
+            .catch(errors =>{
+                setMistakes(errors);
+            })
     }
 
     return (
         <div className={`edit-delete-modal position-absolute top-50 start-50 ${modalActive === false ? "d-none" : ""} `}>
-            {deletedCar && <div className="alert alert-success" role="alert">You successfully deleted a car</div>}
+            {deletedCar && <div className="alert alert-success" role="alert">{deletedCar.message}</div>}
             {mistakes.length > 0 && (
                 <div className="alert alert-danger" role="alert">
                     {mistakes.map((error, index) => (

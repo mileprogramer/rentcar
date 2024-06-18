@@ -2,30 +2,33 @@ import React, {useEffect, useState} from 'react';
 import carService from "../services/carService";
 
 import "../css/modal.css"
+import FormValidation from "../services/FormValidation";
 function EditModal({modalActive, setModalActive, setCars, car}) {
 
     const [editedCar, setEditedCar] = useState(false);
     const [mistakes, setMistakes] = useState(false);
     const [inputData, setInputData] = useState({
-        license: '',
-        brand: '',
-        model: '',
-        year: '',
-        pricePerDay: '',
-        airConditioner: ''
+        id: car.id,
+        license: car.license,
+        newLicense: car.license,
+        brand: car.brand,
+        model: car.model,
+        year: car.year,
+        pricePerDay: car.pricePerDay,
+        airConditioner: car.airConditioner
     });
-    const [isChecked, setIsChecked] = useState(false);
-
 
     useEffect(() => {
         if (car) {
             setInputData({
-                license: car.license || '',
-                brand: car.brand || '',
-                model: car.model || '',
-                year: car.year || '',
-                pricePerDay: car.pricePerDay || '',
-                airConditioner: car.airConditioner || ''
+                id: car.id,
+                license: car.license,
+                newLicense: car.license,
+                brand: car.brand,
+                model: car.model,
+                year: car.year,
+                pricePerDay: car.pricePerDay,
+                airConditioner: car.airConditioner
             });
         }
     }, [car]);
@@ -51,35 +54,31 @@ function EditModal({modalActive, setModalActive, setCars, car}) {
         }
     }
 
-    function print(whatToPrint){
-        console.log(whatToPrint);
-    }
-
     const editCar = async (event)=>{
-
-        try{
-            let result = await carService.updateCar(event.target.name, inputData);
-            if(result){
-                setCars(await carService.getCars());
-                setEditedCar(true);
-                setTimeout(() =>{
-                    setInputData({});
-                    setModalActive(false);
-                    setEditedCar(false)
-                }, 3000);
-            }
-        }catch (error){
-            setMistakes(["Some mistake happend"]);
+        let mistakes = FormValidation.validateInputFields(inputData);
+        if(mistakes.length !== 0){
+            setMistakes(mistakes);
         }
+        carService.updateCar(inputData)
+            .then(data =>{
+                setCars("edit", inputData, null);
+                setEditedCar(data);
+                setTimeout(()=>{
+                    setEditedCar(false);
+                },5000)
+            })
+            .catch(errors =>{
+                setMistakes(errors);
+            })
     }
 
     return (
         <div className={`edit-modal position-absolute top-50 start-50 ${modalActive === false ? "d-none" : ""} `}>
-            {editedCar && <div className="alert alert-success" role="alert">You successfully deleted a car</div>}
+            {editedCar && <div className="alert alert-success" role="alert">{editedCar.message}</div>}
             {mistakes.length > 0 && (
                 <div className="alert alert-danger" role="alert">
                     {mistakes.map((error, index) => (
-                        <div key={index}>{error}</div>
+                        <div key={index}>{error.message}</div>
                     ))}
                 </div>
             )}
@@ -91,11 +90,11 @@ function EditModal({modalActive, setModalActive, setCars, car}) {
                     <div className="form-group w-50 offset-3">
                         <label htmlFor="brand">Type license</label>
                         <input
-                            id="license"
-                            name="license"
+                            id="newLicense"
+                            name="newLicense"
                             type="text"
                             className="form-control"
-                            value={inputData.license}
+                            value={inputData.newLicense}
                             onChange={handleInput}
                         />
                     </div>

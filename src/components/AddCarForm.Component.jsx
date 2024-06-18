@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import carService from "../services/carService";
+import FormValidation from "../services/FormValidation";
 
 function AddCarForm(props) {
     const [inputData, setInputData] = useState({
@@ -23,36 +24,19 @@ function AddCarForm(props) {
     };
 
     const addCar = () => {
-        const newMistakes = [];
-
-        for (let prop in inputData) {
-            if (inputData[prop] === '') {
-                newMistakes.push(`You did not fill ${prop} field`);
-            }
+        let mistakes = FormValidation.validateInputFields(inputData);
+        if(mistakes.length !== 0){
+            setMistakes(mistakes);
         }
 
-        if (newMistakes.length > 0) {
-            setMistakes(newMistakes);
-            return;
-        }
+        carService.addCar(inputData)
+            .then(data =>{
+                setAddedCar(true);
+            })
+            .catch(errors =>{
+                setMistakes(errors);
+            })
 
-        // add the car
-        if(carService.addCar(inputData)){
-            setAddedCar(true);
-            setMistakes([]);
-            setInputData({
-                license: '',
-                brand: '',
-                model: '',
-                year: '',
-                price: '',
-                airConditioner: ''
-            });
-        }
-        else{
-            setAddedCar(false);
-            setMistakes(["You can not add car with same license change"]);
-        }
     };
 
     return (

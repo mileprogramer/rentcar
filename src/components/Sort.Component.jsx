@@ -1,31 +1,38 @@
 import React, {useState} from 'react';
 import carService from "../services/carService";
 
-function Sort({setCars}) {
-    
+function Sort({setCars, setLoader}) {
     const sortCar = async (event)=>{
-        if(event.target.value === '0') return ;
-        let criterium = null;
+
+        let urlQuery = "?";
+        let criterium = event.target.value;
         let sortedCars = [];
         if(event.target.value.startsWith("-")){
             criterium = event.target.value.slice(1, event.target.value.length);
-            sortedCars = await carService.sortCars("desc", criterium);
+            urlQuery += `${criterium}=${criterium}:desc`;
         }
         else{
-            criterium = event.target.value;
-            sortedCars = await carService.sortCars("asc", criterium);
+            urlQuery += `${criterium}=${criterium}:asc`;
         }
-        setCars([...sortedCars]);
+
+        setLoader(true);
+        carService.sortCars(urlQuery)
+            .then((cars)=>{
+                setCars(cars);
+                setLoader(false);
+            })
+            .catch((error)=>{
+                alert("Error happened mistake is: "+ error.message);
+            })
     }
 
     return (
         <select className="form-select w-50" onChange={(event)=> sortCar(event)}>
-            <option value="0">Sort by...</option>
+            <option value="reset">Sort by...</option>
             <option value="pricePerDay">Price asc</option>
             <option value="-pricePerDay">Price desc</option>
             <option value="-model"> Model desc</option>
             <option value="model"> Model asc </option>
-            <option value="reset"> Reset sort </option>
         </select>
     );
 }

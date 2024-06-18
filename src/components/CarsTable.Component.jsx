@@ -5,32 +5,12 @@ import Loader from "./Loader.Component";
 import "../css/table.css"
 
 
-function CarsTable({cars, setRentCarModal, setModalCar}) {
+function CarsTable({cars, setRentCarModal, getCarData}) {
 
-    const [averageRating, setAverageRating] = useState([]);
-    const [tdReturnDate, setTdReturnDate] = useState(false);
-
-    useEffect(() => {
-        const calculateRating = async (cars)=>{
-            const ratingPromises = cars.map(async (car) => {
-                return await carService.averageRating(car.license);
-            });
-
-            const ratings = await Promise.all(ratingPromises);
-
-            // Set the averageRatings state with the resolved ratings array
-            setAverageRating(ratings);
-        }
-        calculateRating(cars);
-    }, []);
-
-    const openRentCarModal = async (event)=>{
+    const openRentCarModal = (event)=>{
+        getCarData(event.target.name);
         setRentCarModal(true);
-        let car = await carService.find(event.target.name);
-        setModalCar(car);
     }
-
-
 
     const isAvailable = (car) => {
         if (car.available === true) {
@@ -93,8 +73,8 @@ function CarsTable({cars, setRentCarModal, setModalCar}) {
                             </td>
                         }
                         <td>{car.pricePerDay}</td>
-                        <td>{car.returnDate ? car.returnDate :"---"}</td>
-                        <td>{averageRating[index]}</td>
+                        <td>{car.returnDate ? car.returnDate : "---"}</td>
+                        <td>To be added</td>
                         {isAvailable(car)}
                     </tr>)
                 })
