@@ -74,7 +74,7 @@ function CarsTable({cars, setRentCarModal, getCarData}) {
                         }
                         <td>{car.pricePerDay}</td>
                         <td>{car.returnDate ? car.returnDate : "---"}</td>
-                        <td>To be added</td>
+                        <td>{car.averageRating}</td>
                         {isAvailable(car)}
                     </tr>)
                 })
