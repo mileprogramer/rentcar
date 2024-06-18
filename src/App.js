@@ -4,7 +4,7 @@ import HomePage from "./pages/Home.Page";
 import BestSellingCars from "./pages/BestSellingCars.Page";
 import AddCar from "./pages/AddCar.Page";
 import EditDeletePage from "./pages/EditDelete.Page";
-import AcceptCarPage from "./pages/AcceptCar.Page";
+import RentedCarsPage from "./pages/RentedCars.Page";
 
 
 function App() {
@@ -12,10 +12,10 @@ function App() {
         <Router>
             <Routes>
                 <Route exact path="/" element={<HomePage />} />
+                <Route exact path="/rented-cars" element={<RentedCarsPage />} />
                 <Route path="/best-selling-cars" element={<BestSellingCars />} />
                 <Route path="/add-car" element={<AddCar />} />
                 <Route path="/edit-delete-cars" element={<EditDeletePage />} />
-                <Route path="/accept-car" element={<AcceptCarPage />} />
             </Routes>
         </Router>
     );
