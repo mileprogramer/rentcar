@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import carService from "../services/carService";
 import Navbar from "../components/Navbar.Component";
-import Search from "../components/Search.Component";
 import Loader from "../components/Loader.Component";
 import RentedCarsTable from "../components/RentedCarsTable.Component";
 import AcceptCarModalComponent from "../components/AcceptCarModal.Component";
+import EditRent from "../components/EditRent.Component";
+import SearchRented from "../components/SearchRented.Component";
 
 
 let allCars = [];
@@ -14,6 +15,7 @@ function RentedCars(props) {
     const [isSearched, setIsSearched] = useState(false);
     const [mistakesAPI, setMistakesAPI] = useState(null);
     const [acceptModal, setAcceptModal] = useState(false);
+    const [rentModal, setRentModal] = useState(false);
     const [carData, setCarData] = useState({});
 
 
@@ -57,19 +59,41 @@ function RentedCars(props) {
         }));
     }
 
+    const handleEditRent = (newCar) =>{
+        setCars(cars.filter(car => {
+            if(car.license === newCar.license){
+                car.personalData = newCar.personalData;
+                car.idCard = newCar.idCard;
+                car.returnDate = newCar.returnDate;
+                car.phoneNumber = newCar.phoneNumber;
+            }
+            return car;
+        }));
+    }
+
     return (
         <div className="container">
             <Navbar/>
             <div className="d-flex gap-3 my-5">
-                <Search resetSearch={resetSearch} setLoader = {setLoader} search ={search}/>
+                <SearchRented resetSearch={resetSearch} setLoader = {setLoader} search = {search}/>
             </div>
             <h1>Rented Cars</h1>
             {
-                cars.length  > 0 ? <RentedCarsTable cars={cars} setAcceptModal={setAcceptModal} setCarData = {setCarData}/> :
+                cars.length  > 0 ? <RentedCarsTable cars={cars}
+                                                    setAcceptModal={setAcceptModal}
+                                                    setRentModal={setRentModal}
+                                                    setCarData = {setCarData}/> :
                     <div className="alert alert-warning">There is not rented cars</div>
             }
             {
-                acceptModal && <AcceptCarModalComponent car = {carData} setAcceptModal = {setAcceptModal} setAcceptCar={handleAccept}/>
+                acceptModal && <AcceptCarModalComponent car = {carData}
+                                                        setAcceptModal = {setAcceptModal}
+                                                        setAcceptCar={handleAccept}/>
+            }
+            {
+                rentModal && <EditRent rentedCarData={carData}
+                                         setRentModal = {setRentModal}
+                                         setRentCar ={handleEditRent}/>
             }
         </div>
     );
