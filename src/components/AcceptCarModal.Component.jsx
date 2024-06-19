@@ -78,7 +78,7 @@ function AcceptCarForm({car, setAcceptModal, setAcceptCar}) {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="brand">Date of taking car --- Date of returning car(now is by default)</label>
+                        <label htmlFor="brand">Date of taking car --- Date of returning car</label>
                         <input
                             disabled={true}
                             id="startEndDate"
