@@ -37,6 +37,24 @@ class CarService {
         });
     }
 
+    static getHistoryRented() {
+        return new Promise((resolve, reject) => {
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", this.url+"/history-rented");
+            xhr.send();
+            xhr.addEventListener("readystatechange", ()=>{
+                if(xhr.readyState === 4 && xhr.status === 200)
+                {
+                    resolve(JSON.parse(xhr.responseText));
+                }
+                else if(xhr.readyState === 4)
+                {
+                    reject("Error happened Status code: "+ xhr.status+ " text of mistake is: " + xhr.responseText)
+                }
+            });
+        });
+    }
+
     static getCar(id, license) {
         let criterium = id || license;
         return new Promise((resolve, reject) => {
@@ -141,6 +159,25 @@ class CarService {
 
     }
 
+    static editRent = (data) =>{
+        return new Promise((resolve, reject)=>{
+            let xhr = new XMLHttpRequest();
+            xhr.open("PATCH", this.url+"/edit-rent");
+            xhr.setRequestHeader("Content-type", "application/json");
+            xhr.send(JSON.stringify(data));
+            xhr.addEventListener("readystatechange",  ()=>{
+                if(xhr.readyState === 4 && xhr.status === 200)
+                {
+                    resolve(JSON.parse(xhr.responseText));
+                }
+                else if(xhr.readyState === 4)
+                {
+                    reject(JSON.parse(xhr.responseText))
+                }
+            });
+        })
+    }
+
     static rentCar = (carInfo) => {
         return new Promise((resolve, reject)=>{
             let xhr = new XMLHttpRequest();
@@ -157,23 +194,6 @@ class CarService {
                     reject(JSON.parse(xhr.responseText))
                 }
             });
-        })
-    }
-
-    static addPriceAndDays(license){
-        return new Promise((resolve, reject)=>{
-            let car = this.rentedCars.find((car, index) =>{
-                return car.license === license
-            });
-            if(car === undefined) reject(new Error("No car with that license"))
-            let carPrice = null;
-            this.allCars.forEach((car, index) =>{
-                if(car.license === license) carPrice = parseInt(car.pricePerDay);
-            });
-            let daysOfUsing = this.calculateDateDiff(car.startDate, car.returnDate);
-            let startDate = car.startDate;
-            let returnDate = car.returnDate;
-            resolve({daysOfUsing, startDate, returnDate, carPrice});
         })
     }
 
@@ -195,26 +215,19 @@ class CarService {
 
     static bestSellingCars(numberOfCars){
         return new Promise((resolve, reject)=>{
-            // iterating through this.statsCars to count how many of rented cars is?
-            let stats = {};
-            for(let i = 0; i<this.statsCars.length; i++){
-                (stats.hasOwnProperty(this.statsCars[i].license) === false) ? stats[this.statsCars[i].license] = 1 : stats[this.statsCars[i].license]++;
-            }
-            // going through numbersOfCars to return user numbers he wants
-            let returnCars = [];
-            for(let i = 0; i<numberOfCars; i++){
-                let max = 0;
-                let carLicense = null;
-                for(let license in stats){
-                    if(stats[license] > max){
-                        max = stats[license];
-                        carLicense = license;
-                    }
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", `http://localhost:3030/api/cars/best-selling/${numberOfCars}`);
+            xhr.send();
+            xhr.addEventListener("readystatechange",  ()=>{
+                if(xhr.readyState === 4 && xhr.status === 200)
+                {
+                    resolve(JSON.parse(xhr.responseText));
                 }
-                returnCars[i] = this.allCars.find((car)=>{return car.license === carLicense});
-                stats[carLicense] = undefined;
-            }
-            resolve(returnCars);
+                else if(xhr.readyState === 4)
+                {
+                    reject(JSON.parse(xhr.responseText))
+                }
+            });
         })
     }
 
@@ -254,16 +267,40 @@ class CarService {
         })
     }
 
-    static calculateDateDiff(date1, date2){
-        const [year1, month1, day1] = date1.split('-').map(Number);
-        const [year2, month2, day2] = date2.split('-').map(Number);
+    static searchRented(identifier){
+        return new Promise((resolve, reject)=>{
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", `http://localhost:3030/api/cars/search-rented/${identifier}`);
+            xhr.send();
+            xhr.addEventListener("readystatechange",  ()=>{
+                if(xhr.readyState === 4 && xhr.status === 200)
+                {
+                    resolve(JSON.parse(xhr.responseText));
+                }
+                else if(xhr.readyState === 4)
+                {
+                    reject(JSON.parse(xhr.responseText))
+                }
+            });
+        })
+    }
 
-        const date1Date = new Date(year1, month1 - 1, day1);
-        const date2Date = new Date(year2, month2 - 1, day2);
-
-        const diffInMs = date2Date.getTime() - date1Date.getTime();
-
-        return  Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+    static searchHistoryRented(data){
+        return new Promise((resolve, reject)=>{
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", `http://localhost:3030/api/cars//search-history-rented/${data.license}/${data.startDate}/${data.endDate}`);
+            xhr.send();
+            xhr.addEventListener("readystatechange",  ()=>{
+                if(xhr.readyState === 4 && xhr.status === 200)
+                {
+                    resolve(JSON.parse(xhr.responseText));
+                }
+                else if(xhr.readyState === 4)
+                {
+                    reject(JSON.parse(xhr.responseText))
+                }
+            });
+        })
     }
 }
 
