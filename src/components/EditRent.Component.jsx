@@ -53,7 +53,7 @@ function EditRent({rentedCarData, setRentCar, setRentModal}) {
     const editRent = (event)=>{
         let mistakes = FormValidation.validateInputFields(inputData);
         if(mistakes.length !== 0){
-            setMistakes(mistakes);
+            return setMistakes(mistakes);
         }
         carService.editRent(inputData)
             .then(data =>{
@@ -74,7 +74,7 @@ function EditRent({rentedCarData, setRentCar, setRentModal}) {
             {mistakes.length > 0 && (
                 <div className="alert alert-danger" role="alert">
                     {mistakes.map((error, index) => (
-                        <div key={index}>{error.message}</div>
+                        <div key={index}>{error.message || error}</div>
                     ))}
                 </div>
             )}
