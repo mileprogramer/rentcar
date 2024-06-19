@@ -48,7 +48,6 @@ function RentedCarsTable({cars, setAcceptModal, setCarData, setRentModal, setRen
                                 name={rentedCar.license}
                                 className="btn btn-primary"
                             > Extend rent </button></td>
-
                         </tr>)
                     })
                 }

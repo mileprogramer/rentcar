@@ -9,6 +9,7 @@ function Navbar(props) {
                 <ul className="navbar-nav d-flex gap-3">
                     <li className="nav-item"><Link to="/"> All Cars </Link></li>
                     <li className="nav-item"><Link to="/rented-cars"> Rented Cars </Link></li>
+                    <li className="nav-item"><Link to="/history-rented-cars"> History Rented Cars </Link></li>
                     <li className="nav-item"><Link to="/add-car"> Add Car </Link></li>
                     <li className="nav-item"><Link to="/best-selling-cars"> Best Selling Cars </Link></li>
                     <li className="nav-item"><Link to="/edit-delete-cars"> Edit/Delete Cars </Link></li>

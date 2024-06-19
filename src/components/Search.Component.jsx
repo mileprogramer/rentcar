@@ -5,8 +5,12 @@ function Search({setLoader, search, resetSearch}) {
 
     const [inputSearch, setInputSearch] = useState("");
     const [isSearched, setIsSearched] = useState(false);
+    const [mistakes, setMistakes] = useState([]);
 
     const handleSearch = (event)=>{
+        if(inputSearch.length < 3){
+            return setMistakes([{"message":"Search term must be at least 3 letters"}]);
+        } else  setMistakes([])
         carService.search(inputSearch)
             .then((cars)=>{
                 search(cars);
@@ -30,6 +34,13 @@ function Search({setLoader, search, resetSearch}) {
 
     return (
         <div className="form-group d-flex gap-3 w-50">
+            {mistakes.length > 0 && (
+                <div className="alert alert-danger" role="alert">
+                    {mistakes.map((error, index) => (
+                        <div key={index}>{error.message || error}</div>
+                    ))}
+                </div>
+            )}
             <input
                 onChange={handleInput}
                 value={inputSearch}
