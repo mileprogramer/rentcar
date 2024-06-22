@@ -1,12 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import carService from "../services/carService";
-import Loader from "./Loader.Component";
-
 import "../css/table.css"
 
 
 function CarsTable({cars, setRentCarModal, getCarData}) {
-
     const openRentCarModal = (event)=>{
         getCarData(event.target.name);
         setRentCarModal(true);
@@ -41,6 +37,7 @@ function CarsTable({cars, setRentCarModal, getCarData}) {
     }
 
     return (
+        <>
         <table className="table">
             <thead>
             <tr>
@@ -81,6 +78,7 @@ function CarsTable({cars, setRentCarModal, getCarData}) {
             }
             </tbody>
         </table>
+        </>
     );
 }
 
