@@ -7,8 +7,8 @@ function AcceptCarForm({car, setAcceptModal, setAcceptCar}) {
         license : car.license,
         review: '',
         userRating: '',
-        totalPrice: calculateTotalPrice(car.startDate, car.returnDate, car.pricePerDay),
-        startEndDate: car.startDate + " --- " + car.returnDate
+        totalPrice: calculateTotalPrice(car.startDate, todayDate(), car.pricePerDay),
+        startEndDate: car.startDate + " --- " + todayDate()
     });
 
     const [returnedCar, setReturnedCar] = useState(false);
@@ -22,11 +22,17 @@ function AcceptCarForm({car, setAcceptModal, setAcceptCar}) {
         });
     };
 
+    function todayDate(){
+        let month = new Date().getMonth() + 1;
+        return new Date().getFullYear() + "-" + month + "-"+ new Date().getDate()
+    }
+
 
     function calculateTotalPrice(startDate, returnDate, pricePerDay){
         let mSeconds = new Date(returnDate).getTime() - new Date(startDate).getTime();
         let days = mSeconds / (1000 * 60 * 60 * 24);
-        return days * pricePerDay;
+        let totalPrice = days * pricePerDay;
+        return totalPrice.toFixed(2);
     }
 
     const acceptCar = () => {
