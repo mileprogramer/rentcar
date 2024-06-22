@@ -6,11 +6,13 @@ import CarsTable from "../components/CarsTable.Component";
 import carService from "../services/carService";
 import Loader from "../components/Loader.Component";
 import RentCar from "../components/RentCar.Component";
+import Pagination from "../components/Pagination.Component";
 
 let allCars = [];
 
 function HomePage(props) {
     const [cars, setCars] = useState([]);
+    const [paginateData, setPaginateData] = useState([]);
     const [loader, setLoader] = useState(true);
     const [modalRentCar, setModalRentCar] = useState(false);
     const [carData, setCarData] = useState({});
@@ -21,8 +23,9 @@ function HomePage(props) {
     useEffect( () => {
         setLoader(true);
         carService.getCars()
-            .then((cars)=>{
-                setCars(cars);
+            .then((data)=>{
+                setPaginateData(data.paginateData);
+                setCars(data.cars);
                 setLoader(false);
             })
             .catch((error)=>{
@@ -30,6 +33,30 @@ function HomePage(props) {
                 setMistakesAPI(error);
             })
     }, []);
+
+    const renderLoaderOrError = () => {
+        if (loader) {
+            return <Loader />;
+        } else if (mistakesAPI !== null) {
+            return <div className="alert alert-danger">{mistakesAPI}</div>;
+        } else {
+            return (
+                <>
+                    <CarsTable
+                        cars={cars}
+                        setRentCarModal={setModalRentCar}
+                        getCarData={getCarData}
+                        paginateData={paginateData}
+                    />
+                    <Pagination elementsPerPage={paginateData.carsPerPage}
+                                totalElements={paginateData.totalCars}
+                                setCars={setCars}
+                                setLoader={setLoader}/>
+                </>
+
+            );
+        }
+    };
 
     const handleCarRented = (rentedCar) =>{
         setCars(cars.map((car)=>{
@@ -73,8 +100,7 @@ function HomePage(props) {
                 <Search resetSearch={resetSearch} setLoader = {setLoader} search ={search}/>
                 <Sort setCars={setCars} setLoader = {setLoader}/>
             </div>
-            {loader ? <Loader/> : mistakesAPI === null ? <CarsTable cars={cars} setRentCarModal = {setModalRentCar} getCarData={getCarData}/> :
-                <div className="alert alert-danger">{mistakesAPI}</div>}
+            {renderLoaderOrError()}
             {modalRentCar !== false ? <RentCar setModalRentCar = {setModalRentCar}
                                       modalRentCar = {modalRentCar}
                                       car={carData}
