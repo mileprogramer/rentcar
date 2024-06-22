@@ -1,11 +1,16 @@
 class CarService {
     static url = "http://localhost:3030/api/cars";
 
-    static getCars() {
+    static getCars(page) {
         return new Promise((resolve, reject) => {
             let xhr = new XMLHttpRequest();
-            xhr.open("GET", this.url);
+            if(page)
+            {
+                xhr.open("GET", this.url+`?page=${page}`);
+            }
+            else xhr.open("GET", this.url);
             xhr.send();
+
             xhr.addEventListener("readystatechange", ()=>{
                if(xhr.readyState === 4 && xhr.status === 200)
                {
