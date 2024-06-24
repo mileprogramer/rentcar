@@ -2,19 +2,23 @@ import React, {useEffect, useState} from 'react';
 import carService from "../services/carService";
 import Navbar from "../components/Navbar.Component";
 import SearchHistoryRented from "../components/SearchHistoryRented.Component";
+import Pagination from "../components/Pagination.Component";
 
 let allHistoryData = [];
 function HistoryRentedCars(props) {
 
     const [historyData, setHistoryData] = useState([]);
+    const [paginateData, setPaginationData] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
     const [mistakes, setMistakes] = useState([]);
     const [loader, setLoader] = useState(false);
 
     useEffect(() => {
         setLoader(true);
         carService.getHistoryRented()
-            .then((cars)=>{
-                setHistoryData(cars);
+            .then((data)=>{
+                setPaginationData(data.paginateData)
+                setHistoryData(data.cars);
                 setLoader(false);
             })
             .catch((error)=>{
@@ -22,6 +26,19 @@ function HistoryRentedCars(props) {
                 setMistakes(error);
             })
     }, []);
+
+    function getHistoryRented(page){
+        carService.getHistoryRented(page)
+            .then((data)=>{
+                setPaginationData(data.paginateData)
+                setHistoryData(data.cars);
+                setLoader(false);
+            })
+            .catch((error)=>{
+                setLoader(false);
+                setMistakes(error);
+            })
+    }
 
     const search = (data) =>{
         allHistoryData = [...historyData];
@@ -68,6 +85,11 @@ function HistoryRentedCars(props) {
                     }
                     </tbody>
                 </table>
+                <Pagination elementsPerPage={paginateData.carsPerPage}
+                            totalElements={paginateData.totalCars}
+                            setCurrentPage={setCurrentPage}
+                            currentPage={currentPage}
+                            getData={getHistoryRented}/>
             </div>
 
         </>
