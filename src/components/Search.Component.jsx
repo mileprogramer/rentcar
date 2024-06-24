@@ -12,8 +12,8 @@ function Search({setLoader, search, resetSearch}) {
             return setMistakes([{"message":"Search term must be at least 3 letters"}]);
         } else  setMistakes([])
         carService.search(inputSearch)
-            .then((cars)=>{
-                search(cars);
+            .then((data)=>{
+                search(data);
                 setIsSearched(true);
                 setLoader(false);
             })
