@@ -42,10 +42,14 @@ class CarService {
         });
     }
 
-    static getHistoryRented() {
+    static getHistoryRented(page) {
         return new Promise((resolve, reject) => {
             let xhr = new XMLHttpRequest();
-            xhr.open("GET", this.url+"/history-rented");
+            if(page)
+            {
+                xhr.open("GET", this.url+`/history-rented?page=${page}`);
+            }
+            else xhr.open("GET", `${this.url}/history-rented`);
             xhr.send();
             xhr.addEventListener("readystatechange", ()=>{
                 if(xhr.readyState === 4 && xhr.status === 200)
