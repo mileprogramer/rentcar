@@ -1,10 +1,21 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import carService from "../services/carService";
 
-function Pagination({totalElements, elementsPerPage, setCars, setLoader}) {
-    const [currentPage, setCurrentPage] = useState(0);
+function Pagination({totalElements, elementsPerPage, getData, setCurrentPage, currentPage}) {
 
-    let numberOfPages = Math.floor(parseInt(totalElements) / parseInt(elementsPerPage))
+    const [isChangePage, setIsChangedPage] = useState(false);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+    useEffect(() => {
+        if(!isChangePage && isInitialLoad){
+            return;
+        }
+        getData(currentPage);
+    }, [currentPage, getData]);
+
+    if(totalElements <= elementsPerPage) return "";
+
+    let numberOfPages = Math.ceil(parseInt(totalElements) / parseInt(elementsPerPage))
     let pages = [];
     for(let i = 1; i<=numberOfPages; i++){
         pages.push(i);
@@ -12,25 +23,20 @@ function Pagination({totalElements, elementsPerPage, setCars, setLoader}) {
     if(pages.length === 0){
         return "";
     }
-    const handleRequest = (page) =>{
-        carService.getCars(page)
-            .then((data)=>{
-                setCurrentPage(page);
-                setCars(data.cars);
-                setLoader(false);
-            })
-            .catch((error)=>{
-                setLoader(false);
-                alert(error);
-            })
-    }
-
     const handleNewPage = (event) =>{
         let nextPage = parseInt(event.target.name)
         if(nextPage && nextPage <= numberOfPages && nextPage >= 1){
-            handleRequest(nextPage);
+            setIsChangedPage(true);
+            setIsInitialLoad(false);
+            setCurrentPage(nextPage);
         }
         else alert("There is no more pages");
+    }
+
+    const print = (value)=>{
+        setTimeout(() => {
+            console.log(value)
+        }, 2000)
     }
 
     return (
@@ -48,7 +54,8 @@ function Pagination({totalElements, elementsPerPage, setCars, setLoader}) {
                 {
                     pages.map((page, index) => {
                         return <li key={index} className="page-item">
-                            <button className="page-link" onClick={handleNewPage} name={page}>
+                            <button className={"page-link " + (currentPage === page ? "active" : "")}
+                                    onClick={handleNewPage} name={page}>
                                 {page}
                             </button>
                         </li>
