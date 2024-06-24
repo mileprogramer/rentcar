@@ -4,7 +4,6 @@ import Navbar from "../components/Navbar.Component";
 import SearchHistoryRented from "../components/SearchHistoryRented.Component";
 import Pagination from "../components/Pagination.Component";
 
-let allHistoryData = [];
 function HistoryRentedCars(props) {
 
     const [historyData, setHistoryData] = useState([]);
@@ -41,12 +40,12 @@ function HistoryRentedCars(props) {
     }
 
     const search = (data) =>{
-        allHistoryData = [...historyData];
-        setHistoryData(data);
+        setHistoryData(data.cars);
+        setPaginationData(data.paginateData);
     }
 
     const resetSearch = () =>{
-        setHistoryData(allHistoryData);
+        getHistoryRented(1);
     }
 
     return (
