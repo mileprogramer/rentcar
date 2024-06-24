@@ -5,6 +5,7 @@ import DeleteModal from "../components/DeleteModal.Component";
 import carService from "../services/carService";
 import EditModal from "../components/EditModal.Component";
 import Loader from "../components/Loader.Component";
+import Pagination from "../components/Pagination.Component";
 
 function EditDeletePage(props) {
     const [deleteCarModal, setDeleteCarModal] = useState(false);
@@ -12,21 +13,36 @@ function EditDeletePage(props) {
     const [editCarModal, setEditCarModal] = useState(false);
     const [dataEditModal, setDataEditModal] = useState({});
     const [cars, setCars] = useState([]);
+    const [paginationData, setPaginateData] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
     const [loader, setLoader] = useState(false);
 
     useEffect(() => {
         setLoader(true);
         carService.getCars()
-            .then((cars)=>{
-                setCars(cars);
+            .then((data)=>{
+                setPaginateData(data.paginateData);
+                setCars(data.cars);
                 setLoader(false);
             })
             .catch((error)=>{
                 setLoader(false);
-                alert("Mistake happened"+ error);
+                alert("Mistake happened"+ error.message);
             })
     }, []);
 
+    const getCarsData = (page)=>{
+        carService.getCars(page)
+            .then((data)=>{
+                setPaginateData(data.paginateData);
+                setCars(data.cars);
+                setLoader(false);
+            })
+            .catch((error)=>{
+                setLoader(false);
+                alert("Mistake happened"+ error.message);
+            })
+    }
 
     const getCarData = (license, editOrDelete) => {
         const car = cars.find(car => car.license === license);
@@ -72,6 +88,13 @@ function EditDeletePage(props) {
                              setModalActive={setEditCarModal}
                              car={dataEditModal}
                              setCars = {updateCarsTable}
+                />
+                <Pagination
+                    totalElements={paginationData.totalCars}
+                    elementsPerPage={paginationData.carsPerPage}
+                    getData={getCarsData}
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
                 />
             </div>
         </>
