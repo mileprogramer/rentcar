@@ -18,8 +18,8 @@ function SearchHistoryRented({search, resetSearch, setLoader}) {
             return;
         } else setMistakes([]);
         carService.searchHistoryRented(inputSearch)
-            .then((cars)=>{
-                search(cars);
+            .then((data)=>{
+                search(data);
                 setIsSearched(true);
                 setLoader(false);
             })
