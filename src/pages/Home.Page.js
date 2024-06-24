@@ -9,10 +9,10 @@ import RentCar from "../components/RentCar.Component";
 import Pagination from "../components/Pagination.Component";
 
 let allCars = [];
-
 function HomePage(props) {
     const [cars, setCars] = useState([]);
     const [paginateData, setPaginateData] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
     const [loader, setLoader] = useState(true);
     const [modalRentCar, setModalRentCar] = useState(false);
     const [carData, setCarData] = useState({});
@@ -21,7 +21,6 @@ function HomePage(props) {
 
 
     useEffect( () => {
-        setLoader(true);
         carService.getCars()
             .then((data)=>{
                 setPaginateData(data.paginateData);
@@ -34,11 +33,25 @@ function HomePage(props) {
             })
     }, []);
 
-    const renderLoaderOrError = () => {
+    function getCars(page){
+        setLoader(true);
+        carService.getCars(page)
+            .then((data)=>{
+                setPaginateData(data.paginateData);
+                setCars(data.cars);
+                setLoader(false);
+            })
+            .catch((error)=>{
+                setLoader(false);
+                setMistakesAPI(error);
+            })
+    }
+
+    const renderLoaderOrCarsTable = () => {
         if (loader) {
             return <Loader />;
         } else if (mistakesAPI !== null) {
-            return <div className="alert alert-danger">{mistakesAPI}</div>;
+            return <div className="alert alert-danger">{mistakesAPI.message}</div>;
         } else {
             return (
                 <>
@@ -50,8 +63,9 @@ function HomePage(props) {
                     />
                     <Pagination elementsPerPage={paginateData.carsPerPage}
                                 totalElements={paginateData.totalCars}
-                                setCars={setCars}
-                                setLoader={setLoader}/>
+                                setCurrentPage={setCurrentPage}
+                                currentPage={currentPage}
+                                getData={getCars}/>
                 </>
 
             );
@@ -68,16 +82,10 @@ function HomePage(props) {
         }))
     }
 
-    const search = (searchedCars) =>{
+    const search = (data) =>{
         // function called by search btn
-        if(isSearched){
-            setCars(searchedCars);
-        }
-        else{
-            setIsSearched(true);
-            allCars = [...cars];
-            setCars(searchedCars);
-        }
+        setCars(data.cars);
+        setPaginateData(data.paginateData);
     }
 
     const getCarData = (license) =>{
@@ -88,9 +96,7 @@ function HomePage(props) {
 
     const resetSearch = () =>{
         // function called by search btn
-        setCars(allCars);
-        allCars = [];
-        setIsSearched(false);
+        getCars(1);
     }
 
     return (
@@ -100,7 +106,7 @@ function HomePage(props) {
                 <Search resetSearch={resetSearch} setLoader = {setLoader} search ={search}/>
                 <Sort setCars={setCars} setLoader = {setLoader}/>
             </div>
-            {renderLoaderOrError()}
+            {renderLoaderOrCarsTable()}
             {modalRentCar !== false ? <RentCar setModalRentCar = {setModalRentCar}
                                       modalRentCar = {modalRentCar}
                                       car={carData}
