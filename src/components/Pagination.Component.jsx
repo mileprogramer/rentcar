@@ -5,13 +5,12 @@ function Pagination({totalElements, elementsPerPage, getData, setCurrentPage, cu
 
     const [isChangePage, setIsChangedPage] = useState(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
-
     useEffect(() => {
         if(!isChangePage && isInitialLoad){
             return;
         }
         getData(currentPage);
-    }, [currentPage, getData]);
+    }, [currentPage]);
 
     if(totalElements <= elementsPerPage) return "";
 
