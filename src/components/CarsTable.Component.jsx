@@ -1,9 +1,12 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import "../css/table.css"
+import ModalOverlay from "./ModalOverlay.Component";
 
 
-function CarsTable({cars, setRentCarModal, getCarData}) {
+function CarsTable({cars, setRentCarModal, getCarData, setActiveOverlay}) {
+
     const openRentCarModal = (event)=>{
+        setActiveOverlay(true);
         getCarData(event.target.name);
         setRentCarModal(true);
     }

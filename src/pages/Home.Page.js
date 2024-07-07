@@ -7,6 +7,7 @@ import carService from "../services/carService";
 import Loader from "../components/Loader.Component";
 import RentCar from "../components/RentCar.Component";
 import Pagination from "../components/Pagination.Component";
+import ModalOverlay from "../components/ModalOverlay.Component";
 
 let allCars = [];
 function HomePage(props) {
@@ -18,6 +19,7 @@ function HomePage(props) {
     const [carData, setCarData] = useState({});
     const [isSearched, setIsSearched] = useState(false);
     const [mistakesAPI, setMistakesAPI] = useState(null);
+    const [isActiveOverlay, setActiveOverlay] = useState(false);
 
 
     useEffect( () => {
@@ -55,11 +57,15 @@ function HomePage(props) {
         } else {
             return (
                 <>
+                    {
+                        isActiveOverlay && <ModalOverlay isActive = {isActiveOverlay} setActive = {setActiveOverlay} />
+                    }
                     <CarsTable
                         cars={cars}
                         setRentCarModal={setModalRentCar}
                         getCarData={getCarData}
                         paginateData={paginateData}
+                        setActiveOverlay={setActiveOverlay}
                     />
                     <Pagination elementsPerPage={paginateData.carsPerPage}
                                 totalElements={paginateData.totalCars}
@@ -111,6 +117,7 @@ function HomePage(props) {
                                       modalRentCar = {modalRentCar}
                                       car={carData}
                                       setCars = {handleCarRented}
+                                      setActiveOverlay={setActiveOverlay}
             /> : "" }
 
         </div>

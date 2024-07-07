@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import "../css/modal.css"
 import carService from "../services/carService";
 import FormValidation from "../services/FormValidation";
-function RentCar({modalRentCar, setModalRentCar, setCars, car}) {
+function RentCar({modalRentCar, setModalRentCar, setCars, car, setActiveOverlay}) {
     const [inputData, setInputData] = useState({
         license: car.license,
         pricePerDay: car.pricePerDay,
@@ -41,6 +41,7 @@ function RentCar({modalRentCar, setModalRentCar, setCars, car}) {
     }
 
     const closeModal = ()=>{
+        setActiveOverlay(false);
         emptyInputFields()
         setModalRentCar(false);
     }
