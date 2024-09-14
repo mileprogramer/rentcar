@@ -1,315 +1,134 @@
+import axios from "axios";
+
 class CarService {
-    static url = "http://localhost:3030/api/cars";
+    static url = "http://localhost:8000/api/cars";
 
     static getCars(page) {
-        return new Promise((resolve, reject) => {
-            let xhr = new XMLHttpRequest();
-            if(page)
-            {
-                xhr.open("GET", this.url+`?page=${page}`);
-            }
-            else xhr.open("GET", this.url);
-            xhr.send();
-
-            xhr.addEventListener("readystatechange", ()=>{
-               if(xhr.readyState === 4 && xhr.status === 200)
-               {
-                   resolve(JSON.parse(xhr.responseText));
-               }
-               else if(xhr.readyState === 4)
-               {
-                   reject("Error happened Status code: "+ xhr.status+ " text of mistake is: " + xhr.responseText)
-               }
-            });
-        });
+        const url = page ? `${this.url}?page=${page}` : this.url;
+        return axios.get(url)
+            .then(response => {
+                let data = {
+                    "cars" :response.data.data, 
+                    "paginationData": {
+                        "currentPage": response.data.current_page,
+                        "firstPage": response.data.from,
+                        "lastPage": response.data.last_page,
+                        "totalElements" : response.data.total,
+                        "elementsPerPage" : response.data.per_page
+                    }
+                }
+                return data;
+            })
+            .catch(error => Promise.reject(this.handleError(error)));
     }
 
-    static getRentedCars(){
-        return new Promise((resolve, reject) => {
-            let xhr = new XMLHttpRequest();
-            xhr.open("GET", this.url+"/rented");
-            xhr.send();
-            xhr.addEventListener("readystatechange", ()=>{
-                if(xhr.readyState === 4 && xhr.status === 200)
-                {
-                    resolve(JSON.parse(xhr.responseText));
-                }
-                else if(xhr.readyState === 4)
-                {
-                    reject("Error happened Status code: "+ xhr.status+ " text of mistake is: " + xhr.responseText)
-                }
-            });
-        });
+    static getRentedCars() {
+        return axios.get(`${this.url}/rented`)
+            .then(response => response.data)
+            .catch(error => Promise.reject(this.handleError(error)));
     }
 
     static getHistoryRented(page) {
-        return new Promise((resolve, reject) => {
-            let xhr = new XMLHttpRequest();
-            if(page)
-            {
-                xhr.open("GET", this.url+`/history-rented?page=${page}`);
-            }
-            else xhr.open("GET", `${this.url}/history-rented`);
-            xhr.send();
-            xhr.addEventListener("readystatechange", ()=>{
-                if(xhr.readyState === 4 && xhr.status === 200)
-                {
-                    resolve(JSON.parse(xhr.responseText));
-                }
-                else if(xhr.readyState === 4)
-                {
-                    reject("Error happened Status code: "+ xhr.status+ " text of mistake is: " + xhr.responseText)
-                }
-            });
-        });
+        const url = page ? `${this.url}/history-rented?page=${page}` : `${this.url}/history-rented`;
+        return axios.get(url)
+            .then(response => response.data)
+            .catch(error => Promise.reject(this.handleError(error)));
     }
 
     static getCar(id, license) {
-        let criterium = id || license;
-        return new Promise((resolve, reject) => {
-            let xhr = new XMLHttpRequest();
-            xhr.open("GET", `http://localhost:3030/api/cars/${criterium}`);
-            xhr.send();
-            xhr.addEventListener("readystatechange", function (){
-                if(xhr.readyState === 4 && xhr.status === 200)
-                {
-                    resolve(JSON.parse(xhr.responseText));
-                }
-                else if(xhr.readyState === 4)
-                {
-                    reject("Error happened "+ xhr.status+ " " + xhr.responseText)
-                }
-            });
-        });
+        const criterium = id || license;
+        return axios.get(`${this.url}/${criterium}`)
+            .then(response => response.data)
+            .catch(error => Promise.reject(this.handleError(error)));
     }
 
     static updateCar(carInfo) {
-        return new Promise((resolve, reject)=>{
-            let xhr = new XMLHttpRequest();
-            xhr.open("PATCH", this.url+"/edit");
-            xhr.setRequestHeader("Content-type", "application/json");
-            xhr.send(JSON.stringify(carInfo));
-            xhr.addEventListener("readystatechange",  ()=>{
-                if(xhr.readyState === 4 && xhr.status === 200)
-                {
-                    resolve(JSON.parse(xhr.responseText));
-                }
-                else if(xhr.readyState === 4)
-                {
-                    reject(JSON.parse(xhr.responseText))
-                }
-            });
-        })
+        return axios.patch(`${this.url}/edit`, carInfo)
+            .then(response => response.data)
+            .catch(error => Promise.reject(this.handleError(error)));
     }
 
     static deleteCar(license) {
-        return new Promise((resolve, reject)=>{
-            let xhr = new XMLHttpRequest();
-            xhr.open("DELETE", this.url+"/delete");
-            xhr.setRequestHeader("Content-type", "application/json");
-            xhr.send(JSON.stringify({"license": license}));
-            xhr.addEventListener("readystatechange",  ()=>{
-                if(xhr.readyState === 4 && xhr.status === 200)
-                {
-                    resolve(JSON.parse(xhr.responseText));
-                }
-                else if(xhr.readyState === 4)
-                {
-                    reject(JSON.parse(xhr.responseText))
-                }
-            });
-        })
+        return axios.delete(`${this.url}/delete`, { data: { license } })
+            .then(response => response.data)
+            .catch(error => Promise.reject(this.handleError(error)));
     }
 
-    static acceptCar(carInfo){
-        return new Promise((resolve, reject)=>{
-            let xhr = new XMLHttpRequest();
-            xhr.open("POST", this.url+"/accept");
-            xhr.setRequestHeader("Content-type", "application/json");
-            xhr.send(JSON.stringify(carInfo));
-            xhr.addEventListener("readystatechange",  ()=>{
-                if(xhr.readyState === 4 && xhr.status === 200)
-                {
-                    resolve(JSON.parse(xhr.responseText));
-                }
-                else if(xhr.readyState === 4)
-                {
-                    reject(JSON.parse(xhr.responseText))
-                }
-            });
-        })
+    static acceptCar(carInfo) {
+        return axios.post(`${this.url}/accept`, carInfo)
+            .then(response => response.data)
+            .catch(error => Promise.reject(this.handleError(error)));
     }
 
-    static addCar(carInfo){
-        return new Promise((resolve, reject)=>{
-            let modelCar = {
-                license: carInfo.license,
-                brand: carInfo.brand,
-                model: carInfo.model,
-                year: carInfo.year,
-                airConditioner: (carInfo.airConditioner === "true") ? true : false,
-                pricePerDay: carInfo.price
+    static addCar(carInfo) {
+        const modelCar = {
+            license: carInfo.license,
+            brand: carInfo.brand,
+            model: carInfo.model,
+            year: carInfo.year,
+            airConditioner: carInfo.airConditioner === "true",
+            pricePerDay: carInfo.price
+        };
+        return axios.post(`${this.url}/add`, modelCar)
+            .then(response => response.data)
+            .catch(error => Promise.reject(this.handleError(error)));
+    }
+
+    static editRent(data) {
+        return axios.patch(`${this.url}/edit-rent`, data)
+            .then(response => response.data)
+            .catch(error => Promise.reject(this.handleError(error)));
+    }
+
+    static rentCar(carInfo) {
+        return axios.post(`${this.url}/rent`, carInfo)
+            .then(response => response.data)
+            .catch(error => Promise.reject(this.handleError(error)));
+    }
+
+    static bestSellingCars(numberOfCars) {
+        return axios.get(`${this.url}/best-selling/${numberOfCars}`)
+            .then(response => response.data)
+            .catch(error => Promise.reject(this.handleError(error)));
+    }
+
+    static sortCars(query) {
+        return axios.get(`${this.url}/sort${query}`)
+            .then(response => response.data)
+            .catch(error => Promise.reject(this.handleError(error)));
+    }
+
+    static search(searchParam) {
+        return axios.get(`${this.url}/search/${searchParam}`)
+            .then(response => response.data)
+            .catch(error => Promise.reject(this.handleError(error)));
+    }
+
+    static searchRented(identifier) {
+        return axios.get(`${this.url}/search-rented/${identifier}`)
+            .then(response => response.data)
+            .catch(error => Promise.reject(this.handleError(error)));
+    }
+
+    static searchHistoryRented(data) {
+        return axios.get(`${this.url}/search-history-rented/${data.license}/${data.startDate}/${data.endDate}`)
+            .then(response => response.data)
+            .catch(error => Promise.reject(this.handleError(error)));
+    }
+    
+    static handleError(error) {
+        if (error.response) {
+            if (error.response.data.errors) {
+                return {
+                    message: error.response.data.message,
+                    errors: error.response.data.errors
+                };
             }
-            let xhr = new XMLHttpRequest();
-            xhr.open("POST", this.url+"/add");
-            xhr.setRequestHeader("Content-type", "application/json");
-            xhr.send(JSON.stringify(modelCar));
-            xhr.addEventListener("readystatechange",  ()=>{
-                if(xhr.readyState === 4 && xhr.status === 200)
-                {
-                    resolve(JSON.parse(xhr.responseText));
-                }
-                else if(xhr.readyState === 4)
-                {
-                    reject(JSON.parse(xhr.responseText))
-                }
-            });
-        })
-
-    }
-
-    static editRent = (data) =>{
-        return new Promise((resolve, reject)=>{
-            let xhr = new XMLHttpRequest();
-            xhr.open("PATCH", this.url+"/edit-rent");
-            xhr.setRequestHeader("Content-type", "application/json");
-            xhr.send(JSON.stringify(data));
-            xhr.addEventListener("readystatechange",  ()=>{
-                if(xhr.readyState === 4 && xhr.status === 200)
-                {
-                    resolve(JSON.parse(xhr.responseText));
-                }
-                else if(xhr.readyState === 4)
-                {
-                    reject(JSON.parse(xhr.responseText))
-                }
-            });
-        })
-    }
-
-    static rentCar = (carInfo) => {
-        return new Promise((resolve, reject)=>{
-            let xhr = new XMLHttpRequest();
-            xhr.open("POST", this.url+"/rent");
-            xhr.setRequestHeader("Content-type", "application/json");
-            xhr.send(JSON.stringify(carInfo));
-            xhr.addEventListener("readystatechange",  ()=>{
-                if(xhr.readyState === 4 && xhr.status === 200)
-                {
-                    resolve(JSON.parse(xhr.responseText));
-                }
-                else if(xhr.readyState === 4)
-                {
-                    reject(JSON.parse(xhr.responseText))
-                }
-            });
-        })
-    }
-
-    static averageRating(license){
-        return new Promise((resolve, reject)=>{
-            let sum = 0;
-            let allRatings = 0;
-            for(let i = 0; i<this.statsCars.length; i++){
-                if(this.statsCars[i].license === license){
-                    sum+= this.statsCars[i].userRating;
-                    allRatings++;
-                }
-            }
-            if(sum === 0) return resolve(0);
-            let result = sum / allRatings;
-            resolve(result.toFixed(2));
-        })
-    }
-
-    static bestSellingCars(numberOfCars){
-        return new Promise((resolve, reject)=>{
-            let xhr = new XMLHttpRequest();
-            xhr.open("GET", `http://localhost:3030/api/cars/best-selling/${numberOfCars}`);
-            xhr.send();
-            xhr.addEventListener("readystatechange",  ()=>{
-                if(xhr.readyState === 4 && xhr.status === 200)
-                {
-                    resolve(JSON.parse(xhr.responseText));
-                }
-                else if(xhr.readyState === 4)
-                {
-                    reject(JSON.parse(xhr.responseText))
-                }
-            });
-        })
-    }
-
-    static sortCars(query){
-        return new Promise((resolve, reject)=>{
-            let xhr = new XMLHttpRequest();
-            xhr.open("GET", `http://localhost:3030/api/cars/sort${query}`);
-            xhr.send();
-            xhr.addEventListener("readystatechange",  ()=>{
-                if(xhr.readyState === 4 && xhr.status === 200)
-                {
-                    resolve(JSON.parse(xhr.responseText));
-                }
-                else if(xhr.readyState === 4)
-                {
-                    reject(JSON.parse(xhr.responseText))
-                }
-            });
-        })
-    }
-
-    static search(searchParam){
-        return new Promise((resolve, reject)=>{
-            let xhr = new XMLHttpRequest();
-            xhr.open("GET", `http://localhost:3030/api/cars/search/${searchParam}`);
-            xhr.send();
-            xhr.addEventListener("readystatechange",  ()=>{
-                if(xhr.readyState === 4 && xhr.status === 200)
-                {
-                    resolve(JSON.parse(xhr.responseText));
-                }
-                else if(xhr.readyState === 4)
-                {
-                    reject(JSON.parse(xhr.responseText))
-                }
-            });
-        })
-    }
-
-    static searchRented(identifier){
-        return new Promise((resolve, reject)=>{
-            let xhr = new XMLHttpRequest();
-            xhr.open("GET", `http://localhost:3030/api/cars/search-rented/${identifier}`);
-            xhr.send();
-            xhr.addEventListener("readystatechange",  ()=>{
-                if(xhr.readyState === 4 && xhr.status === 200)
-                {
-                    resolve(JSON.parse(xhr.responseText));
-                }
-                else if(xhr.readyState === 4)
-                {
-                    reject(JSON.parse(xhr.responseText))
-                }
-            });
-        })
-    }
-
-    static searchHistoryRented(data){
-        return new Promise((resolve, reject)=>{
-            let xhr = new XMLHttpRequest();
-            xhr.open("GET", `http://localhost:3030/api/cars//search-history-rented/${data.license}/${data.startDate}/${data.endDate}`);
-            xhr.send();
-            xhr.addEventListener("readystatechange",  ()=>{
-                if(xhr.readyState === 4 && xhr.status === 200)
-                {
-                    resolve(JSON.parse(xhr.responseText));
-                }
-                else if(xhr.readyState === 4)
-                {
-                    reject(JSON.parse(xhr.responseText))
-                }
-            });
-        })
+            return {
+                message: error.response.data.message || 'An error occurred',
+            };
+        }
+        return { message: error.message };
     }
 }
 

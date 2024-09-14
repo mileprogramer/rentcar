@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import "../css/table.css"
+import "../css/car-colors.css"
 import ModalOverlay from "./ModalOverlay.Component";
 
 
@@ -11,12 +12,12 @@ function CarsTable({cars, setRentCarModal, getCarData, setActiveOverlay}) {
         setRentCarModal(true);
     }
 
-    const isAvailable = (car) => {
+    const getCarStatus = (car) => {
         if (car.available === true) {
             return (
                 <>
                     <td>
-                        <button className="btn btn-success">Yes</button>
+                        <div className={"car-badge car-" + car.color}>{ car.status }</div>
                     </td>
                     <td>
                         <input onClick={(event)=>openRentCarModal(event)}
@@ -32,7 +33,7 @@ function CarsTable({cars, setRentCarModal, getCarData, setActiveOverlay}) {
         return (
             <>
                 <td>
-                    <button className="btn btn-danger">No</button>
+                    <div className={"car-badge car-" + car.color}> {car.status} </div>
                 </td>
                 <td> {null} </td>
             </>
@@ -50,9 +51,8 @@ function CarsTable({cars, setRentCarModal, getCarData, setActiveOverlay}) {
                 <td>Years old</td>
                 <td>Air Conditioner</td>
                 <td>Prize per day</td>
-                <td>Return day</td>
-                <td>Average rating</td>
-                <td>Available</td>
+                <td>Possible return day</td>
+                <td>Status</td>
                 <td>Reservation</td>
             </tr>
             </thead>
@@ -64,18 +64,10 @@ function CarsTable({cars, setRentCarModal, getCarData, setActiveOverlay}) {
                         <td>{car.brand}</td>
                         <td>{car.model}</td>
                         <td>{car.year}</td>
-                        {car.airConditioner ?
-                            <td>
-                                <button className="btn btn-success">Yes</button>
-                            </td> :
-                            <td>
-                                <button className="btn btn-danger">No</button>
-                            </td>
-                        }
-                        <td>{car.pricePerDay}</td>
-                        <td>{car.returnDate ? car.returnDate : "---"}</td>
-                        <td>{car.averageRating.toFixed(2)}</td>
-                        {isAvailable(car)}
+                        <td>{car.air_conditioning_type}</td>
+                        <td>{car.price_per_day}</td>
+                        <td>{car.returned_date ? car.returned_date : "---"}</td>
+                        {getCarStatus(car)}
                     </tr>)
                 })
             }

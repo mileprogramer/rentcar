@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import "../css/modal.css"
 import carService from "../services/carService";
 import FormValidation from "../services/FormValidation";

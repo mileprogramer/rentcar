@@ -1,0 +1,29 @@
+.car-badge{
+    padding: 8px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.car-success{
+    background-color: #157347;
+    border: 1px solid #157347;
+    color: white;
+}
+
+.car-rented{
+    background-color: #FFC107;
+    border: 1px solid #FFC107;
+    color: black;
+}
+
+.car-broken{
+    background-color: #dc3545;
+    border: 1px solid #dc3545;
+    color: white;
+}
+
+.car-deleted{
+    background-color: #BB2D3B;
+    border: 1px solid #BB2D3B;
+    color: white;
+}

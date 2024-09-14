@@ -23,23 +23,14 @@ function HomePage(props) {
 
 
     useEffect( () => {
-        carService.getCars()
-            .then((data)=>{
-                setPaginateData(data.paginateData);
-                setCars(data.cars);
-                setLoader(false);
-            })
-            .catch((error)=>{
-                setLoader(false);
-                setMistakesAPI(error);
-            })
+        getCars();
     }, []);
 
-    function getCars(page){
+    function getCars(page = 1){
         setLoader(true);
         carService.getCars(page)
             .then((data)=>{
-                setPaginateData(data.paginateData);
+                setPaginateData(data.paginationData);
                 setCars(data.cars);
                 setLoader(false);
             })
@@ -67,10 +58,10 @@ function HomePage(props) {
                         paginateData={paginateData}
                         setActiveOverlay={setActiveOverlay}
                     />
-                    <Pagination elementsPerPage={paginateData.carsPerPage}
+                    <Pagination elementsPerPage={paginateData.elementsPerPage}
                                 totalElements={paginateData.totalCars}
                                 setCurrentPage={setCurrentPage}
-                                currentPage={currentPage}
+                                currentPage={paginateData.currentPage}
                                 getData={getCars}/>
                 </>
 

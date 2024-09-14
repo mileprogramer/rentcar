@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import carService from "../services/carService";
 
 function Pagination({totalElements, elementsPerPage, getData, setCurrentPage, currentPage}) {
 
@@ -39,7 +38,7 @@ function Pagination({totalElements, elementsPerPage, getData, setCurrentPage, cu
     }
 
     return (
-        <nav aria-label="Page navigation example">
+        <nav>
             <ul className="pagination">
                 <li className="page-item">
                     <button
