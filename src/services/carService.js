@@ -7,8 +7,25 @@ class CarService {
         const url = page ? `${this.url}?page=${page}` : this.url;
         return axios.get(url)
             .then(response => {
-                let data = {
-                    "cars" :response.data.data, 
+                return {
+                    "cars" : response.data.data, 
+                    "paginationData": {
+                        "currentPage": response.data.current_page,
+                        "firstPage": response.data.from,
+                        "lastPage": response.data.last_page,
+                        "totalElements" : response.data.total,
+                        "elementsPerPage" : response.data.per_page
+                    }
+                };
+            })
+            .catch(error => Promise.reject(this.handleError(error)));
+    }
+
+    static getRentedCars() {
+        return axios.get(`${this.url}/rented`)
+            .then(response => {
+                return {
+                    "cars" : response.data.data, 
                     "paginationData": {
                         "currentPage": response.data.current_page,
                         "firstPage": response.data.from,
@@ -17,14 +34,7 @@ class CarService {
                         "elementsPerPage" : response.data.per_page
                     }
                 }
-                return data;
             })
-            .catch(error => Promise.reject(this.handleError(error)));
-    }
-
-    static getRentedCars() {
-        return axios.get(`${this.url}/rented`)
-            .then(response => response.data)
             .catch(error => Promise.reject(this.handleError(error)));
     }
 

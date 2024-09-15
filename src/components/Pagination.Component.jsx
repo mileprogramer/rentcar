@@ -1,40 +1,24 @@
-import React, {useEffect, useState} from 'react';
-
-function Pagination({totalElements, elementsPerPage, getData, setCurrentPage, currentPage}) {
-
-    const [isChangePage, setIsChangedPage] = useState(false);
-    const [isInitialLoad, setIsInitialLoad] = useState(true);
-    useEffect(() => {
-        if(!isChangePage && isInitialLoad){
-            return;
-        }
-        getData(currentPage);
-    }, [currentPage]);
-
+function Pagination({totalElements, elementsPerPage, currentPage , getData}) {
+    
     if(totalElements <= elementsPerPage) return "";
-
+    
     let numberOfPages = Math.ceil(parseInt(totalElements) / parseInt(elementsPerPage))
     let pages = [];
+
     for(let i = 1; i<=numberOfPages; i++){
         pages.push(i);
     }
+    
     if(pages.length === 0){
         return "";
     }
+
     const handleNewPage = (event) =>{
-        let nextPage = parseInt(event.target.name)
+        let nextPage = parseInt(event.target.name);
         if(nextPage && nextPage <= numberOfPages && nextPage >= 1){
-            setIsChangedPage(true);
-            setIsInitialLoad(false);
-            setCurrentPage(nextPage);
+            getData(nextPage);
         }
         else alert("There is no more pages");
-    }
-
-    const print = (value)=>{
-        setTimeout(() => {
-            console.log(value)
-        }, 2000)
     }
 
     return (
@@ -42,7 +26,7 @@ function Pagination({totalElements, elementsPerPage, getData, setCurrentPage, cu
             <ul className="pagination">
                 <li className="page-item">
                     <button
-                        name = {currentPage-1}
+                        name = { currentPage -1 }
                         className="page-link"
                         onClick={handleNewPage}
                     >
@@ -51,6 +35,7 @@ function Pagination({totalElements, elementsPerPage, getData, setCurrentPage, cu
                 </li>
                 {
                     pages.map((page, index) => {
+                        console.log(currentPage)
                         return <li key={index} className="page-item">
                             <button className={"page-link " + (currentPage === page ? "active" : "")}
                                     onClick={handleNewPage} name={page}>
