@@ -18,12 +18,11 @@ function RentedCars(props) {
     const [rentModal, setRentModal] = useState(false);
     const [carData, setCarData] = useState({});
 
-
     useEffect( () => {
         setLoader(true);
         carService.getRentedCars()
-            .then((cars)=>{
-                setCars(cars);
+            .then((data)=>{
+                setCars(data.cars);
                 setLoader(false);
             })
             .catch((error)=>{
@@ -31,8 +30,6 @@ function RentedCars(props) {
                 setMistakesAPI(error);
             })
     }, []);
-
-
 
     const search = (searchedCars) =>{
         // function called by search btn

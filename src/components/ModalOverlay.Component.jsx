@@ -1,13 +1,10 @@
-import React, {useState} from 'react';
 import "../css/modal-overlay.css";
 
-function ModalOverlay(props) {
-
-    const isActive = props.isOverlayActive;
-    const setIsActive = props.setActiveOverlay;
+function ModalOverlay({setActiveOverlay, setModalRentCar}) {
 
     const closeModal = (event) =>{
-        setIsActive(false);
+        setActiveOverlay(false);
+        setModalRentCar(false);
     }
 
     return (

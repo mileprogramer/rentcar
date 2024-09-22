@@ -24,6 +24,7 @@ function RentedCarsTable({cars, setAcceptModal, setCarData, setRentModal, setRen
                     <td>Start rent date</td>
                     <td>End rent date</td>
                     <td>Price per day</td>
+                    <td>See details</td>
                     <td>Accept car</td>
                     <td>Extend rent</td>
                 </tr>
@@ -32,22 +33,32 @@ function RentedCarsTable({cars, setAcceptModal, setCarData, setRentModal, setRen
                 {
                     cars.map((rentedCar, index) => {
                         return (<tr key={index}>
-                            <td>{rentedCar.license}</td>
-                            <td>{rentedCar.personalData}</td>
-                            <td>{rentedCar.phoneNumber}</td>
-                            <td>{rentedCar.idCard}</td>
-                            <td>{rentedCar.startDate}</td>
-                            <td>{rentedCar.returnDate}</td>
-                            <td>{rentedCar.pricePerDay}</td>
-                            <td><button
+                            <td>{rentedCar.car['license']}</td>
+                            <td>{rentedCar.user['name']}</td>
+                            <td>{rentedCar.user['card_id']}</td>
+                            <td>{rentedCar.user['phone']}</td>
+                            <td>{rentedCar.start_date}</td>
+                            <td>{rentedCar.return_date}</td>
+                            <td>{rentedCar.price_per_day}</td>
+                            <td>
+                                <button
+                                name={rentedCar.license}
+                                className="btn btn-info"
+                                onClick={handleAcceptCar}> See details </button>
+                            </td>
+                            <td>
+                                <button
                                 name={rentedCar.license}
                                 className="btn btn-dark"
-                                onClick={handleAcceptCar}> Accept Car </button></td>
-                            <td><button
+                                onClick={handleAcceptCar}> Accept Car </button>
+                            </td>
+                            <td>
+                                <button
                                 onClick={handleEditRent}
                                 name={rentedCar.license}
                                 className="btn btn-primary"
-                            > Extend rent </button></td>
+                            > Extend rent </button>
+                            </td>
                         </tr>)
                     })
                 }

@@ -8,30 +8,34 @@ import Loader from "../components/Loader.Component";
 import RentCar from "../components/RentCar.Component";
 import Pagination from "../components/Pagination.Component";
 import ModalOverlay from "../components/ModalOverlay.Component";
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCars } from '../redux/car.slicer';
+import { saveCars } from '../redux/car.slicer';
+import { setCurrentPage } from '../redux/car.slicer';
+import { selectCurrentPage } from '../redux/car.slicer';
 
-let allCars = [];
 function HomePage(props) {
-    const [cars, setCars] = useState([]);
+    const currentPage = useSelector((state) => selectCurrentPage(state));
+    const cars = useSelector((state) => selectCars(state, currentPage));
+    const dispatch = useDispatch();
+
     const [paginateData, setPaginateData] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
     const [loader, setLoader] = useState(true);
     const [modalRentCar, setModalRentCar] = useState(false);
-    const [carData, setCarData] = useState({});
     const [isSearched, setIsSearched] = useState(false);
     const [mistakesAPI, setMistakesAPI] = useState(null);
     const [isActiveOverlay, setActiveOverlay] = useState(false);
+    const [rentedCarLicense, setRentedCarLicense] = useState("");
 
-
-    useEffect( () => {
-        getCars();
-    }, []);
+    if(cars === null)
+        getCars(currentPage);
 
     function getCars(page = 1){
-        setLoader(true);
         carService.getCars(page)
             .then((data)=>{
+                dispatch(setCurrentPage({"page" : page}));
+                dispatch(saveCars({"page": page, "cars": data.cars}));
                 setPaginateData(data.paginationData);
-                setCars(data.cars);
                 setLoader(false);
             })
             .catch((error)=>{
@@ -40,74 +44,79 @@ function HomePage(props) {
             })
     }
 
+    const openRentCarModal = (event)=>{
+        setActiveOverlay(true);
+        setRentedCarLicense(event.target.name);
+        setModalRentCar(true);
+    }
+
     const renderLoaderOrCarsTable = () => {
-        if (loader) {
+        if (loader || cars === null) {
             return <Loader />;
         } else if (mistakesAPI !== null) {
             return <div className="alert alert-danger">{mistakesAPI.message}</div>;
         } else {
+            
             return (
                 <>
                     {
-                        isActiveOverlay && <ModalOverlay isActive = {isActiveOverlay} setActive = {setActiveOverlay} />
+                        isActiveOverlay && <ModalOverlay setModalRentCar={(showOrHide) => setModalRentCar(showOrHide)} setActiveOverlay = {(showOrHide) => setActiveOverlay(showOrHide)} />
                     }
                     <CarsTable
                         cars={cars}
-                        setRentCarModal={setModalRentCar}
-                        getCarData={getCarData}
+                        setRentCarModal={openRentCarModal}
                         paginateData={paginateData}
-                        setActiveOverlay={setActiveOverlay}
+                        openRentCarModal={openRentCarModal}
                     />
                     <Pagination elementsPerPage={paginateData.elementsPerPage}
-                                totalElements={paginateData.totalCars}
-                                setCurrentPage={setCurrentPage}
-                                currentPage={paginateData.currentPage}
-                                getData={getCars}/>
+                                totalElements={paginateData.totalElements}
+                                changePage={(page) => dispatch(setCurrentPage({page}))}
+                                currentPage={currentPage}/>
                 </>
 
             );
         }
     };
 
-    const handleCarRented = (rentedCar) =>{
-        setCars(cars.map((car)=>{
-            if(car.license === rentedCar.license){
-                car.available = false;
-                car.returnDate = rentedCar.returnDate;
-            }
-            return car;
-        }))
-    }
+    // const handleCarRented = (rentedCar) =>{
+    //     setCars(cars.map((car)=>{
+    //         if(car.license === rentedCar.license){
+    //             car.available = false;
+    //             car.returnDate = rentedCar.returnDate;
+    //         }
+    //         return car;
+    //     }))
+    // }
 
-    const search = (data) =>{
-        // function called by search btn
-        setCars(data.cars);
-        setPaginateData(data.paginateData);
-    }
+    // const search = (data) =>{
+    //     // function called by search btn
+    //     setCars(data.cars);
+    //     setPaginateData(data.paginateData);
+    // }
 
-    const getCarData = (license) =>{
-        setCarData(cars.find(car =>{
-            return car.license === license;
-        }));
-    }
+    // const getCarData = (license) =>{
+    //     setCarData(cars.find(car =>{
+    //         return car.license === license;
+    //     }));
+    // }
 
-    const resetSearch = () =>{
-        // function called by search btn
-        getCars(1);
-    }
+    // const resetSearch = () =>{
+    //     // function called by search btn
+    //     getCars(1);
+    // }
 
     return (
         <div className="container">
             <Navbar/>
             <div className="d-flex gap-3 my-5">
-                <Search resetSearch={resetSearch} setLoader = {setLoader} search ={search}/>
-                <Sort setCars={setCars} setLoader = {setLoader}/>
+                {/* <Search resetSearch={resetSearch} setLoader = {setLoader} search ={search}/>
+                <Sort setCars={setCars} setLoader = {setLoader}/> */}
             </div>
             {renderLoaderOrCarsTable()}
             {modalRentCar !== false ? <RentCar setModalRentCar = {setModalRentCar}
                                       modalRentCar = {modalRentCar}
-                                      car={carData}
-                                      setCars = {handleCarRented}
+                                      carLicense = {rentedCarLicense}
+                                      carFromPage = {currentPage}
                                       setActiveOverlay={setActiveOverlay}
             /> : "" }
 

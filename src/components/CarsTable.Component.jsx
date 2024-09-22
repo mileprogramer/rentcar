@@ -1,16 +1,9 @@
-import React, {useState} from 'react';
-import "../css/table.css"
-import "../css/car-colors.css"
-import ModalOverlay from "./ModalOverlay.Component";
+import { useEffect, useState } from "react";
+import "../css/table.css";
+import "../css/car-colors.css";
 
 
-function CarsTable({cars, setRentCarModal, getCarData, setActiveOverlay}) {
-
-    const openRentCarModal = (event)=>{
-        setActiveOverlay(true);
-        getCarData(event.target.name);
-        setRentCarModal(true);
-    }
+function CarsTable({cars, openRentCarModal}) {
 
     const getCarStatus = (car) => {
         if (car.available === true) {

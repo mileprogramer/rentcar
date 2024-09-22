@@ -1,13 +1,15 @@
 import axios from "axios";
 
 class CarService {
-    static url = "http://localhost:8000/api/cars";
+    static defaultUrl = "http://localhost:8000/api/cars";
+    static rentedUrl = this.defaultUrl + "/rented";
 
     static getCars(page) {
-        const url = page ? `${this.url}?page=${page}` : this.url;
+        const url = page ? `${this.defaultUrl}?page=${page}` : this.defaultUrl;
         return axios.get(url)
             .then(response => {
                 return {
+                    "apiEndpoint": response.request.responseURL,
                     "cars" : response.data.data, 
                     "paginationData": {
                         "currentPage": response.data.current_page,
@@ -22,7 +24,7 @@ class CarService {
     }
 
     static getRentedCars() {
-        return axios.get(`${this.url}/rented`)
+        return axios.get(this.rentedUrl)
             .then(response => {
                 return {
                     "cars" : response.data.data, 

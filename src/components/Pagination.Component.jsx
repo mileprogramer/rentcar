@@ -1,4 +1,4 @@
-function Pagination({totalElements, elementsPerPage, currentPage , getData}) {
+function Pagination({totalElements, elementsPerPage, currentPage , changePage}) {
     
     if(totalElements <= elementsPerPage) return "";
     
@@ -16,7 +16,7 @@ function Pagination({totalElements, elementsPerPage, currentPage , getData}) {
     const handleNewPage = (event) =>{
         let nextPage = parseInt(event.target.name);
         if(nextPage && nextPage <= numberOfPages && nextPage >= 1){
-            getData(nextPage);
+            changePage(nextPage);
         }
         else alert("There is no more pages");
     }
@@ -35,7 +35,6 @@ function Pagination({totalElements, elementsPerPage, currentPage , getData}) {
                 </li>
                 {
                     pages.map((page, index) => {
-                        console.log(currentPage)
                         return <li key={index} className="page-item">
                             <button className={"page-link " + (currentPage === page ? "active" : "")}
                                     onClick={handleNewPage} name={page}>
