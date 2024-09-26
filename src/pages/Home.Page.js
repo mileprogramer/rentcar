@@ -106,7 +106,7 @@ function HomePage(props) {
     // }
 
     return (
-        <div className="container">
+        <div className="container overflow-hidden">
             <Navbar/>
             <div className="d-flex gap-3 my-5">
                 {/* <Search resetSearch={resetSearch} setLoader = {setLoader} search ={search}/>

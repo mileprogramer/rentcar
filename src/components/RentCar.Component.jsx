@@ -1,17 +1,33 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import "../css/modal.css"
 import carService from "../services/carService";
 import FormValidation from "../services/FormValidation";
 import { useSelector } from 'react-redux';
 import { selectCarData } from '../redux/car.slicer';
+import SearchableDropdown from './SearchableDropDown.Component';
+import userSerice from '../services/userService';
 
 function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setActiveOverlay}) {
 
     const carData = useSelector(state => selectCarData(state, carLicense, carFromPage));
-    
+    const [users, setUsers] = useState([]);
+    const [oldCustomer, setOldCustomer] = useState(false);
+    const [newCustomer, setNewCustomer] = useState(false);
+
+    useEffect(()=> {
+        userSerice.getUsers()
+            .then(data => {
+                setUsers(data.users);
+            })
+            .catch(errors => {
+                alert(errors);
+            })
+    }, [])
+
     const [inputData, setInputData] = useState({
         license: carData.license,
         pricePerDay: carData.price_per_day,
+        userId: "",
         idCard: '',
         returnDate: '',
         startDate: generateNowDate(),
@@ -88,7 +104,39 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
                     License: {carData.license}
                 </div>
                 <div className="card-body">
+                    <div>
 
+                        <div className='d-flex justify-content-evenly gap-3'>
+                            <button className='btn btn-primary'
+                                onClick={() => {
+                                    setOldCustomer(true);
+                                    setNewCustomer(false);
+                                }}
+                            >Choose old customer</button>
+                            <button className='btn btn-secondary'
+                                onClick={() => {
+                                    setOldCustomer(false);
+                                    setNewCustomer(true);
+                                }}
+                            >Add new user</button>
+                        </div>
+
+                    </div>
+                    {
+                        oldCustomer && 
+                        <SearchableDropdown
+                            options={users}
+                            label="name"
+                            id="id"
+                            selectedVal={inputData.userId}
+                            inputLabel="Type or choose old customer"
+                            handleChange={(val) => setInputData({...inputData, "userId": val})}
+                        />
+                    }
+                    
+                    {
+                        newCustomer &&
+                    <>
                     <div className="form-group my-1">
                         <label htmlFor="brand"> ID card of user </label>
                         <input
@@ -124,7 +172,8 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
                             onChange={handleInput}
                         />
                     </div>
-
+                    </>
+                    }
                     <div className="form-group my-1">
                         <div className='d-flex justify-content-between'>
                             <label htmlFor="brand">Date of taking car</label><br/>
@@ -164,7 +213,7 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
                         />
                     </div>
                 </div>
-                <div className="card-footer">
+                <div className="card-footer p-3">
                     <div onClick={() => closeModal()} className="btn btn-danger">Close modal</div>
                     <button
                         className="btn btn-primary float-end"
