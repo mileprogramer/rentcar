@@ -10,6 +10,10 @@ const carSlicer = createSlice({
             state.value[action.payload.page] = action.payload.cars;
         },
 
+        savePaginationData(state, action){
+            state.value.paginationData = action.payload.paginationData;
+        },
+
         setCurrentPage(state, action){
             state.value.currentPage = action.payload.page;
         }
@@ -24,6 +28,10 @@ export const selectCars = (state, page) =>  {
     return null;
 };
 
+export const selectPaginationData = (state) =>  {
+    return state.carStore.value.paginationData;
+};
+
 export const selectCurrentPage = (state) => {
     return state.carStore.value.currentPage;
 }
@@ -33,5 +41,5 @@ export const selectCarData = (state, license, fromPage) => {
 }
 
 
-export const { saveCars, setCurrentPage } = carSlicer.actions;
+export const { saveCars, setCurrentPage, savePaginationData } = carSlicer.actions;
 export default carSlicer.reducer;

@@ -11,7 +11,7 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
 
     const carData = useSelector(state => selectCarData(state, carLicense, carFromPage));
     const [users, setUsers] = useState([]);
-    const [oldCustomer, setOldCustomer] = useState(false);
+    const [oldCustomer, setOldCustomer] = useState(true);
     const [newCustomer, setNewCustomer] = useState(false);
 
     useEffect(()=> {
@@ -104,9 +104,28 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
                     License: {carData.license}
                 </div>
                 <div className="card-body">
-                    <div>
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <button className={`nav-link ${oldCustomer ? "active" : ""}`}
+                                onClick={() => {
+                                    setOldCustomer(true);
+                                    setNewCustomer(false);
+                                }}
+                            >Choose old customer</button>
+                        </li>
+                        <li class="nav-item">
+                            <button className={`nav-link ${newCustomer ? "active" : ""}`}
+                                onClick={() => {
+                                    setOldCustomer(false);
+                                    setNewCustomer(true);
+                                }}
+                            >New customer</button>
+                        </li>
+                    </ul>
+                    <div className='form-parent'>
 
-                        <div className='d-flex justify-content-evenly gap-3'>
+                    
+                        {/* <div className='d-flex justify-content-evenly gap-3'>
                             <button className='btn btn-primary'
                                 onClick={() => {
                                     setOldCustomer(true);
@@ -119,98 +138,97 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
                                     setNewCustomer(true);
                                 }}
                             >Add new user</button>
+                        </div> */}
+                        {
+                            oldCustomer && 
+                            <SearchableDropdown
+                                options={users}
+                                label="name"
+                                id="id"
+                                selectedVal={inputData.userId}
+                                inputLabel="Type or choose old customer"
+                                handleChange={(val) => setInputData({...inputData, "userId": val})}
+                            />
+                        }
+                        
+                        {
+                            newCustomer &&
+                        <>
+                        <div className="form-group my-1">
+                            <label htmlFor="brand"> ID card of user </label>
+                            <input
+                                id="idCard"
+                                name="idCard"
+                                type="text"
+                                className="form-control"
+                                value={inputData.idCard}
+                                onChange={handleInput}
+                            />
                         </div>
 
-                    </div>
-                    {
-                        oldCustomer && 
-                        <SearchableDropdown
-                            options={users}
-                            label="name"
-                            id="id"
-                            selectedVal={inputData.userId}
-                            inputLabel="Type or choose old customer"
-                            handleChange={(val) => setInputData({...inputData, "userId": val})}
-                        />
-                    }
-                    
-                    {
-                        newCustomer &&
-                    <>
-                    <div className="form-group my-1">
-                        <label htmlFor="brand"> ID card of user </label>
-                        <input
-                            id="idCard"
-                            name="idCard"
-                            type="text"
-                            className="form-control"
-                            value={inputData.idCard}
-                            onChange={handleInput}
-                        />
-                    </div>
-
-                    <div className="form-group my-1">
-                        <label htmlFor="brand">Type first name and last name</label>
-                        <input
-                            id="personalData"
-                            name="personalData"
-                            type="text"
-                            className="form-control"
-                            value={inputData.personalData}
-                            onChange={handleInput}
-                        />
-                    </div>
-
-                    <div className="form-group my-1">
-                        <label htmlFor="brand">Type phone number</label>
-                        <input
-                            id="number"
-                            name="number"
-                            type="number"
-                            className="form-control"
-                            value={inputData.number}
-                            onChange={handleInput}
-                        />
-                    </div>
-                    </>
-                    }
-                    <div className="form-group my-1">
-                        <div className='d-flex justify-content-between'>
-                            <label htmlFor="brand">Date of taking car</label><br/>
-                            <em>If input is empty by default it will be today date</em>
+                        <div className="form-group my-1">
+                            <label htmlFor="brand">Type first name and last name</label>
+                            <input
+                                id="personalData"
+                                name="personalData"
+                                type="text"
+                                className="form-control"
+                                value={inputData.personalData}
+                                onChange={handleInput}
+                            />
                         </div>
-                        <input
-                            id="startDate"
-                            name="startDate"
-                            type="date"
-                            className="form-control"
-                            value={inputData.startDate}
-                            onChange={handleInput}
-                        />
-                    </div>
 
-                    <div className="form-group my-1">
-                        <label htmlFor="brand">Date of return car</label>
-                        <input
-                            id="returnDate"
-                            name="returnDate"
-                            type="date"
-                            className="form-control"
-                            value={inputData.returnDate}
-                            onChange={handleInput}
-                        />
-                    </div>
+                        <div className="form-group my-1">
+                            <label htmlFor="brand">Type phone number</label>
+                            <input
+                                id="number"
+                                name="number"
+                                type="number"
+                                className="form-control"
+                                value={inputData.number}
+                                onChange={handleInput}
+                            />
+                        </div>
+                        </>
+                        }
+                        <div className="form-group my-1">
+                            <div className='d-flex justify-content-between'>
+                                <label htmlFor="brand">Date of taking car</label><br/>
+                                <em>If input is empty by default it will be today date</em>
+                            </div>
+                            <input
+                                id="startDate"
+                                name="startDate"
+                                type="date"
+                                className="form-control"
+                                value={inputData.startDate}
+                                onChange={handleInput}
+                            />
+                        </div>
 
-                    <div className="form-group my-1">
-                        <label htmlFor="brand">Price per day</label>
-                        <input
-                            id="pricePerDay"
-                            name="pricePerDay"
-                            type="text"
-                            className="form-control"
-                            value={inputData.pricePerDay}
-                            onChange={handleInput}
-                        />
+                        <div className="form-group my-1">
+                            <label htmlFor="brand">Date of return car</label>
+                            <input
+                                id="returnDate"
+                                name="returnDate"
+                                type="date"
+                                className="form-control"
+                                value={inputData.returnDate}
+                                onChange={handleInput}
+                            />
+                        </div>
+
+                        <div className="form-group my-1">
+                            <label htmlFor="brand">Price per day</label>
+                            <input
+                                id="pricePerDay"
+                                name="pricePerDay"
+                                type="text"
+                                className="form-control"
+                                value={inputData.pricePerDay}
+                                onChange={handleInput}
+                            />
+                        </div>
                     </div>
                 </div>
                 <div className="card-footer p-3">

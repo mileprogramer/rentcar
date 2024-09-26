@@ -2,6 +2,15 @@
     transform: translate(-50%, -50%);
     width: 600px;
 }
+
+.rent-car-model .form-parent{
+    border: 1px solid #ddd;
+    padding: 10px;
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+}
+
 .edit-delete-modal{
     transform: translate(-50%, -50%);
 }
