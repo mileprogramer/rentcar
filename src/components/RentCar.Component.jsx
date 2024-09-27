@@ -27,12 +27,13 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
     const [inputData, setInputData] = useState({
         license: carData.license,
         pricePerDay: carData.price_per_day,
+        discount: 0,
         userId: "",
         idCard: '',
+        personalData: '',
+        phoneNumber: '',
         returnDate: '',
         startDate: generateNowDate(),
-        number: '',
-        personalData: '',
     });
 
     const [mistakes, setMistakes] = useState([]);
@@ -70,6 +71,7 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
 
     const rentCar = (event)=>{
         let mistakes = FormValidation.validateInputFields(inputData);
+        // add validation does taking date is before returning date
         if(mistakes.length !== 0){
             setMistakes(mistakes);
             return ;
@@ -104,8 +106,8 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
                     License: {carData.license}
                 </div>
                 <div className="card-body">
-                    <ul class="nav nav-tabs">
-                        <li class="nav-item">
+                    <ul className="nav nav-tabs">
+                        <li className="nav-item">
                             <button className={`nav-link ${oldCustomer ? "active" : ""}`}
                                 onClick={() => {
                                     setOldCustomer(true);
@@ -113,7 +115,7 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
                                 }}
                             >Choose old customer</button>
                         </li>
-                        <li class="nav-item">
+                        <li className="nav-item">
                             <button className={`nav-link ${newCustomer ? "active" : ""}`}
                                 onClick={() => {
                                     setOldCustomer(false);
@@ -123,28 +125,13 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
                         </li>
                     </ul>
                     <div className='form-parent'>
-
-                    
-                        {/* <div className='d-flex justify-content-evenly gap-3'>
-                            <button className='btn btn-primary'
-                                onClick={() => {
-                                    setOldCustomer(true);
-                                    setNewCustomer(false);
-                                }}
-                            >Choose old customer</button>
-                            <button className='btn btn-secondary'
-                                onClick={() => {
-                                    setOldCustomer(false);
-                                    setNewCustomer(true);
-                                }}
-                            >Add new user</button>
-                        </div> */}
                         {
                             oldCustomer && 
                             <SearchableDropdown
                                 options={users}
                                 label="name"
                                 id="id"
+                                additionalLabelText = "card_id"
                                 selectedVal={inputData.userId}
                                 inputLabel="Type or choose old customer"
                                 handleChange={(val) => setInputData({...inputData, "userId": val})}
@@ -153,43 +140,43 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
                         
                         {
                             newCustomer &&
-                        <>
-                        <div className="form-group my-1">
-                            <label htmlFor="brand"> ID card of user </label>
-                            <input
-                                id="idCard"
-                                name="idCard"
-                                type="text"
-                                className="form-control"
-                                value={inputData.idCard}
-                                onChange={handleInput}
-                            />
-                        </div>
+                        <div className='row justify-content-between'>
+                            <div className="form-group my-1 col-3">
+                                <label htmlFor="brand"> ID card of user </label>
+                                <input
+                                    id="idCard"
+                                    name="idCard"
+                                    type="text"
+                                    className="form-control"
+                                    value={inputData.idCard}
+                                    onChange={handleInput}
+                                />
+                            </div>
 
-                        <div className="form-group my-1">
-                            <label htmlFor="brand">Type first name and last name</label>
-                            <input
-                                id="personalData"
-                                name="personalData"
-                                type="text"
-                                className="form-control"
-                                value={inputData.personalData}
-                                onChange={handleInput}
-                            />
-                        </div>
+                            <div className="form-group my-1 col-5">
+                                <label htmlFor="brand">Type first name and last name</label>
+                                <input
+                                    id="personalData"
+                                    name="personalData"
+                                    type="text"
+                                    className="form-control"
+                                    value={inputData.personalData}
+                                    onChange={handleInput}
+                                />
+                            </div>
 
-                        <div className="form-group my-1">
-                            <label htmlFor="brand">Type phone number</label>
-                            <input
-                                id="number"
-                                name="number"
-                                type="number"
-                                className="form-control"
-                                value={inputData.number}
-                                onChange={handleInput}
-                            />
+                            <div className="form-group my-1 col-4">
+                                <label htmlFor="brand">Type phone number</label>
+                                <input
+                                    id="number"
+                                    name="number"
+                                    type="number"
+                                    className="form-control"
+                                    value={inputData.number}
+                                    onChange={handleInput}
+                                />
+                            </div>
                         </div>
-                        </>
                         }
                         <div className="form-group my-1">
                             <div className='d-flex justify-content-between'>
@@ -213,21 +200,56 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
                                 name="returnDate"
                                 type="date"
                                 className="form-control"
-                                value={inputData.returnDate}
+                                value={inputData.discount}
                                 onChange={handleInput}
                             />
                         </div>
 
-                        <div className="form-group my-1">
-                            <label htmlFor="brand">Price per day</label>
-                            <input
-                                id="pricePerDay"
-                                name="pricePerDay"
-                                type="text"
-                                className="form-control"
-                                value={inputData.pricePerDay}
-                                onChange={handleInput}
-                            />
+                        <div className='row justify-content-between'>
+                            <div className="form-group my-1 col-3">
+                                <label htmlFor="discount">Discount in %</label>
+                                <input
+                                    id="discount"
+                                    name="discount"
+                                    type="text"
+                                    className="form-control"
+                                    onChange={handleInput}
+                                />
+                            </div>
+                            <div className="form-group my-1 col-8">
+                                <label htmlFor="brand">Reason for discount</label>
+                                <textarea
+                                    rows={2}
+                                    id="reasonForDiscount"
+                                    name="reasonForDiscount"
+                                    type="text"
+                                    className="form-control"
+                                    onChange={handleInput}
+                                />
+                            </div>
+                        </div>
+                        
+                        <div className='form-group my-1'>
+                            <table className='table'>
+                                <thead>
+                                    <tr>
+                                        <td>Days</td>
+                                        <td>Price per day</td>
+                                        <td>Discount</td>
+                                        <td>Total price</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>10</td>
+                                        <td>{inputData.pricePerDay}$</td>
+                                        <td>{inputData.discount}%</td>
+                                        <td className='fw-bold'>
+                                            { inputData.days * inputData.pricePerDay - inputData.discount * 100  }
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "../css/drop-down.css"
 
-const SearchableDropdown = ({ options, inputLabel, label, id, selectedVal, handleChange }) => {
+const SearchableDropdown = ({ options, inputLabel, label, additionalLabelText = null ,id, selectedVal, handleChange }) => {
     const [query, setQuery] = useState("");
     const [isOpen, setIsOpen] = useState(false);
 
@@ -65,7 +65,10 @@ const SearchableDropdown = ({ options, inputLabel, label, id, selectedVal, handl
                 }`}
                 key={`${id}-${index}`}
             >
-                {option[label]}
+                {
+                    additionalLabelText ?
+                    option[label] + "-" + option[additionalLabelText] : option[label]
+                }
             </div>
             );
         })}
