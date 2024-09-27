@@ -62,7 +62,7 @@ function HomePage(props) {
             return (
                 <>
                     {
-                        isActiveOverlay && <ModalOverlay setModalRentCar={(showOrHide) => setModalRentCar(showOrHide)} setActiveOverlay = {(showOrHide) => setActiveOverlay(showOrHide)} />
+                        isActiveOverlay && <ModalOverlay bgColor="transparent" setModalActive={(showOrHide) => setModalRentCar(showOrHide)} setActiveOverlay = {(showOrHide) => setActiveOverlay(showOrHide)} />
                     }
                     <CarsTable
                         cars={cars}
@@ -108,20 +108,22 @@ function HomePage(props) {
     // }
 
     return (
-        <div className="container overflow-hidden">
-            <Navbar/>
-            <div className="d-flex gap-3 my-5">
-                {/* <Search resetSearch={resetSearch} setLoader = {setLoader} search ={search}/>
-                <Sort setCars={setCars} setLoader = {setLoader}/> */}
-            </div>
-            {renderLoaderOrCarsTable()}
-            {modalRentCar !== false ? <RentCar setModalRentCar = {setModalRentCar}
-                                      modalRentCar = {modalRentCar}
-                                      carLicense = {rentedCarLicense}
-                                      carFromPage = {currentPage}
-                                      setActiveOverlay={setActiveOverlay}
-            /> : "" }
+        <div className='position-relative overflow-hidden'>
+            <div className="container">
+                <Navbar/>
+                <div className="d-flex gap-3 my-5">
+                    {/* <Search resetSearch={resetSearch} setLoader = {setLoader} search ={search}/>
+                    <Sort setCars={setCars} setLoader = {setLoader}/> */}
+                </div>
+                {renderLoaderOrCarsTable()}
+                {modalRentCar !== false ? <RentCar setModalRentCar = {setModalRentCar}
+                                        modalRentCar = {modalRentCar}
+                                        carLicense = {rentedCarLicense}
+                                        carFromPage = {currentPage}
+                                        setActiveOverlay={setActiveOverlay}
+                /> : "" }
 
+            </div>
         </div>
     );
 }

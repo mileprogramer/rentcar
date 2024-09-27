@@ -1,16 +1,18 @@
 import "../css/modal-overlay.css";
 
-function ModalOverlay({setActiveOverlay, setModalRentCar}) {
+function ModalOverlay({setActiveOverlay, bgColor = "rgba(221, 221, 221, 0.687)", setModalActive}) {
 
     const closeModal = (event) =>{
+        console.log("nemanaj")
         setActiveOverlay(false);
-        setModalRentCar(false);
+        setModalActive(false);
     }
 
     return (
         <div
             id="overlay"
             onClick={closeModal}
+            style={{backgroundColor: bgColor}}
         >
         </div>
     );

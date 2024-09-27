@@ -1,18 +1,33 @@
 import React, {useEffect, useState} from 'react';
 import "../css/modal.css"
 import carService from "../services/carService";
-import FormValidation from "../services/FormValidation";
 import { useSelector } from 'react-redux';
 import { selectCarData } from '../redux/car.slicer';
 import SearchableDropdown from './SearchableDropDown.Component';
 import userSerice from '../services/userService';
+import dayjs from 'dayjs';
 
-function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setActiveOverlay}) {
-
+function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, carLicense}) {
+    
     const carData = useSelector(state => selectCarData(state, carLicense, carFromPage));
     const [users, setUsers] = useState([]);
     const [oldCustomer, setOldCustomer] = useState(true);
     const [newCustomer, setNewCustomer] = useState(false);
+    const [inputData, setInputData] = useState({
+        license: carData.license,
+        pricePerDay: carData.price_per_day,
+        discount: 0,
+        reasonForDiscount: 0,
+        userId: "",
+        idCard: '',
+        personalData: '',
+        phoneNumber: '',
+        returnDate: '',
+        startDate: dayjs().format("YYYY-MM-DD"),
+    });
+
+    const [mistakes, setMistakes] = useState(false);
+    const [rentedCar, setRentedCar] = useState(false);
 
     useEffect(()=> {
         userSerice.getUsers()
@@ -24,21 +39,6 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
             })
     }, [])
 
-    const [inputData, setInputData] = useState({
-        license: carData.license,
-        pricePerDay: carData.price_per_day,
-        discount: 0,
-        userId: "",
-        idCard: '',
-        personalData: '',
-        phoneNumber: '',
-        returnDate: '',
-        startDate: generateNowDate(),
-    });
-
-    const [mistakes, setMistakes] = useState([]);
-    const [rentedCar, setRentedCar] = useState(false);
-
     const handleInput = (event) => {
         const { name, value } = event.target;
         setInputData({
@@ -47,35 +47,91 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
         });
     };
 
-    function generateNowDate(){
-        let now = new Date();
-        return `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`
-    }
-
     const emptyInputFields = ()=>{
         setInputData({
-            pricePerDay: carData.pricePerDay,
-            license: '',
+            license: "",
+            pricePerDay: "",
+            discount: 0,
+            reasonForDiscount: 0,
+            userId: "",
             idCard: '',
-            returnDate: '',
-            number: '',
             personalData: '',
+            phoneNumber: '',
+            returnDate: '',
+            startDate: "",
         })
     }
 
+    const calculaDays = () => {
+        if(inputData.returnDate){
+            return dayjs(inputData.returnDate).diff(inputData.startDate, "day");
+        }
+        return "";
+    }
+
     const closeModal = ()=>{
-        setActiveOverlay(false);
+        setActiveOverlay(false)
         emptyInputFields()
         setModalRentCar(false);
     }
 
-    const rentCar = (event)=>{
-        let mistakes = FormValidation.validateInputFields(inputData);
-        // add validation does taking date is before returning date
-        if(mistakes.length !== 0){
-            setMistakes(mistakes);
-            return ;
+    const validateInputFields = (inputData) => {
+        let hasError = false;
+        const mistakes = {
+            license: [],
+            pricePerDay: [],
+            discount: [],
+            reasonForDiscount: [],
+            userId: [],
+            idCard: [],
+            personalData: [],
+            phoneNumber: [],
+            returnDate: [],
+        };
+        if(!inputData.userId && oldCustomer){
+            mistakes.userId.push("You must choose user")
+            hasError = true;
         }
+
+        if(!inputData.personalData && newCustomer){
+            mistakes.personalData.push("You must fill user personal data")
+            hasError = true;
+        }
+
+        if(!inputData.phoneNumber && newCustomer){
+            mistakes.phoneNumber.push("You must fill the phone number")
+            hasError = true;
+        }
+
+        if(!inputData.idCard && newCustomer){
+            mistakes.idCard.push("You must fill the phone number");
+            hasError = true;
+        }
+
+        if(inputData.discount > 100){
+            mistakes.discount.push("Discount can not be grater than 100%");
+            hasError = true;
+        }
+        
+        if(inputData.discount > 0 && !inputData.reasonForDiscount){
+            mistakes.reasonForDiscount.push("You must fill reason for discount");
+            hasError = true;
+        }
+
+        if(!inputData.returnDate || dayjs(inputData.returnDate).isBefore(inputData.startDate)){
+            mistakes.reasonForDiscount.push("Return date must be after start date");
+            hasError = true;
+        }
+
+        if(hasError)
+        {
+            setMistakes(mistakes);
+            return;
+        }
+        rentCar();
+    }
+
+    const rentCar = (event)=>{
         carService.rentCar(inputData)
             .then(data =>{
                 // setCars(inputData); // refresh the page that is car rented
@@ -91,16 +147,10 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
                 setMistakes(errors);
             })
     }
+
     return (
-        <div className={`rent-car-model position-absolute top-50 start-50 ${modalRentCar === false ? "d-none" : ""} `}>
+        <div className={`rent-car-model position-fixed top-0 row align-center ${modalRentCar === true ? "rent-car-model-active" : ""} `}>
             {rentedCar && <div className="alert alert-success" role="alert">{rentedCar.message}</div>}
-            {mistakes.length > 0 && (
-                <div className="alert alert-danger" role="alert">
-                    {mistakes.map((error, index) => (
-                        <div key={index}>{error.message || error}</div>
-                    ))}
-                </div>
-            )}
             <div className="card">
                 <div className="card-header">
                     License: {carData.license}
@@ -131,6 +181,7 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
                                 options={users}
                                 label="name"
                                 id="id"
+                                validationErrors={mistakes.userId}
                                 additionalLabelText = "card_id"
                                 selectedVal={inputData.userId}
                                 inputLabel="Type or choose old customer"
@@ -151,6 +202,15 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
                                     value={inputData.idCard}
                                     onChange={handleInput}
                                 />
+                                {
+                                    mistakes !== false && mistakes.discount ? (
+                                        <ul>
+                                            {mistakes.idCard.map((el, index) => (
+                                                <li className="text-danger" key={index}>{el}</li>
+                                            ))}
+                                        </ul>
+                                    ) : ""
+                                }
                             </div>
 
                             <div className="form-group my-1 col-5">
@@ -163,6 +223,15 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
                                     value={inputData.personalData}
                                     onChange={handleInput}
                                 />
+                                {
+                                    mistakes !== false && mistakes.personalData ? (
+                                        <ul>
+                                            {mistakes.personalData.map((el, index) => (
+                                                <li className="text-danger" key={index}>{el}</li>
+                                            ))}
+                                        </ul>
+                                    ) : ""
+                                }
                             </div>
 
                             <div className="form-group my-1 col-4">
@@ -175,22 +244,41 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
                                     value={inputData.number}
                                     onChange={handleInput}
                                 />
+                                {
+                                    mistakes !== false && mistakes.phoneNumber ? (
+                                        <ul>
+                                            {mistakes.phoneNumber.map((el, index) => (
+                                                <li className="text-danger" key={index}>{el}</li>
+                                            ))}
+                                        </ul>
+                                    ) : ""
+                                }
                             </div>
                         </div>
                         }
                         <div className="form-group my-1">
                             <div className='d-flex justify-content-between'>
                                 <label htmlFor="brand">Date of taking car</label><br/>
-                                <em>If input is empty by default it will be today date</em>
+                                <em>By default it will be today date</em>
                             </div>
                             <input
                                 id="startDate"
                                 name="startDate"
+                                disabled = {true}
                                 type="date"
                                 className="form-control"
                                 value={inputData.startDate}
                                 onChange={handleInput}
                             />
+                            {
+                                    mistakes !== false && mistakes.startDate ? (
+                                        <ul>
+                                            {mistakes.startDate.map((el, index) => (
+                                                <li className="text-danger" key={index}>{el}</li>
+                                            ))}
+                                        </ul>
+                                    ) : ""
+                            }
                         </div>
 
                         <div className="form-group my-1">
@@ -200,9 +288,19 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
                                 name="returnDate"
                                 type="date"
                                 className="form-control"
-                                value={inputData.discount}
+                                min={dayjs(inputData.startDate).add(1, 'day').format('YYYY-MM-DD')}
+                                value={inputData.returnDate}
                                 onChange={handleInput}
                             />
+                            {
+                                mistakes !== false && mistakes.returnDate ? (
+                                    <ul>
+                                        {mistakes.returnDate.map((el, index) => (
+                                            <li className="text-danger" key={index}>{el}</li>
+                                        ))}
+                                    </ul>
+                                ) : ""
+                            }
                         </div>
 
                         <div className='row justify-content-between'>
@@ -211,10 +309,20 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
                                 <input
                                     id="discount"
                                     name="discount"
-                                    type="text"
+                                    type="number"
+                                    max = {100}
                                     className="form-control"
                                     onChange={handleInput}
                                 />
+                                {
+                                    mistakes !== false && mistakes.discount ? (
+                                        <ul>
+                                            {mistakes.discount.map((el, index) => (
+                                                <li className="text-danger" key={index}>{el}</li>
+                                            ))}
+                                        </ul>
+                                    ) : ""
+                                }
                             </div>
                             <div className="form-group my-1 col-8">
                                 <label htmlFor="brand">Reason for discount</label>
@@ -226,6 +334,15 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
                                     className="form-control"
                                     onChange={handleInput}
                                 />
+                                {
+                                    mistakes !== false && mistakes.reasonForDiscount ? (
+                                        <ul>
+                                            {mistakes.reasonForDiscount.map((el, index) => (
+                                                <li className="text-danger" key={index}>{el}</li>
+                                            ))}
+                                        </ul>
+                                    ) : ""
+                                }
                             </div>
                         </div>
                         
@@ -241,11 +358,13 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>10</td>
+                                        <td>{ calculaDays() }</td>
                                         <td>{inputData.pricePerDay}$</td>
                                         <td>{inputData.discount}%</td>
                                         <td className='fw-bold'>
-                                            { inputData.days * inputData.pricePerDay - inputData.discount * 100  }
+                                            {
+                                                Math.round(calculaDays() * inputData.pricePerDay * (1 - inputData.discount / 100), 2) 
+                                            }
                                         </td>
                                     </tr>
                                 </tbody>
@@ -257,7 +376,7 @@ function RentCar({modalRentCar, setModalRentCar, carFromPage, carLicense, setAct
                     <div onClick={() => closeModal()} className="btn btn-danger">Close modal</div>
                     <button
                         className="btn btn-primary float-end"
-                        onClick={(event) => rentCar(event)} // onClick handler directly within the button element
+                        onClick={(event) => validateInputFields(event)} // onClick handler directly within the button element
                         name={carData.license}
                     >
                         Rent

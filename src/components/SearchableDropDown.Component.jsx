@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "../css/drop-down.css"
 
-const SearchableDropdown = ({ options, inputLabel, label, additionalLabelText = null ,id, selectedVal, handleChange }) => {
+const SearchableDropdown = ({ options, inputLabel, label, additionalLabelText = null, validationErrors = [], id, selectedVal, handleChange }) => {
     const [query, setQuery] = useState("");
     const [isOpen, setIsOpen] = useState(false);
 
@@ -36,44 +36,55 @@ const SearchableDropdown = ({ options, inputLabel, label, additionalLabelText = 
     };
 
     return (
-    <div className="dropdown">
-        <label htmlFor="text">{inputLabel}</label>
-        <div className="control">
-            <div className="selected-value">
-                <input
-                ref={inputRef}
-                type="text"
-                value={getDisplayValue()}
-                name="searchTerm"
-                onChange={(e) => {
-                    setQuery(e.target.value);
-                    handleChange(null);
-                }}
-                onClick={toggle}
-                />
+    <>
+        <div className="dropdown">
+            <label htmlFor="text">{inputLabel}</label>
+            <div className="control">
+                <div className="selected-value">
+                    <input
+                    ref={inputRef}
+                    type="text"
+                    value={getDisplayValue()}
+                    name="searchTerm"
+                    onChange={(e) => {
+                        setQuery(e.target.value);
+                        handleChange(null);
+                    }}
+                    onClick={toggle}
+                    />
+                </div>
+            <div className={`arrow ${isOpen ? "open" : ""}`}></div>
             </div>
-        <div className={`arrow ${isOpen ? "open" : ""}`}></div>
-        </div>
 
-        <div className={`options ${isOpen ? "open" : ""}`}>
-        {filter(options).map((option, index) => {
-            return (
-            <div
-                onClick={() => selectOption(option)}
-                className={`option ${
-                option[label] === selectedVal ? "selected" : ""
-                }`}
-                key={`${id}-${index}`}
-            >
-                {
-                    additionalLabelText ?
-                    option[label] + "-" + option[additionalLabelText] : option[label]
-                }
+            <div className={`options ${isOpen ? "open" : ""}`}>
+            {filter(options).map((option, index) => {
+                return (
+                <div
+                    onClick={() => selectOption(option)}
+                    className={`option ${
+                    option[label] === selectedVal ? "selected" : ""
+                    }`}
+                    key={`${id}-${index}`}
+                >
+                    {
+                        additionalLabelText ?
+                        option[label] + "-" + option[additionalLabelText] : option[label]
+                    }
+                </div>
+                );
+            })}
             </div>
-            );
-        })}
         </div>
-    </div>
+        {
+            validationErrors.length !== 0 ? (
+                <ul>
+                    {validationErrors.map((el, index) => (
+                        <li className="text-danger" key={index}>{el}</li>
+                    ))}
+                </ul>
+            ) : ""
+        }
+    </>
     );
 };
 
