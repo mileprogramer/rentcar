@@ -1,13 +1,19 @@
 .rent-car-model{
+    position: fixed;
+    top: 0;
+    right: -100%;
     width: 800px;
     height: 100vh;
     overflow-y: auto;
-    right: -100%;
-    transition: all 0.4s ease-out;
+    transition: right 0.4s ease-in-out;
 }
 
 .rent-car-model-active{
     right: 0%;
+}
+
+.rent-car-model-unactive{
+    right: -100%;
 }
 
 .rent-car-model .form-parent{

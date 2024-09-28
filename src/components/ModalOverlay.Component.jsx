@@ -3,7 +3,6 @@ import "../css/modal-overlay.css";
 function ModalOverlay({setActiveOverlay, bgColor = "rgba(221, 221, 221, 0.687)", setModalActive}) {
 
     const closeModal = (event) =>{
-        console.log("nemanaj")
         setActiveOverlay(false);
         setModalActive(false);
     }

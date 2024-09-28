@@ -116,12 +116,12 @@ function HomePage(props) {
                     <Sort setCars={setCars} setLoader = {setLoader}/> */}
                 </div>
                 {renderLoaderOrCarsTable()}
-                {modalRentCar !== false ? <RentCar setModalRentCar = {setModalRentCar}
-                                        modalRentCar = {modalRentCar}
-                                        carLicense = {rentedCarLicense}
-                                        carFromPage = {currentPage}
-                                        setActiveOverlay={setActiveOverlay}
-                /> : "" }
+                <RentCar setModalRentCar = {setModalRentCar}
+                    modalRentCar = {modalRentCar}
+                    carLicense = {rentedCarLicense}
+                    carFromPage = {currentPage}
+                    setActiveOverlay={setActiveOverlay}
+                />
 
             </div>
         </div>

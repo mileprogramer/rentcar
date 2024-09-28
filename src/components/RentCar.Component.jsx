@@ -8,14 +8,15 @@ import userSerice from '../services/userService';
 import dayjs from 'dayjs';
 
 function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, carLicense}) {
-    
+
     const carData = useSelector(state => selectCarData(state, carLicense, carFromPage));
     const [users, setUsers] = useState([]);
     const [oldCustomer, setOldCustomer] = useState(true);
     const [newCustomer, setNewCustomer] = useState(false);
-    const [inputData, setInputData] = useState({
-        license: carData.license,
-        pricePerDay: carData.price_per_day,
+
+    const initialInputData = {
+        license: carData?.license || null,
+        pricePerDay: carData?.price_per_day ||  null,
         discount: 0,
         reasonForDiscount: 0,
         userId: "",
@@ -24,7 +25,14 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
         phoneNumber: '',
         returnDate: '',
         startDate: dayjs().format("YYYY-MM-DD"),
-    });
+    };
+
+    const [inputData, setInputData] = useState(initialInputData);
+
+    useEffect(()=> {
+        setInputData(initialInputData);
+        setMistakes(false)
+    }, [carData, oldCustomer])
 
     const [mistakes, setMistakes] = useState(false);
     const [rentedCar, setRentedCar] = useState(false);
@@ -48,18 +56,7 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
     };
 
     const emptyInputFields = ()=>{
-        setInputData({
-            license: "",
-            pricePerDay: "",
-            discount: 0,
-            reasonForDiscount: 0,
-            userId: "",
-            idCard: '',
-            personalData: '',
-            phoneNumber: '',
-            returnDate: '',
-            startDate: "",
-        })
+        setInputData(initialInputData)
     }
 
     const calculaDays = () => {
@@ -75,7 +72,7 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
         setModalRentCar(false);
     }
 
-    const validateInputFields = (inputData) => {
+    const validateInputFields = () => {
         let hasError = false;
         const mistakes = {
             license: [],
@@ -107,8 +104,8 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
             mistakes.idCard.push("You must fill the phone number");
             hasError = true;
         }
-
-        if(inputData.discount > 100){
+        
+        if(+inputData.discount > 100){
             mistakes.discount.push("Discount can not be grater than 100%");
             hasError = true;
         }
@@ -119,7 +116,7 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
         }
 
         if(!inputData.returnDate || dayjs(inputData.returnDate).isBefore(inputData.startDate)){
-            mistakes.reasonForDiscount.push("Return date must be after start date");
+            mistakes.returnDate.push("Return date must be after start date");
             hasError = true;
         }
 
@@ -148,8 +145,13 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
             })
     }
 
+    if(modalRentCar === false && !carData){
+        // initial load
+        return <div className={`rent-car-model rent-car-model-unactive`}></div>;
+    }
+
     return (
-        <div className={`rent-car-model position-fixed top-0 row align-center ${modalRentCar === true ? "rent-car-model-active" : ""} `}>
+        <div className={`rent-car-model row align-center ${modalRentCar === true ? "rent-car-model-active" : "rent-car-model-unactive"} `}>
             {rentedCar && <div className="alert alert-success" role="alert">{rentedCar.message}</div>}
             <div className="card">
                 <div className="card-header">
@@ -376,7 +378,7 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
                     <div onClick={() => closeModal()} className="btn btn-danger">Close modal</div>
                     <button
                         className="btn btn-primary float-end"
-                        onClick={(event) => validateInputFields(event)} // onClick handler directly within the button element
+                        onClick={() => validateInputFields()} // onClick handler directly within the button element
                         name={carData.license}
                     >
                         Rent

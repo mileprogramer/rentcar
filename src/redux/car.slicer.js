@@ -37,7 +37,10 @@ export const selectCurrentPage = (state) => {
 }
 
 export const selectCarData = (state, license, fromPage) => {
-    return state.carStore.value[fromPage].find(car => car.license === license);
+    if(state.carStore.value[fromPage])
+        return state.carStore.value[fromPage].find(car => car.license === license);
+
+    return null;
 }
 
 
