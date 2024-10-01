@@ -10,20 +10,19 @@ function AddCarForm(props) {
     const carStatus = new CarStatus();
     const airConditionerType = new AirConditioningType();
     const transmissionType = new TransmissionType();
-
-    const [inputData, setInputData] = useState({
+    const initialInputData = {
         license: '',
         brand: '',
         model: '',
         year: '',
         price: '',
-        numberOfdoors: 0,
-        personFitIn: 0,
+        numberOfDoors: 5,
+        personFitIn: 4,
         consumption: 0,
         airConditioner: '',
         transmissionType: '',
-        carStatus: carStatus.available
-    });
+    };
+    const [inputData, setInputData] = useState(initialInputData);
 
     const [addedCar, setAddedCar] = useState(false);
     const [mistakes, setMistakes] = useState([]);
@@ -39,7 +38,7 @@ function AddCarForm(props) {
     const renderAirConditiongTypes = () =>{
         let content = [];
         let types = airConditionerType.getKeys();
-        content.push(<option value="">Select air conditioning type</option>);
+        content.push(<option key="default" value="">Select air conditioning type</option>);
         for (let prop in types) {
             content.push(
                 <option key={prop} value={prop}>
@@ -53,7 +52,7 @@ function AddCarForm(props) {
     const renderTransmissionTypes = () =>{
         let content = [];
         let types = transmissionType.getKeys();
-        content.push(<option value="">Select transmission type</option>);
+        content.push(<option key="default" value="">Select transmission type</option>);
         for (let prop in types) {
             content.push(
                 <option key={prop} value={prop}>
@@ -68,11 +67,31 @@ function AddCarForm(props) {
         let mistakes = FormValidation.validateInputFields(inputData);
         if(mistakes.length !== 0){
             setMistakes(mistakes);
+            return;
         }
 
-        carService.addCar(inputData)
+        let carData = {
+            license: inputData.license,
+            brand: inputData.brand,
+            model: inputData.model,
+            year: inputData.year,
+            price_per_day: inputData.price,
+            number_of_doors: inputData.numberOfDoors,
+            person_fit_in: inputData.personFitIn,
+            car_consumption: inputData.consumption,
+            air_conditioning_type: inputData.airConditioner,
+            transmission_type: inputData.transmissionType,
+            status: carStatus.available
+        }
+
+        carService.addCar(carData)
             .then(data =>{
+                setMistakes([]);
                 setAddedCar(true);
+                setTimeout(()=> {
+                    setInputData(initialInputData);
+                    setAddedCar(false);
+                }, 3000)
             })
             .catch(errors =>{
                 setMistakes(errors);
@@ -93,7 +112,7 @@ function AddCarForm(props) {
             {addedCar && <div className="alert alert-success" role="alert">You successfully added a car</div>}
 
             <div className="row">
-                <div className="form-group col-4">
+                <div className="form-group col-3">
                     <label htmlFor="brand">Type license</label>
                     <input
                         id="license"
@@ -105,7 +124,7 @@ function AddCarForm(props) {
                     />
                 </div>
 
-                <div className="form-group col-4">
+                <div className="form-group col-3">
                     <label htmlFor="brand">Type brand</label>
                     <input
                         id="brand"
@@ -117,7 +136,7 @@ function AddCarForm(props) {
                     />
                 </div>
 
-                <div className="form-group col-4">
+                <div className="form-group col-3">
                     <label htmlFor="brand">Type model</label>
                     <input
                         id="model"
@@ -128,10 +147,8 @@ function AddCarForm(props) {
                         onChange={handleInput}
                     />
                 </div>
-            </div>
 
-            <div className='row mt-3'>
-                <div className="form-group col-4">
+                <div className="form-group col-3">
                     <label htmlFor="year">Type year</label>
                     <input
                         id="year"
@@ -142,7 +159,9 @@ function AddCarForm(props) {
                         onChange={handleInput}
                     />
                 </div>
+            </div>
 
+            <div className='row mt-3'>
                 <div className="form-group col-4">
                     <label htmlFor="price">Price per day</label>
                     <input
@@ -166,24 +185,52 @@ function AddCarForm(props) {
                         onChange={handleInput}
                     />
                 </div>
+
+                <div className="form-group col-4">
+                    <label htmlFor="numberOfDoors">Number of doors</label>
+                    <input
+                        id="numberOfDoors"
+                        name="numberOfDoors"
+                        type="number"
+                        className="form-control"
+                        value={inputData.numberOfDoors}
+                        onChange={handleInput}
+                    />
+                </div>
             </div>
 
             <div className="row">
-                <div className="form-group my-3 col-6">
+
+                <div className="form-group my-3 col-4">
+                    <label htmlFor="personFitIn">Person fit in</label>
+                    <input
+                        id="personFitIn"
+                        name="personFitIn"
+                        type="number"
+                        className="form-control"
+                        value={inputData.personFitIn}
+                        onChange={handleInput}
+                    />
+                </div>
+
+                <div className="form-group my-3 col-4">
                     <label htmlFor="airConditioner">Air conditioner</label>
-                    <select className='form-select' name="airConditioner" id="airConditioner" oncChange={handleInput}>
+                    <select className='form-select' name="airConditioner" id="airConditioner" onChange={(event) => {
+                        setInputData({...inputData, "airConditioner":event.target.value})
+                    }}>
                         {renderAirConditiongTypes()}
                     </select>
                 </div>
 
-                <div className="form-group my-3 col-6">
+                <div className="form-group my-3 col-4">
                     <label htmlFor="transmissionType">Transmission type</label>
-                    <select className='form-select' name="transmissionType" id="transmissionType" oncChange={handleInput}>
+                    <select className='form-select' name="transmissionType" id="transmissionType" onChange={(event) => {
+                        setInputData({...inputData, "transmissionType": event.target.value})
+                    }}>
                         {renderTransmissionTypes()}
                     </select>
                 </div>
             </div>
-
 
             <button className="btn btn-primary w-50 offset-3 mt-5" onClick={addCar}>
                 Add Car

@@ -82,7 +82,10 @@ class CarService {
     static deleteCar(license) {
         return axios.delete(`${this.url}/delete`, { data: { license } })
             .then(response => response.data)
-            .catch(error => Promise.reject(this.handleError(error)));
+            .catch(error => {
+                console.log(error);
+                Promise.reject(this.handleError(error));
+            });
     }
 
     static acceptCar(carInfo) {
@@ -91,18 +94,12 @@ class CarService {
             .catch(error => Promise.reject(this.handleError(error)));
     }
 
-    static addCar(carInfo) {
-        const modelCar = {
-            license: carInfo.license,
-            brand: carInfo.brand,
-            model: carInfo.model,
-            year: carInfo.year,
-            airConditioner: carInfo.airConditioner === "true",
-            pricePerDay: carInfo.price
-        };
-        return axios.post(`${this.url}/add`, modelCar)
+    static addCar(carData) {
+        return axios.post(`${this.defaultPostUrl}/add`, carData)
             .then(response => response.data)
-            .catch(error => Promise.reject(this.handleError(error)));
+            .catch(error => {
+                return Promise.reject(this.getErrorsMessages(error.response.data));
+            });
     }
 
     static editRent(data) {
@@ -153,14 +150,33 @@ class CarService {
     static handleError(data) {
         let mistakes = [];
         if (data?.errors) {
-            for(let prop of mistakes)
+            for(let prop in data.errors)
             {
-                mistakes[prop] = mistakes[prop] || [];
-                mistakes[prop].push(mistakes[prop]); 
+                if(mistakes.hasOwnProperty(prop))
+                {
+                    mistakes[prop].push(data.errors[prop]);
+                }
+                else{
+                    mistakes[prop] = [data.errors[prop]];
+                }
             }
-            
         }
         return mistakes;
+    }
+
+    static getErrorsMessages(data){
+        let mistakes = [];
+        if (data?.errors) {
+            for(let prop in data.errors)
+            {
+                mistakes.push(data.errors[prop]);
+            }
+        }
+        return mistakes;
+    }
+
+    static convertToSnakeCase(name){
+        return name.replace(/[A-Z]/g, (match) => '_' + match.toLowerCase())
     }
 }
 
