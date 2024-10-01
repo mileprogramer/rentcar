@@ -16,6 +16,29 @@ const carSlicer = createSlice({
 
         setCurrentPage(state, action){
             state.value.currentPage = action.payload.page;
+        },
+
+        setRentedCar(state, action){
+            let { carId, page } = action.payload;
+            let cars = state.value[page] || [];
+
+            let updatedCars = cars.filter(car => car.id !== carId);
+            let nextPage = page + 1;
+            if (cars.length === 10) {
+                let nextPageCars = state.value[nextPage]; // could be undefined if the next page is not cached  
+                
+                if(nextPageCars?.length === 0){
+                    // if there is not cars on that page remove it from pagination
+                    state.value.paginationData.lastPage--;
+                }
+
+                if (nextPageCars?.length > 0) {
+                    updatedCars.push(nextPageCars[0]);
+                    state.value[nextPage] = nextPageCars.slice(1);
+                }
+            }
+            
+            state.value[page] = updatedCars;
         }
     },
 });
@@ -44,5 +67,5 @@ export const selectCarData = (state, license, fromPage) => {
 }
 
 
-export const { saveCars, setCurrentPage, savePaginationData } = carSlicer.actions;
+export const { saveCars, setCurrentPage, savePaginationData, setRentedCar } = carSlicer.actions;
 export default carSlicer.reducer;

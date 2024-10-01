@@ -1,37 +1,8 @@
-import { useEffect, useState } from "react";
 import "../css/table.css";
 import "../css/car-colors.css";
 
 
 function CarsTable({cars, openRentCarModal}) {
-
-    const getCarStatus = (car) => {
-        if (car.available === true) {
-            return (
-                <>
-                    <td>
-                        <div className={"car-badge car-" + car.color}>{ car.status }</div>
-                    </td>
-                    <td>
-                        <input onClick={(event)=>openRentCarModal(event)}
-                               type="button"
-                               value="Rent car"
-                               name={car.license}
-                               className="btn btn-primary"/>
-                    </td>
-                </>
-            )
-        }
-
-        return (
-            <>
-                <td>
-                    <div className={"car-badge car-" + car.color}> {car.status} </div>
-                </td>
-                <td> {null} </td>
-            </>
-        )
-    }
 
     return (
         <>
@@ -43,9 +14,9 @@ function CarsTable({cars, openRentCarModal}) {
                 <td>Model</td>
                 <td>Years old</td>
                 <td>Air Conditioner</td>
-                <td>Prize per day</td>
-                <td>Possible return day</td>
-                <td>Status</td>
+                <td>Person fit in</td>
+                <td>Car consumption in city</td>
+                <td>Transmissions type</td>
                 <td>Reservation</td>
             </tr>
             </thead>
@@ -58,9 +29,16 @@ function CarsTable({cars, openRentCarModal}) {
                         <td>{car.model}</td>
                         <td>{car.year}</td>
                         <td>{car.air_conditioning_type}</td>
-                        <td>{car.price_per_day}</td>
-                        <td>{car.returned_date ? car.returned_date : "---"}</td>
-                        {getCarStatus(car)}
+                        <td>{car.person_fit_in}</td>
+                        <td>{car.car_consumption}l/100km</td>
+                        <td>{car.transmission_type}</td>
+                        <td>
+                            <input onClick={(event)=>openRentCarModal(event)}
+                               type="button"
+                               value="Rent car"
+                               name={car.license}
+                               className="btn btn-primary"/>
+                        </td>
                     </tr>)
                 })
             }

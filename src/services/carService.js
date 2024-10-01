@@ -1,11 +1,30 @@
 import axios from "axios";
 
 class CarService {
-    static defaultUrl = "http://localhost:8000/api/cars";
-    static rentedUrl = this.defaultUrl + "/rented";
+    static defaultGetUrl = "http://127.0.0.1:8000/api/cars";
+    static defaultPostUrl = "http://127.0.0.1:8000/api/car";
 
     static getCars(page) {
-        const url = page ? `${this.defaultUrl}?page=${page}` : this.defaultUrl;
+        const url = page ? `${this.defaultGetUrl}?page=${page}` : this.defaultGetUrl;
+        return axios.get(url)
+            .then(response => {
+                return {
+                    "apiEndpoint": response.request.responseURL,
+                    "cars" : response.data.data, 
+                    "paginationData": {
+                        "currentPage": response.data.current_page,
+                        "firstPage": response.data.from,
+                        "lastPage": response.data.last_page,
+                        "totalElements" : response.data.total,
+                        "elementsPerPage" : response.data.per_page
+                    }
+                };
+            })
+            .catch(error => Promise.reject(this.handleError(error)));
+    }
+
+    static getAvailableCars(page) {
+        const url = page ? `${this.defaultGetUrl}/available?page=${page}` : this.defaultGetUrl + "/available";
         return axios.get(url)
             .then(response => {
                 return {
@@ -24,7 +43,7 @@ class CarService {
     }
 
     static getRentedCars() {
-        return axios.get(this.rentedUrl)
+        return axios.get(this.defaultGetUrl + "/rented")
             .then(response => {
                 return {
                     "cars" : response.data.data, 
@@ -92,8 +111,11 @@ class CarService {
             .catch(error => Promise.reject(this.handleError(error)));
     }
 
-    static rentCar(carInfo) {
-        return axios.post(`${this.url}/rent`, carInfo)
+    static rentCar(rentCarData) {
+        return axios.post(`${this.defaultPostUrl}/rent`, rentCarData, {
+            "headers": {
+                "Content-type": 'application/json'
+            }})
             .then(response => response.data)
             .catch(error => Promise.reject(this.handleError(error)));
     }
@@ -117,7 +139,7 @@ class CarService {
     }
 
     static searchRented(identifier) {
-        return axios.get(`${this.url}/search-rented/${identifier}`)
+        return axios.get(`${this.defaultUrl}/search-rented/${identifier}`)
             .then(response => response.data)
             .catch(error => Promise.reject(this.handleError(error)));
     }
@@ -128,19 +150,16 @@ class CarService {
             .catch(error => Promise.reject(this.handleError(error)));
     }
     
-    static handleError(error) {
-        if (error.response) {
-            if (error.response.data.errors) {
-                return {
-                    message: error.response.data.message,
-                    errors: error.response.data.errors
-                };
+    static handleError(data) {
+        let mistakes = [];
+        if (data?.errors) {
+            for(let prop of mistakes)
+            {
+                mistakes.push(mistakes[prop]); 
             }
-            return {
-                message: error.response.data.message || 'An error occurred',
-            };
+            
         }
-        return { message: error.message };
+        return mistakes;
     }
 }
 

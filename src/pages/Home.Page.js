@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import Navbar from "../components/Navbar.Component";
-// import Search from "../components/Search.Component";
-// import Sort from "../components/Sort.Component";
+import Search from "../components/Search.Component";
 import CarsTable from "../components/CarsTable.Component";
 import carService from "../services/carService";
 import Loader from "../components/Loader.Component";
@@ -17,23 +16,33 @@ function HomePage(props) {
     const cars = useSelector((state) => selectCars(state, currentPage));
     const paginationData = useSelector((state) => selectPaginationData(state, currentPage));
     const dispatch = useDispatch();
-
+    
     const [loader, setLoader] = useState(true);
     const [modalRentCar, setModalRentCar] = useState(false);
     const [isSearched, setIsSearched] = useState(false);
     const [mistakesAPI, setMistakesAPI] = useState(null);
     const [isActiveOverlay, setActiveOverlay] = useState(false);
     const [rentedCarLicense, setRentedCarLicense] = useState("");
-
+    
     if(cars === null){
         getCars(currentPage);
     }
 
-    // check does the cars data is filtered
-
+    let shouldFetchNextPage = paginationData?.lastPage >= currentPage + 1 ? true : false;
+    if(shouldFetchNextPage){
+        // FETCH next page of cars for better UX
+        let nextPage = currentPage + 1;
+        carService.getAvailableCars(nextPage)
+            .then((data)=>{
+                dispatch(saveCars({"page": nextPage, "cars": data.cars}));
+            })
+            .catch((error)=>{
+                console.log(error);
+            })
+    }
 
     function getCars(page = 1){
-        carService.getCars(page)
+        carService.getAvailableCars(page)
             .then((data)=>{
                 dispatch(setCurrentPage({"page" : page}));
                 dispatch(saveCars({"page": page, "cars": data.cars}));
@@ -80,40 +89,12 @@ function HomePage(props) {
         }
     };
 
-    // const handleCarRented = (rentedCar) =>{
-    //     setCars(cars.map((car)=>{
-    //         if(car.license === rentedCar.license){
-    //             car.available = false;
-    //             car.returnDate = rentedCar.returnDate;
-    //         }
-    //         return car;
-    //     }))
-    // }
-
-    // const search = (data) =>{
-    //     // function called by search btn
-    //     setCars(data.cars);
-    //     setPaginateData(data.paginateData);
-    // }
-
-    // const getCarData = (license) =>{
-    //     setCarData(cars.find(car =>{
-    //         return car.license === license;
-    //     }));
-    // }
-
-    // const resetSearch = () =>{
-    //     // function called by search btn
-    //     getCars(1);
-    // }
-
     return (
         <div className='position-relative overflow-hidden'>
             <div className="container">
                 <Navbar/>
-                <div className="d-flex gap-3 my-5">
-                    {/* <Search resetSearch={resetSearch} setLoader = {setLoader} search ={search}/>
-                    <Sort setCars={setCars} setLoader = {setLoader}/> */}
+                <div className="ml-auto">
+                    {/* <Search setLoader = {setLoader} setIsSearched={setIsSearched}/> */}
                 </div>
                 {renderLoaderOrCarsTable()}
                 <RentCar setModalRentCar = {setModalRentCar}

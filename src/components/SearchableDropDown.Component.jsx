@@ -1,38 +1,44 @@
 import { useEffect, useRef, useState } from "react";
 import "../css/drop-down.css"
 
-const SearchableDropdown = ({ options, inputLabel, label, additionalLabelText = null, validationErrors = [], id, selectedVal, handleChange }) => {
+const SearchableDropdown = ({ options, inputLabel, label, additionalLabel = null, validationErrors = [], id, selectedVal, handleChange }) => {
+
     const [query, setQuery] = useState("");
     const [isOpen, setIsOpen] = useState(false);
 
     const inputRef = useRef(null);
 
     useEffect(() => {
-    document.addEventListener("click", toggle);
-    return () => document.removeEventListener("click", toggle);
+        document.addEventListener("click", toggle);
+        let searchableDropDown = document.querySelector(".dropdown input")
+        searchableDropDown.addEventListener("input", toggle);
+        return () =>{
+            searchableDropDown.addEventListener("input", toggle);
+            document.removeEventListener("click", toggle);
+        };
     }, []);
 
     const selectOption = (option) => {
-    setQuery(() => "");
-    handleChange(option[label]);
-    setIsOpen((isOpen) => !isOpen);
+        setQuery(() => "");
+        handleChange(option);
+        setIsOpen((isOpen) => !isOpen);
     };
 
     function toggle(e) {
-    setIsOpen(e && e.target === inputRef.current);
+        setIsOpen(e && e.target === inputRef.current);
     }
 
     const getDisplayValue = () => {
-    if (query) return query;
-    if (selectedVal) return selectedVal;
+        if (query) return query;
+        if (selectedVal) return selectedVal;
 
-    return "";
+        return "";
     };
 
     const filter = (options) => {
-    return options.filter(
-        (option) => option[label].toLowerCase().indexOf(query.toLowerCase()) > -1
-    );
+        return options.filter(
+            (option) => option[label].toLowerCase().indexOf(query.toLowerCase()) > -1 || option[additionalLabel].toLowerCase().indexOf(query.toLowerCase()) > -1
+        );
     };
 
     return (
@@ -42,15 +48,15 @@ const SearchableDropdown = ({ options, inputLabel, label, additionalLabelText = 
             <div className="control">
                 <div className="selected-value">
                     <input
-                    ref={inputRef}
-                    type="text"
-                    value={getDisplayValue()}
-                    name="searchTerm"
-                    onChange={(e) => {
-                        setQuery(e.target.value);
-                        handleChange(null);
-                    }}
-                    onClick={toggle}
+                        ref={inputRef}
+                        type="text"
+                        value={getDisplayValue()}
+                        name="searchTerm"
+                        onChange={(e) => {
+                            setQuery(e.target.value);
+                            handleChange(null);
+                        }}
+                        onClick={toggle}
                     />
                 </div>
             <div className={`arrow ${isOpen ? "open" : ""}`}></div>
@@ -67,8 +73,8 @@ const SearchableDropdown = ({ options, inputLabel, label, additionalLabelText = 
                     key={`${id}-${index}`}
                 >
                     {
-                        additionalLabelText ?
-                        option[label] + "-" + option[additionalLabelText] : option[label]
+                        additionalLabel ?
+                        option[label] + "-" + option[additionalLabel] : option[label]
                     }
                 </div>
                 );

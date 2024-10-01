@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import "../css/modal.css"
 import carService from "../services/carService";
-import { useSelector } from 'react-redux';
-import { selectCarData } from '../redux/car.slicer';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCarData, selectCurrentPage } from '../redux/car.slicer';
+import { setRentedCar } from "../redux/car.slicer"
 import SearchableDropdown from './SearchableDropDown.Component';
 import userSerice from '../services/userService';
 import dayjs from 'dayjs';
@@ -10,15 +11,21 @@ import dayjs from 'dayjs';
 function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, carLicense}) {
 
     const carData = useSelector(state => selectCarData(state, carLicense, carFromPage));
+    const selectedUser = useRef({});
+    const page = useSelector(state => selectCurrentPage(state));
     const [users, setUsers] = useState([]);
     const [oldCustomer, setOldCustomer] = useState(true);
     const [newCustomer, setNewCustomer] = useState(false);
-
-    const initialInputData = {
+    const [mistakes, setMistakes] = useState(false);
+    const [rentMessage, setRentMessage] = useState({});
+    const dispatch = useDispatch();
+    
+    const initialInputData = {  
+        carId: carData?.id,
         license: carData?.license || null,
         pricePerDay: carData?.price_per_day ||  null,
         discount: 0,
-        reasonForDiscount: 0,
+        reasonForDiscount: "",
         userId: "",
         idCard: '',
         personalData: '',
@@ -34,8 +41,7 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
         setMistakes(false)
     }, [carData, oldCustomer])
 
-    const [mistakes, setMistakes] = useState(false);
-    const [rentedCar, setRentedCar] = useState(false);
+    
 
     useEffect(()=> {
         userSerice.getUsers()
@@ -67,12 +73,14 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
     }
 
     const closeModal = ()=>{
+        selectedUser.current = {};
+        setRentMessage({});
         setActiveOverlay(false)
         emptyInputFields()
         setModalRentCar(false);
     }
 
-    const validateInputFields = () => {
+    const validateInputFields = (event) => {
         let hasError = false;
         const mistakes = {
             license: [],
@@ -101,7 +109,7 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
         }
 
         if(!inputData.idCard && newCustomer){
-            mistakes.idCard.push("You must fill the phone number");
+            mistakes.idCard.push("You must fill the card id");
             hasError = true;
         }
         
@@ -125,20 +133,45 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
             setMistakes(mistakes);
             return;
         }
-        rentCar();
+        rentCar(event);
     }
 
     const rentCar = (event)=>{
-        carService.rentCar(inputData)
+        event.target.disabled = true;
+        let rentCarData = {  
+            car_id: inputData.carId,
+            license: inputData.license,
+            discount: inputData.discount,
+            reason_for_discount: inputData.reasonForDiscount,
+            user_id: inputData.userId,
+            card_id: inputData.idCard,
+            name: inputData.personalData,
+            phone: inputData.phoneNumber,
+            return_date: inputData.returnDate,
+            start_date: inputData.startDate,
+        };
+        if(oldCustomer){
+            delete rentCarData.name;
+            delete rentCarData.phone;
+            delete rentCarData.card_id;
+        }
+        else{
+            delete rentCarData.user_id;
+        }
+        
+        carService.rentCar(rentCarData)
             .then(data =>{
-                // setCars(inputData); // refresh the page that is car rented
-                // setRentedCar(data);
-                // emptyInputFields();
-                // setMistakes([]);
-                // setTimeout(()=>{
-                //     setModalRentCar(false);
-                //     setRentedCar(false)
-                // }, 3000);
+                setRentMessage({"message": data.message});
+                emptyInputFields();
+                setMistakes([]);
+                dispatch(setRentedCar({"page": page, "carId": rentCarData.car_id}))
+                event.target.disabled = false;
+                setTimeout(()=>{
+                    if(modalRentCar)
+                    {
+                        closeModal();
+                    }
+                }, 3000);
             })
             .catch(errors =>{
                 setMistakes(errors);
@@ -149,13 +182,13 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
         // initial load
         return <div className={`rent-car-model rent-car-model-unactive`}></div>;
     }
-
+    
     return (
         <div className={`rent-car-model row align-center ${modalRentCar === true ? "rent-car-model-active" : "rent-car-model-unactive"} `}>
-            {rentedCar && <div className="alert alert-success" role="alert">{rentedCar.message}</div>}
+            {rentMessage?.message && <div className="alert alert-success" role="alert">{rentMessage.message}</div>}
             <div className="card">
                 <div className="card-header">
-                    License: {carData.license}
+                    License: {carData?.license}
                 </div>
                 <div className="card-body">
                     <ul className="nav nav-tabs">
@@ -184,10 +217,13 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
                                 label="name"
                                 id="id"
                                 validationErrors={mistakes.userId}
-                                additionalLabelText = "card_id"
-                                selectedVal={inputData.userId}
+                                additionalLabel = "card_id"
+                                selectedVal={selectedUser.current?.name}
                                 inputLabel="Type or choose old customer"
-                                handleChange={(val) => setInputData({...inputData, "userId": val})}
+                                handleChange={(val) => {
+                                    selectedUser.current = val;
+                                    setInputData({...inputData, "userId": val?.id})
+                                }}
                             />
                         }
                         
@@ -239,11 +275,11 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
                             <div className="form-group my-1 col-4">
                                 <label htmlFor="brand">Type phone number</label>
                                 <input
-                                    id="number"
-                                    name="number"
-                                    type="number"
+                                    id="phoneNumber"
+                                    name="phoneNumber"
+                                    type="text"
                                     className="form-control"
-                                    value={inputData.number}
+                                    value={inputData.phoneNumber}
                                     onChange={handleInput}
                                 />
                                 {
@@ -378,8 +414,8 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
                     <div onClick={() => closeModal()} className="btn btn-danger">Close modal</div>
                     <button
                         className="btn btn-primary float-end"
-                        onClick={() => validateInputFields()} // onClick handler directly within the button element
-                        name={carData.license}
+                        onClick={(event) => validateInputFields(event)} // onClick handler directly within the button element
+                        name={carData?.license}
                     >
                         Rent
                     </button>
