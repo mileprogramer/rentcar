@@ -155,7 +155,8 @@ class CarService {
         if (data?.errors) {
             for(let prop of mistakes)
             {
-                mistakes.push(mistakes[prop]); 
+                mistakes[prop] = mistakes[prop] || [];
+                mistakes[prop].push(mistakes[prop]); 
             }
             
         }
