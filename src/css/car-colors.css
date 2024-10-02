@@ -1,28 +1,31 @@
-.car-badge{
-    padding: 8px;
-    border-radius: 10px;
-    display: inline-block;
-}
-
-.car-success{
+.car-available{
+    padding: 4px;
+    border-radius: 2px;
     background-color: #157347;
     border: 1px solid #157347;
+    display: inline-block;
     color: white;
 }
 
 .car-rented{
-    background-color: #FFC107;
-    border: 1px solid #FFC107;
+    padding: 4px;
+    border-radius: 2px;
+    background-color: #FFFF00;
+    border: 1px solid #FFFF00;
     color: black;
 }
 
 .car-broken{
+    padding: 4px;
+    border-radius: 2px;
     background-color: #dc3545;
     border: 1px solid #dc3545;
     color: white;
 }
 
 .car-deleted{
+    padding: 4px;
+    border-radius: 2px;
     background-color: #BB2D3B;
     border: 1px solid #BB2D3B;
     color: white;

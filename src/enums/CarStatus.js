@@ -2,7 +2,7 @@ export default class CarStatus{
     #rented = "rented";
     #available = "available";
     #broken = "broken";
-    #deleted = "rented";
+    #deleted = "deleted";
 
     get rented(){
         return this.#rented;

@@ -80,10 +80,9 @@ class CarService {
     }
 
     static deleteCar(license) {
-        return axios.delete(`${this.url}/delete`, { data: { license } })
+        return axios.delete(`${this.defaultPostUrl}/delete`, license)
             .then(response => response.data)
             .catch(error => {
-                console.log(error);
                 Promise.reject(this.handleError(error));
             });
     }
