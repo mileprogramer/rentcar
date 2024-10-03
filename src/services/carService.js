@@ -60,9 +60,20 @@ class CarService {
     }
 
     static getHistoryRented(page) {
-        const url = page ? `${this.url}/history-rented?page=${page}` : `${this.url}/history-rented`;
+        const url = page ? `${this.defaultGetUrl}/statistics?page=${page}` : `${this.defaultGetUrl}/statistics`;
         return axios.get(url)
-            .then(response => response.data)
+            .then(response => {
+                return {
+                    "stats" : response.data.data, 
+                    "paginationData": {
+                        "currentPage": response.data.current_page,
+                        "firstPage": response.data.from,
+                        "lastPage": response.data.last_page,
+                        "totalElements" : response.data.total,
+                        "elementsPerPage" : response.data.per_page
+                    }
+                }
+            })
             .catch(error => Promise.reject(this.handleError(error)));
     }
 

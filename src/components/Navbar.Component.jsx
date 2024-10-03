@@ -17,7 +17,7 @@ function Navbar(props) {
                         Rented Cars </NavLink>
                     </li>
                     <li className="nav-item">
-                        <NavLink to="/history-rented-cars" className="nav-link"> 
+                        <NavLink to="/statistics" className="nav-link"> 
                         Statistics </NavLink>
                     </li>
                     <li className="nav-item">
