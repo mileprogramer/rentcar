@@ -47,17 +47,6 @@ function EditDeletePage(props) {
 
     }
 
-    const handleDeleteCar = (event) => {
-        carService.deleteCar(event.target.name)
-            .then(data=>{
-                dispatch(deleteCar({"license": event.target.name, "page": currentPage}));
-                setDeleteCarModal(false);
-            })
-            .catch(error =>{
-                alert(error);
-            })
-    }
-
     function getCars(page = 1){
         carService.getCars(page)
             .then((data)=>{
@@ -92,7 +81,6 @@ function EditDeletePage(props) {
                 
                     {deleteCarModal && <DeleteModal 
                         modalActive={deleteCarModal}
-                        handleDeleteCar = {handleDeleteCar}
                         currentPage = {currentPage}
                         car = {carData.current}
                         setModalActive={(showOrHide) => setDeleteCarModal(showOrHide)}

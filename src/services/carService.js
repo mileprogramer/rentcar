@@ -79,11 +79,11 @@ class CarService {
             .catch(error => Promise.reject(this.handleError(error)));
     }
 
-    static deleteCar(license) {
-        return axios.delete(`${this.defaultPostUrl}/delete`, license)
+    static deleteCar(data) {
+        return axios.post(`${this.defaultPostUrl}/delete`, data)
             .then(response => response.data)
             .catch(error => {
-                Promise.reject(this.handleError(error));
+                return Promise.reject(this.getErrorsMessages(error.response.data));
             });
     }
 
@@ -171,6 +171,7 @@ class CarService {
                 mistakes.push(data.errors[prop]);
             }
         }
+        console.log(data);
         return mistakes;
     }
 

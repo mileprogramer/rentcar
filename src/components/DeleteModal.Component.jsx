@@ -26,12 +26,13 @@ function DeleteModal({modalActive, setModalActive, car, currentPage}) {
             setMistakes(mistakes);    
             return;
         }
-        carService.deleteCar({"carId": car.id, "reasonForDelete": inputData.reasonForDelete})
+        carService.deleteCar({"car_id": car.id, "reason_for_delete": inputData.reasonForDelete})
             .then(data => {
-                dispatch(deleteCar({page: currentPage, car}));
-                setDeletedCar(data.message);
+                dispatch(deleteCar({"page": currentPage, "car": car}));
+                setDeletedCar(data);
             })
             .catch(error =>{
+                console.log(error);
                 setMistakes(error);
             })
     }

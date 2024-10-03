@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import CarStatus from "../enums/CarStatus";
 
 const initialState = {value : {}};
 
@@ -19,9 +18,9 @@ const carSlicer = createSlice({
             state.value.currentPage = action.payload.page;
         },
 
-        deletCar(state, action){
+        deleteCar(state, action){
             state.value[action.payload.page] = 
-            state.value[action.payload.page].filter(car => car !== action.payload.car.id);
+            state.value[action.payload.page].filter(car => car.id !== action.payload.car.id);
             let nextPage = action.payload.page + 1;
             let beforePage = action.payload.page;
             while(state.value.hasOwnProperty(nextPage)){
