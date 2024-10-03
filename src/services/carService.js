@@ -74,7 +74,7 @@ class CarService {
     }
 
     static updateCar(carInfo) {
-        return axios.patch(`${this.url}/edit`, carInfo)
+        return axios.post(`${this.defaultPostUrl}/update`, carInfo)
             .then(response => response.data)
             .catch(error => Promise.reject(this.handleError(error)));
     }

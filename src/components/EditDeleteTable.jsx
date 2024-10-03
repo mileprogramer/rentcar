@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import "../css/car-colors.css"
 import CarStatus from '../enums/CarStatus';
 
-function EditDeleteTable({cars, openDeleteModal}) {
+function EditDeleteTable({cars, openDeleteModal, openEditModal}) {
     let carStatus = new CarStatus();
     return (
         <>
@@ -28,7 +28,7 @@ function EditDeleteTable({cars, openDeleteModal}) {
                             {car.status !== carStatus.deleted ? 
                                 <button
                                     onClick={(event) => {
-                                        // handleEditCar(event);
+                                        openEditModal(event);
                                     }}
                                     name={car.license}
                                     className="btn btn-warning"
@@ -38,7 +38,7 @@ function EditDeleteTable({cars, openDeleteModal}) {
                             }
                         </td>
                         <td>
-                            {car.status !== carStatus.rented ?
+                            {car.status !== carStatus.rented && car.status !== carStatus.deleted ?
                                 <button
                                     onClick={event => openDeleteModal(event) }
                                     name={car.license}

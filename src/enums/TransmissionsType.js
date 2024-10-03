@@ -1,26 +1,26 @@
 export default class TransmissionType{
 
-    #automatic = "Automatic";
-    #manual = "Manual";
-    #semiAutomatic = "Semi automatic";
+    #Automatic = "Automatic";
+    #Manual = "Manual";
+    #SemiAutomatic = "Semi automatic";
 
     get automatic(){
-        return this.#automatic;
+        return this.#Automatic;
     }
 
     get manual(){
-        return this.#manual;
+        return this.#Manual;
     }
     
     get semiAutomatic(){
-        return this.#semiAutomatic;
+        return this.#SemiAutomatic;
     }
 
     getKeys(){
         return {
-            "manual": this.#manual,
-            "automatic": this.#automatic,
-            "semiAutomatic": this.#semiAutomatic
+            "manual": this.#Manual,
+            "automatic": this.#Automatic,
+            "semi-automatic": this.#SemiAutomatic
         }
     }
 }

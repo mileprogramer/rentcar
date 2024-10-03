@@ -18,6 +18,16 @@ const carSlicer = createSlice({
             state.value.currentPage = action.payload.page;
         },
 
+        editCar(state, action){
+            state.value[action.payload.page] = 
+            state.value[action.payload.page].map(car => {
+                if(car.id === action.payload.car.id){
+                    return action.payload.car;
+                }
+                return car;
+            });
+        },
+
         deleteCar(state, action){
             state.value[action.payload.page] = 
             state.value[action.payload.page].filter(car => car.id !== action.payload.car.id);
@@ -50,5 +60,5 @@ export const selectCurrentPage = (state) => {
 
 
 
-export const { saveCars, setCurrentPage, savePaginationData, deleteCar } = carSlicer.actions;
+export const { saveCars, setCurrentPage, savePaginationData, deleteCar, editCar } = carSlicer.actions;
 export default carSlicer.reducer;

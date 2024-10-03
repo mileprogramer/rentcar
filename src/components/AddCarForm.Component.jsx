@@ -120,7 +120,10 @@ function AddCarForm(props) {
                         type="text"
                         className="form-control"
                         value={inputData.license}
-                        onChange={handleInput}
+                        onChange={(event) => {
+                            event.target.value = event.target.value.toUpperCase();
+                            handleInput(event);
+                        }}
                     />
                 </div>
 

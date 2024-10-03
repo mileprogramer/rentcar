@@ -7,12 +7,12 @@ import EditModal from "../components/EditModal.Component";
 import Loader from "../components/Loader.Component";
 import Pagination from "../components/Pagination.Component";
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteCar, saveCars, savePaginationData, selectCars, selectCurrentPage, selectPaginationData, setCurrentPage } from '../redux/allCars.slicer';
+import { saveCars, savePaginationData, selectCars, selectCurrentPage, selectPaginationData, setCurrentPage } from '../redux/allCars.slicer';
 
 function EditDeletePage(props) {
+
     const [deleteCarModal, setDeleteCarModal] = useState(false);
     const [editCarModal, setEditCarModal] = useState(false);
-    // const [dataEditModal, setDataEditModal] = useState({});
     const currentPage = useSelector((state) => selectCurrentPage(state));
     const cars = useSelector((state) => selectCars(state, currentPage));//
     const paginationData = useSelector((state) => selectPaginationData(state, currentPage));
@@ -41,9 +41,18 @@ function EditDeletePage(props) {
     }
 
     const openDeleteModal = (license) =>{
+
         let car = cars.find(car => car.license === license);
         carData.current = car;
         setDeleteCarModal(true);
+
+    }
+
+    const openEditModal = (license) =>{
+
+        let car = cars.find(car => car.license === license);
+        carData.current = car;
+        setEditCarModal(true);
 
     }
 
@@ -69,9 +78,8 @@ function EditDeletePage(props) {
                 <>
                     <EditDeleteTable 
                         cars={cars}
-                        // handleEditCar={}
                         openDeleteModal = {(event) => openDeleteModal(event.target.name)}
-                                    //  getCarData = {getCarData}
+                        openEditModal = {(event) => openEditModal(event.target.name)}
                     />
                     <Pagination elementsPerPage={paginationData.elementsPerPage}
                         totalElements={paginationData.totalElements}
@@ -79,17 +87,22 @@ function EditDeletePage(props) {
                         currentPage={currentPage}
                     />
                 
-                    {deleteCarModal && <DeleteModal 
-                        modalActive={deleteCarModal}
-                        currentPage = {currentPage}
-                        car = {carData.current}
-                        setModalActive={(showOrHide) => setDeleteCarModal(showOrHide)}
-                    />}
-                {/* <EditModal modalActive={editCarModal}
-                             setModalActive={setEditCarModal}
-                             car={dataEditModal}
-                            //  setCars = {updateCarsTable}
-                /> */}
+                    {
+                        deleteCarModal && <DeleteModal 
+                            modalActive={deleteCarModal}
+                            currentPage = {currentPage}
+                            car = {carData.current}
+                            setModalActive={(showOrHide) => setDeleteCarModal(showOrHide)}
+                        />
+                    }
+                    {
+                        editCarModal && <EditModal 
+                            modalActive={editCarModal}
+                            setModalActive={(showOrHide) => setEditCarModal(showOrHide)}
+                            currentPage = {currentPage}
+                            car={carData.current} 
+                        />
+                    }
                 </> : <Loader/>}
             </div>
         </div>

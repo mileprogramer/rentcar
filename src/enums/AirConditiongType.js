@@ -1,55 +1,61 @@
 export default class AirConditioningType {
-    #manual = "Manual";
-    #automatic = "Automatic";
-    #dualZone = "Dual Zone";
-    #multiZone = "Multi zone";
-    #rearseat = "Rear seat";
-    #electric = "Electric";
-    #hybrid = "Hybrid";
-    #solarPowered = "Solar powered";
+    #Manual = "manual";
+    #Automatic = "automatic";
+    #DualZone = "dual zone";
+    #MultiZone = "multi zone";
+    #RearSeat = "rear seat";
+    #Electric = "electric";
+    #Hybrid = "Hybrid";
+    #SolarPowered = "solar powered";
+    #None = "none";
 
     getKeys() {
         return {
-            manual: this.#manual,
-            automatic: this.#automatic,
-            dualZone: this.#dualZone,
-            multiZone: this.#multiZone,
-            rearSeat: this.#rearseat,
-            electric: this.#electric,
-            hybrid: this.#hybrid,
-            solarPowered: this.#solarPowered,
+            "manual": this.#Manual,
+            "automatic": this.#Automatic,
+            "dual zone": this.#DualZone,
+            "multi zone": this.#MultiZone,
+            "rear seat": this.#RearSeat,
+            "electric": this.#Electric,
+            "hybrid": this.#Hybrid,
+            "solarPowered": this.#SolarPowered,
+            "none": this.#None,
         };
     }
 
     get manual() {
-        return this.#manual;
+        return this.#Manual;
     }
 
     get automatic() {
-        return this.#automatic;
+        return this.#Automatic;
     }
 
     get dualZone() {
-        return this.#dualZone;
+        return this.#DualZone;
     }
 
     get multiZone() {
-        return this.#multiZone;
+        return this.#MultiZone;
     }
 
     get rearSeat() {
-        return this.#rearseat;
+        return this.#RearSeat;
     }
 
     get electric() {
-        return this.#electric;
+        return this.#Electric;
     }
 
     get hybrid() {
-        return this.#hybrid;
+        return this.#Hybrid;
     }
 
     get solarPowered() {
-        return this.#solarPowered;
+        return this.#SolarPowered;
+    }
+
+    get none() {
+        return this.#SolarPowered;
     }
 }
