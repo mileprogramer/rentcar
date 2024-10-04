@@ -14,6 +14,7 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
     const selectedUser = useRef({});
     const page = useSelector(state => selectCurrentPage(state));
     const [users, setUsers] = useState([]);
+    const addNewUser = useRef(false);
     const [oldCustomer, setOldCustomer] = useState(true);
     const [newCustomer, setNewCustomer] = useState(false);
     const [mistakes, setMistakes] = useState(false);
@@ -27,9 +28,10 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
         discount: 0,
         reasonForDiscount: "",
         userId: "",
-        idCard: '',
+        cardId: '',
+        email: "",
         personalData: '',
-        phoneNumber: '',
+        phone: '',
         returnDate: '',
         startDate: dayjs().format("YYYY-MM-DD"),
     };
@@ -51,7 +53,7 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
             .catch(errors => {
                 alert(errors);
             })
-    }, [])
+    }, [addNewUser])
 
     const handleInput = (event) => {
         const { name, value } = event.target;
@@ -88,9 +90,9 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
             discount: [],
             reasonForDiscount: [],
             userId: [],
-            idCard: [],
+            cardId: [],
             personalData: [],
-            phoneNumber: [],
+            phone: [],
             returnDate: [],
         };
         if(!inputData.userId && oldCustomer){
@@ -103,13 +105,13 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
             hasError = true;
         }
 
-        if(!inputData.phoneNumber && newCustomer){
-            mistakes.phoneNumber.push("You must fill the phone number")
+        if(!inputData.phone && newCustomer){
+            mistakes.phone.push("You must fill the phone number")
             hasError = true;
         }
 
-        if(!inputData.idCard && newCustomer){
-            mistakes.idCard.push("You must fill the card id");
+        if(!inputData.cardId && newCustomer){
+            mistakes.cardId.push("You must fill the card id");
             hasError = true;
         }
         
@@ -144,9 +146,10 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
             discount: inputData.discount,
             reason_for_discount: inputData.reasonForDiscount,
             user_id: inputData.userId,
-            card_id: inputData.idCard,
+            card_id: inputData.cardId,
             name: inputData.personalData,
-            phone: inputData.phoneNumber,
+            phone: inputData.phone,
+            email: inputData.email,
             return_date: inputData.returnDate,
             start_date: inputData.startDate,
         };
@@ -154,8 +157,10 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
             delete rentCarData.name;
             delete rentCarData.phone;
             delete rentCarData.card_id;
+            delete rentCarData.email;
         }
         else{
+            addNewUser.current = true;
             delete rentCarData.user_id;
         }
         
@@ -174,6 +179,7 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
                 }, 3000);
             })
             .catch(errors =>{
+                event.target.disabled = false;
                 setMistakes(errors);
             })
     }
@@ -230,20 +236,20 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
                         {
                             newCustomer &&
                         <div className='row justify-content-between'>
-                            <div className="form-group my-1 col-3">
+                            <div className="form-group my-1 col-6">
                                 <label htmlFor="brand"> ID card of user </label>
                                 <input
-                                    id="idCard"
-                                    name="idCard"
+                                    id="cardId"
+                                    name="cardId"
                                     type="text"
                                     className="form-control"
-                                    value={inputData.idCard}
+                                    value={inputData.cardId}
                                     onChange={handleInput}
                                 />
                                 {
-                                    mistakes !== false && mistakes.discount ? (
+                                    mistakes !== false && mistakes.cardId ? (
                                         <ul>
-                                            {mistakes.idCard.map((el, index) => (
+                                            {mistakes.cardId.map((el, index) => (
                                                 <li className="text-danger" key={index}>{el}</li>
                                             ))}
                                         </ul>
@@ -251,7 +257,7 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
                                 }
                             </div>
 
-                            <div className="form-group my-1 col-5">
+                            <div className="form-group my-1 col-6">
                                 <label htmlFor="brand">Type first name and last name</label>
                                 <input
                                     id="personalData"
@@ -272,20 +278,40 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
                                 }
                             </div>
 
-                            <div className="form-group my-1 col-4">
+                            <div className="form-group my-1 col-6">
                                 <label htmlFor="brand">Type phone number</label>
                                 <input
-                                    id="phoneNumber"
-                                    name="phoneNumber"
+                                    id="phone"
+                                    name="phone"
                                     type="text"
                                     className="form-control"
-                                    value={inputData.phoneNumber}
+                                    value={inputData.phone}
                                     onChange={handleInput}
                                 />
                                 {
-                                    mistakes !== false && mistakes.phoneNumber ? (
+                                    mistakes !== false && mistakes.phone ? (
                                         <ul>
-                                            {mistakes.phoneNumber.map((el, index) => (
+                                            {mistakes.phone.map((el, index) => (
+                                                <li className="text-danger" key={index}>{el}</li>
+                                            ))}
+                                        </ul>
+                                    ) : ""
+                                }
+                            </div>
+                            <div className="form-group my-1 col-6">
+                                <label htmlFor="brand">Type email</label>
+                                <input
+                                    id="email"
+                                    name="email"
+                                    type="text"
+                                    className="form-control"
+                                    value={inputData.email}
+                                    onChange={handleInput}
+                                />
+                                {
+                                    mistakes !== false && mistakes.email ? (
+                                        <ul>
+                                            {mistakes.email.map((el, index) => (
                                                 <li className="text-danger" key={index}>{el}</li>
                                             ))}
                                         </ul>
@@ -349,6 +375,7 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
                                     name="discount"
                                     type="number"
                                     max = {100}
+                                    value={inputData?.discount}
                                     className="form-control"
                                     onChange={handleInput}
                                 />
@@ -370,6 +397,7 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
                                     name="reasonForDiscount"
                                     type="text"
                                     className="form-control"
+                                    value={inputData?.reasonForDiscount}
                                     onChange={handleInput}
                                 />
                                 {

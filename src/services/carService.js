@@ -124,13 +124,7 @@ class CarService {
                 "Content-type": 'application/json'
             }})
             .then(response => response.data)
-            .catch(error => Promise.reject(this.handleError(error)));
-    }
-
-    static bestSellingCars(numberOfCars) {
-        return axios.get(`${this.url}/best-selling/${numberOfCars}`)
-            .then(response => response.data)
-            .catch(error => Promise.reject(this.handleError(error)));
+            .catch(error => Promise.reject(this.handleError(error.response.data)));
     }
 
     static sortCars(query) {
@@ -162,12 +156,13 @@ class CarService {
         if (data?.errors) {
             for(let prop in data.errors)
             {
-                if(mistakes.hasOwnProperty(prop))
-                {
-                    mistakes[prop].push(data.errors[prop]);
+                let propToCamelCase = this.convertToCamelCase(prop);
+
+                if(mistakes.hasOwnProperty(prop)){
+                    mistakes[propToCamelCase].push(data.errors[prop]);
                 }
                 else{
-                    mistakes[prop] = [data.errors[prop]];
+                    mistakes[propToCamelCase] = [data.errors[prop]];
                 }
             }
         }
@@ -182,12 +177,13 @@ class CarService {
                 mistakes.push(data.errors[prop]);
             }
         }
-        console.log(data);
         return mistakes;
     }
 
-    static convertToSnakeCase(name){
-        return name.replace(/[A-Z]/g, (match) => '_' + match.toLowerCase())
+    static convertToCamelCase(str){
+        return str.toLowerCase().replace(/_([a-z])/g, function(match, letter) {
+            return letter.toUpperCase();
+        });
     }
 }
 

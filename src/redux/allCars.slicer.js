@@ -35,7 +35,7 @@ const carSlicer = createSlice({
             let beforePage = action.payload.page;
             while(state.value.hasOwnProperty(nextPage)){
                 state.value[beforePage].push(state.value[nextPage][0]);
-                state.value[nextPage].slice(1);
+                state.value[nextPage] = state.value[nextPage].slice(1);
                 nextPage++;
             }
         }
@@ -58,7 +58,13 @@ export const selectCurrentPage = (state) => {
     return state.allCarsStore.value.currentPage;
 }
 
-
+export const selectShouldFetchNextPage = (state) =>{
+    let nextPage = state.allCarsStore.value.currentPage + 1;
+    if(!state.allCarsStore.value.hasOwnProperty(nextPage) || state.allCarsStore.value[nextPage]?.length === 9){
+        return true;
+    }
+    return false;
+}
 
 export const { saveCars, setCurrentPage, savePaginationData, deleteCar, editCar } = carSlicer.actions;
 export default carSlicer.reducer;

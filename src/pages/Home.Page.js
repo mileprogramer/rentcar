@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import Navbar from "../components/Navbar.Component";
 import Search from "../components/Search.Component";
 import CarsTable from "../components/CarsTable.Component";
@@ -8,15 +8,16 @@ import RentCar from "../components/RentCar.Component";
 import Pagination from "../components/Pagination.Component";
 import ModalOverlay from "../components/ModalOverlay.Component";
 import { useDispatch, useSelector } from 'react-redux';
-import { selectCars, selectPaginationData, selectCurrentPage } from '../redux/car.slicer';
+import { selectCars, selectPaginationData, selectCurrentPage, selectShouldFetchNextPage, setShouldFetchNextPage } from '../redux/car.slicer';
 import { saveCars, savePaginationData, setCurrentPage } from '../redux/car.slicer';
 
 function HomePage(props) {
+
     const currentPage = useSelector((state) => selectCurrentPage(state));
     const cars = useSelector((state) => selectCars(state, currentPage));
     const paginationData = useSelector((state) => selectPaginationData(state, currentPage));
+    const shouldFetchNextPage = useSelector((state) => selectShouldFetchNextPage(state));
     const dispatch = useDispatch();
-    
     const [loader, setLoader] = useState(true);
     const [modalRentCar, setModalRentCar] = useState(false);
     const [isSearched, setIsSearched] = useState(false);
@@ -27,10 +28,9 @@ function HomePage(props) {
     if(cars === null){
         getCars(currentPage);
     }
-
-    let shouldFetchNextPage = paginationData?.lastPage >= currentPage + 1 ? true : false;
+    
     if(shouldFetchNextPage){
-        // FETCH next page of cars for better UX
+        // FETCHING next page of cars for better UX and getting the next available car
         let nextPage = currentPage + 1;
         carService.getAvailableCars(nextPage)
             .then((data)=>{

@@ -22,24 +22,22 @@ const carSlicer = createSlice({
             let { carId, page } = action.payload;
             let cars = state.value[page] || [];
 
-            let updatedCars = cars.filter(car => car.id !== carId);
-            let nextPage = page + 1;
-            if (cars.length === 10) {
-                let nextPageCars = state.value[nextPage]; // could be undefined if the next page is not cached  
-                
-                if(nextPageCars?.length === 0){
-                    // if there is not cars on that page remove it from pagination
-                    state.value.paginationData.lastPage--;
-                }
+            state.value[page] = cars.filter(car => car.id !== carId);
 
-                if (nextPageCars?.length > 0) {
-                    updatedCars.push(nextPageCars[0]);
-                    state.value[nextPage] = nextPageCars.slice(1);
+            if (cars.length === 10) {
+                let nextPage = action.payload.page + 1;
+                let beforePage = action.payload.page;
+                
+                while(state.value.hasOwnProperty(nextPage)){
+                    state.value[beforePage].push(state.value[nextPage][0]);
+                    state.value[nextPage] = state.value[nextPage].slice(1);
+                    nextPage++;
+                    beforePage++;
                 }
             }
             
-            state.value[page] = updatedCars;
         }
+
     },
 });
 
@@ -66,6 +64,13 @@ export const selectCarData = (state, license, fromPage) => {
     return null;
 }
 
+export const selectShouldFetchNextPage = (state) =>{
+    let nextPage = state.carStore.value.currentPage + 1;
+    if(!state.carStore.value.hasOwnProperty(nextPage) || state.carStore.value[nextPage]?.length === 9){
+        return true;
+    }
+    return false;
+}
 
-export const { saveCars, setCurrentPage, savePaginationData, setRentedCar } = carSlicer.actions;
+export const { saveCars, setCurrentPage, savePaginationData, setRentedCar, setShouldFetchNextPage } = carSlicer.actions;
 export default carSlicer.reducer;

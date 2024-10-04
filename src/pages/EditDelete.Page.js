@@ -8,14 +8,16 @@ import Loader from "../components/Loader.Component";
 import Pagination from "../components/Pagination.Component";
 import { useDispatch, useSelector } from 'react-redux';
 import { saveCars, savePaginationData, selectCars, selectCurrentPage, selectPaginationData, setCurrentPage } from '../redux/allCars.slicer';
+import { selectShouldFetchNextPage } from '../redux/allCars.slicer';
 
 function EditDeletePage(props) {
 
     const [deleteCarModal, setDeleteCarModal] = useState(false);
     const [editCarModal, setEditCarModal] = useState(false);
     const currentPage = useSelector((state) => selectCurrentPage(state));
-    const cars = useSelector((state) => selectCars(state, currentPage));//
+    const cars = useSelector((state) => selectCars(state, currentPage));
     const paginationData = useSelector((state) => selectPaginationData(state, currentPage));
+    const shouldFetchNextPage = useSelector(state => selectShouldFetchNextPage(state));
     const [loader, setLoader] = useState(false);
     const dispatch = useDispatch();
     const carData = useRef({});
@@ -27,7 +29,6 @@ function EditDeletePage(props) {
         }
     }, [currentPage])
 
-    let shouldFetchNextPage = paginationData?.lastPage >= currentPage + 1 ? true : false;
     if(shouldFetchNextPage){
         // FETCH next page of cars for better UX
         let nextPage = currentPage + 1;
