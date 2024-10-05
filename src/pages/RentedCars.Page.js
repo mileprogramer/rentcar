@@ -33,7 +33,7 @@ function RentedCars(props) {
     if(shouldFetchNextPage){
         // FETCHING next page of cars for better UX and getting the next available car
         let nextPage = currentPage + 1;
-        carService.getRentedCars()
+        carService.getRentedCars(nextPage)
             .then((data)=>{
                 dispatch(saveCars({"page": nextPage, "cars": data.cars}));
             })
@@ -43,7 +43,7 @@ function RentedCars(props) {
     }
 
     function getRentedCars(page = 1){
-        carService.getRentedCars()
+        carService.getRentedCars(page)
             .then((data)=>{
                 dispatch(setCurrentPage({"page" : page}));
                 dispatch(saveCars({"page": page, "cars": data.cars}));
@@ -55,7 +55,7 @@ function RentedCars(props) {
                 setMistakes(error);
             })
     }
-
+    
     return (
     <div className='position-relative' style={{height: "100vh"}}>
             <div className="container">

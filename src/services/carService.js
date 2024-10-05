@@ -42,8 +42,8 @@ class CarService {
             .catch(error => Promise.reject(this.handleError(error)));
     }
 
-    static getRentedCars() {
-        return axios.get(this.defaultGetUrl + "/rented")
+    static getRentedCars(page) {
+        return axios.get(this.defaultGetUrl + "/rented" + "?page="+ page)
             .then(response => {
                 return {
                     "cars" : response.data.data, 

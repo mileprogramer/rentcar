@@ -8,6 +8,8 @@ const rentedCarsSlicer = createSlice({
     reducers : {
 
         saveCars(state, action){
+            console.log(action.payload.page);
+            console.log(action.payload.cars);
             state.value[action.payload.page] = action.payload.cars;
         },
 
