@@ -99,9 +99,9 @@ class CarService {
     }
 
     static acceptCar(carInfo) {
-        return axios.post(`${this.url}/accept`, carInfo)
+        return axios.post(`${this.defaultPostUrl}/rent/return`, carInfo)
             .then(response => response.data)
-            .catch(error => Promise.reject(this.handleError(error)));
+            .catch(error => Promise.reject(this.getErrorsMessages(error.response.data)));
     }
 
     static addCar(carData) {

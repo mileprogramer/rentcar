@@ -7,6 +7,8 @@ import { setRentedCar } from "../redux/car.slicer"
 import SearchableDropdown from './SearchableDropDown.Component';
 import userSerice from '../services/userService';
 import dayjs from 'dayjs';
+import { refreshFirstPage, updateCars } from '../redux/rentedCars.slicer';
+import { refreshStatFirstPage } from '../redux/statistics.slicer';
 
 function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, carLicense}) {
 
@@ -167,9 +169,12 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
         carService.rentCar(rentCarData)
             .then(data =>{
                 setRentMessage({"message": data.message});
+                setMistakes([]);
                 emptyInputFields();
                 setMistakes([]);
                 dispatch(setRentedCar({"page": page, "carId": rentCarData.car_id}))
+                dispatch(refreshFirstPage());
+                dispatch(refreshStatFirstPage());
                 event.target.disabled = false;
                 setTimeout(()=>{
                     if(modalRentCar)

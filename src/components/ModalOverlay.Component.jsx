@@ -6,7 +6,7 @@ function ModalOverlay({setActiveOverlay, bgColor = "rgba(221, 221, 221, 0.687)",
         setActiveOverlay(false);
         setModalActive(false);
     }
-
+    
     return (
         <div
             id="overlay"

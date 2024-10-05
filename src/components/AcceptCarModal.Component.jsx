@@ -1,16 +1,19 @@
 import React, {useState} from 'react';
 import carService from "../services/carService";
 import FormValidation from "../services/FormValidation";
+import "../css/modal.css"
+import dayjs from 'dayjs';
+import { useDispatch } from 'react-redux';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 
-function AcceptCarForm({car, setAcceptModal, setAcceptCar}) {
+dayjs.extend(customParseFormat);
+
+function AcceptCarForm({carData, currentPage, closeModal}) {
     const [inputData, setInputData] = useState({
-        license : car.license,
-        review: '',
-        userRating: '',
-        totalPrice: calculateTotalPrice(car.startDate, todayDate(), car.pricePerDay),
-        startEndDate: car.startDate + " --- " + todayDate()
+        note : "",
     });
 
+    const dispatch = useDispatch();
     const [returnedCar, setReturnedCar] = useState(false);
     const [mistakes, setMistakes] = useState([]);
 
@@ -22,42 +25,33 @@ function AcceptCarForm({car, setAcceptModal, setAcceptCar}) {
         });
     };
 
-    function todayDate(){
-        let month = new Date().getMonth() + 1;
-        return new Date().getFullYear() + "-" + month + "-"+ new Date().getDate()
-    }
 
-
-    function calculateTotalPrice(startDate, returnDate, pricePerDay){
-        let mSeconds = new Date(returnDate).getTime() - new Date(startDate).getTime();
-        let days = mSeconds / (1000 * 60 * 60 * 24);
-        let totalPrice = days * pricePerDay;
-        return totalPrice.toFixed(2);
+    function calculateTotalPrice(){
+        if(carData.extended_rents.length === 0){
+            return (carData.price_per_day - (carData.price_per_day * (carData.discount / 100))) * dayjs().diff(dayjs(carData.start_date, "DD/MM/YYYY"), 'days');
+        }
     }
 
     const acceptCar = () => {
         let mistakes = FormValidation.validateInputFields(inputData);
-        console.log(mistakes);
+
         if(mistakes.length !== 0){
             setMistakes(mistakes);
             return ;
         }
-        let carInfo = {
-            license: inputData.license,
-            userRating: inputData.userRating,
-            review: inputData.review
-        }
-        carService.acceptCar(carInfo)
+        
+        carService.acceptCar({car_id: carData.car_id, note: inputData.note})
             .then(data =>{
-                setAcceptCar(carInfo.license);
+                dispatch(acceptCar({"carId:": carData.car_id, "page": currentPage}));
                 setReturnedCar(data);
             })
             .catch(errors =>{
                 setMistakes(errors);
             })
     };
+    
     return (
-        <div className="edit-modal position-absolute top-50 start-50">
+        <div className="position-absolute edit-modal top-50 start-50 z-3">
             {mistakes.length > 0 && (
                 <div className="alert alert-danger" role="alert">
                     {mistakes.map((error, index) => (
@@ -68,74 +62,55 @@ function AcceptCarForm({car, setAcceptModal, setAcceptCar}) {
             {returnedCar && <div className="alert alert-success" role="alert">{returnedCar.message}</div>}
             <div className="card">
                 <div className="card-header">
-                    <h3>Fill the form to return a car</h3>
+                    <h5>License: {carData?.car?.license}</h5>
                 </div>
                 <div className="card-body">
-                    <div className="form-group">
-                        <label htmlFor="brand">Type license</label>
-                        <input
-                            id="license"
-                            name="license"
-                            type="text"
-                            disabled={true}
-                            className="form-control"
-                            value={inputData.license}
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="brand">Date of taking car --- Date of returning car</label>
-                        <input
-                            disabled={true}
-                            id="startEndDate"
-                            name="startEndDate"
-                            type="text"
-                            className="form-control"
-                            value={inputData.startEndDate}
-                            onChange={handleInput}
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="brand">Total price to pay</label>
-                        <input
-                            disabled={true}
-                            id="totalPrize"
-                            name="totalPrize"
-                            type="text"
-                            className="form-control"
-                            value={inputData["totalPrice"]}
-                        />
-                    </div>
-
-                    <div className="form-group my-3">
-                        <label htmlFor="userRating">Insert user rating</label>
-                        <select name="userRating" id="userRating" className="form-select" onChange={handleInput}>
-                            <option value="0">0</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                        </select>
-                    </div>
-
-                    <div className="form-group my-3">
-                        <label htmlFor="license">User review</label>
+                    <div className="form-group py-3">
+                        <label className='d-block' htmlFor="note">Insert the note</label>
+                        <em>**Type here if user have any suggestions or objections for our service, If the user wants to return the car earlier than planned, they must provide a reason for the early return.</em>
                         <textarea
-                            id="review"
-                            name="review"
+                            id="note"
+                            name="note"
+                            type="text"
                             className="form-control"
-                            value={inputData.review}
+                            value={inputData.note}
                             onChange={handleInput}
                         />
                     </div>
+
+                    <table className='table'>
+                        <thead className='table-dark'>
+                            <tr>
+                                <td>Started Rent</td>
+                                <td>End rent/today date</td>
+                                <td>Days Total</td>
+                                <td>Price per day</td> 
+                                <td>Discount</td> 
+                                <td>Total price</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{carData.start_date}</td>
+                                <td>{dayjs().format("DD/MM/YYYY")}</td>
+                                <td>
+                                    {dayjs().diff(dayjs(carData.start_date, "DD/MM/YYYY"), 'days')}
+                                </td>
+                                <td>{carData.price_per_day}</td>
+                                <td>{carData.discount}%</td>
+                                <td className='fw-bold'>
+                                    {calculateTotalPrice()}$
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
                 </div>
-                <div className="card-footer">
+                <div className="card-footer d-flex justify-content-between">
                     <button
-                        onClick={() => setAcceptModal(false)}
-                        className="btn btn-danger">Close modal</button>
-                    <button className="btn btn-primary mx-3" onClick={acceptCar}>
+                        onClick={() => closeModal(false)}
+                        className="btn btn-outline-primary">Close modal</button>
+                    <button className="btn btn-primary ml-auto" onClick={acceptCar}>
                         Accept Car
                     </button>
                 </div>

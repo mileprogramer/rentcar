@@ -20,6 +20,14 @@ const statisticsSlicer = createSlice({
             state.value.currentPage = action.payload.page;
         },
 
+        refreshStatFirstPage(state, action){
+            state.value[1] = null; 
+        },
+
+        setDefault(state, action){
+            state.value = initialState;
+        },
+
         saveFilterStats(state, action){
             state.value.filter[action.payload.page] = action.payload.stats;
         },
@@ -50,6 +58,14 @@ export const selectCurrentPage = (state) => {
     return state.statisticsStore.value.currentPage;
 }
 
+export const selectShouldFetchNextPage = (state) =>{
+    let nextPage = state.statisticsStore.value.currentPage + 1;
+    if(!state.statisticsStore.value.hasOwnProperty(nextPage) || state.statisticsStore.value[nextPage]?.length === 9){
+        return true;
+    }
+    return false;
+}
+
 export const selectFilterStats = (state, page) =>  {
     if(state.statisticsStore.value.filter.hasOwnProperty(page)){
         return state.statisticsStore.value.filter[page];
@@ -74,5 +90,6 @@ export const {
     saveFilterStats, 
     setFilterCurrentPage, 
     saveFilterPaginationData,  
+    refreshStatFirstPage,
 } = statisticsSlicer.actions;
 export default statisticsSlicer.reducer;
