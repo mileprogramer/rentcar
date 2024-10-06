@@ -5,6 +5,9 @@ function Search({setIsSearched, placeholder, getCarData}) {
     const [inputSearch, setInputSearch] = useState("");
     
     const handleSearch = (event) => {
+        if(event.target.value === ""){
+            setIsSearched(false);
+        }
         setInputSearch(event.target.value);
         if(inputSearch.length < 3){
             return;

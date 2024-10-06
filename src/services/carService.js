@@ -138,8 +138,12 @@ class CarService {
             .catch(error => Promise.reject(this.handleError(error)));
     }
 
-    static searchAvailableCars(searchParam) {
-        return axios.get(`${this.defaultGetUrl}/available?search=${searchParam}`)
+    static searchAvailableCars(searchParam, page) {
+        let url = `${this.defaultGetUrl}/available?search=${searchParam}`;
+        if(page){
+            url += "&page=" + page;
+        }
+        return axios.get(url)
             .then(response => {
                 return {
                     "cars" : response.data.data, 
