@@ -9,7 +9,6 @@ class CarService {
         return axios.get(url)
             .then(response => {
                 return {
-                    "apiEndpoint": response.request.responseURL,
                     "cars" : response.data.data, 
                     "paginationData": {
                         "currentPage": response.data.current_page,
@@ -136,6 +135,23 @@ class CarService {
     static search(searchParam) {
         return axios.get(`${this.url}/search/${searchParam}`)
             .then(response => response.data)
+            .catch(error => Promise.reject(this.handleError(error)));
+    }
+
+    static searchAvailableCars(searchParam) {
+        return axios.get(`${this.defaultGetUrl}/available?search=${searchParam}`)
+            .then(response => {
+                return {
+                    "cars" : response.data.data, 
+                    "paginationData": {
+                        "currentPage": response.data.current_page,
+                        "firstPage": response.data.from,
+                        "lastPage": response.data.last_page,
+                        "totalElements" : response.data.total,
+                        "elementsPerPage" : response.data.per_page
+                    }
+                };
+            })
             .catch(error => Promise.reject(this.handleError(error)));
     }
 

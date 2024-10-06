@@ -7,66 +7,84 @@ const carSlicer = createSlice({
     initialState: initialState,
     reducers : {
         saveCars(state, action){
-            state.value[action.payload.page] = action.payload.cars;
+            if(action.payload.type === "searched"){
+                state.value.searched[action.payload.page] = action.payload.cars;
+            }
+            else 
+                state.value[action.payload.page] = action.payload.cars;
         },
 
         savePaginationData(state, action){
-            state.value.paginationData = action.payload.paginationData;
+            if(action.payload.type === "searched"){
+                state.value.searched.paginationData = action.payload.paginationData;
+            }
+            else 
+                state.value.paginationData = action.payload.paginationData;
         },
 
         setCurrentPage(state, action){
-            state.value.currentPage = action.payload.page;
+            if(action.payload.type === "searched"){
+                state.value.searched = state.value.searched || {};
+                state.value.searched.currentPage = action.payload.page;
+            }
+            else 
+                state.value.currentPage = action.payload.page;
         },
 
         setRentedCar(state, action){
             let { carId, page } = action.payload;
-            let cars = state.value[page] || [];
+            let carsState = state.value;
+            if(action.payload.type === "searched"){
+                carsState = state.value.searched || {};
+            }
 
-            state.value[page] = cars.filter(car => car.id !== carId);
+            carsState[page] = carsState[page].filter(car => car.id !== carId);
 
-            if (cars.length === 10) {
+            if (carsState[page].length < 10) {
                 let nextPage = action.payload.page + 1;
                 let beforePage = action.payload.page;
                 
-                while(state.value.hasOwnProperty(nextPage)){
-                    state.value[beforePage].push(state.value[nextPage][0]);
-                    state.value[nextPage] = state.value[nextPage].slice(1);
+                while(carsState.hasOwnProperty(nextPage) && carsState[nextPage].length > 0){
+                    carsState[beforePage].push(carsState[nextPage][0]);
+                    carsState[nextPage] = carsState[nextPage].slice(1);
                     nextPage++;
                     beforePage++;
                 }
             }
-            
         }
 
     },
 });
 
 // selectors
-export const selectCars = (state, page) =>  {
-    if(state.carStore.value.hasOwnProperty(page)){
-        return state.carStore.value[page];
+export const selectCars = (state, page, type) =>  {
+    let carsState = type === "searched" ? state.carStore.value.searched : state.carStore.value;
+    if(carsState.hasOwnProperty(page)){
+        return carsState[page];
     }
     return null;
 };
 
-export const selectPaginationData = (state) =>  {
-    return state.carStore.value.paginationData;
+export const selectPaginationData = (state, type) =>  {
+    return type === "searched" ? state.carStore.value.searched.paginationData : state.carStore.value.paginationData;
 };
 
-export const selectCurrentPage = (state) => {
-    return state.carStore.value.currentPage;
+export const selectCurrentPage = (state, type) => {
+    return type === "searched" ? state.carStore.value.searched.currentPage : state.carStore.value.currentPage;
 }
 
-export const selectCarData = (state, license, fromPage) => {
-    if(state.carStore.value[fromPage])
-        return state.carStore.value[fromPage].find(car => car.license === license);
+export const selectCarData = (state, license, fromPage, type) => {
+    let cars = type === "searched" ? state.carStore.value.searched : state.carStore.value;
+    if(cars[fromPage])
+        return cars[fromPage].find(car => car.license === license);
 
     return null;
 }
 
-export const selectShouldFetchNextPage = (state) =>{
-    let nextPage = state.carStore.value.currentPage + 1;
-    if(!state.carStore.value.hasOwnProperty(nextPage) || state.carStore.value[nextPage]?.length === 9){
+export const selectShouldFetchNextPage = (state, type) =>{
+    let cars = type === "searched" ? state.carStore.value.searched : state.carStore.value;
+    let nextPage = cars.currentPage + 1;
+    if(!cars.hasOwnProperty(nextPage) || cars[nextPage]?.length === 9){
         return true;
     }
     return false;

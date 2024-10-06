@@ -6,7 +6,7 @@ function CarsTable({cars, openRentCarModal}) {
 
     return (
         <>
-        <table className="table">
+        <table className="table table-striped">
             <thead>
             <tr>
                 <td>License</td>

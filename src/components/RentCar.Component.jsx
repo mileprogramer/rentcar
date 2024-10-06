@@ -10,9 +10,9 @@ import dayjs from 'dayjs';
 import { refreshFirstPage, updateCars } from '../redux/rentedCars.slicer';
 import { refreshStatFirstPage } from '../redux/statistics.slicer';
 
-function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, carLicense}) {
+function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, carLicense, typeIsSearched}) {
 
-    const carData = useSelector(state => selectCarData(state, carLicense, carFromPage));
+    const carData = useSelector(state => selectCarData(state, carLicense, carFromPage, typeIsSearched));
     const selectedUser = useRef({});
     const page = useSelector(state => selectCurrentPage(state));
     const [users, setUsers] = useState([]);
@@ -172,13 +172,13 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
                 setMistakes([]);
                 emptyInputFields();
                 setMistakes([]);
-                dispatch(setRentedCar({"page": page, "carId": rentCarData.car_id}))
+                dispatch(setRentedCar({"page": page, "carId": rentCarData.car_id, "type": typeIsSearched}))
                 dispatch(refreshFirstPage());
                 dispatch(refreshStatFirstPage());
-                event.target.disabled = false;
                 setTimeout(()=>{
                     if(modalRentCar)
                     {
+                        event.target.disabled = false;
                         closeModal();
                     }
                 }, 3000);

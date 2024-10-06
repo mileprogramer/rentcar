@@ -1,27 +1,15 @@
 import React, {useState} from 'react';
-import carService from "../services/carService";
 
-
-function Search({setLoader, setIsSearched}) {
+function Search({setIsSearched, placeholder, getCarData}) {
 
     const [inputSearch, setInputSearch] = useState("");
-
+    
     const handleSearch = (event) => {
+        setInputSearch(event.target.value);
         if(inputSearch.length < 3){
             return;
         }
-        setLoader(true);
-        getCarData();
-    }
-
-    function getCarData(page = 1){
-        carService.search(inputSearch)
-            .then((data)=>{
-                setLoader(false);
-            })
-            .catch((error)=>{
-                alert("Error happened mistake is: "+ error.message);
-            })
+        getCarData(inputSearch);
     }
 
     const resetSearch = () =>{
@@ -30,16 +18,22 @@ function Search({setLoader, setIsSearched}) {
     }
 
     return (
-        <div className="form-group mt-3 ml-auto">
+        <div className="form-group mt-3 pe-4 ms-auto" style={{width: "300px"}}>
             <input
                 onChange={handleSearch}
                 value={inputSearch}
                 type="search"
                 className="form-control"
-                placeholder="Type brand, model of car, license"/>
-            <p className='text-danger'
-                onClick={()=> resetSearch()}
-                >Reset search</p>
+                placeholder={placeholder}/>
+            <div className='text-end'>
+                <p
+                    className='text-danger d-inline-block' 
+                    style={{cursor: "pointer"}}
+                    onClick={()=> resetSearch()}
+                >
+                    Reset search
+                </p>
+            </div>
         </div>
     );
 }
