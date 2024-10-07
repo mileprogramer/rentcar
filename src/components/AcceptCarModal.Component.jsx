@@ -5,6 +5,7 @@ import "../css/modal.css"
 import dayjs from 'dayjs';
 import { useDispatch } from 'react-redux';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import { refreshFirstPage, returnCar } from '../redux/rentedCars.slicer';
 
 dayjs.extend(customParseFormat);
 
@@ -27,7 +28,7 @@ function AcceptCarForm({carData, currentPage, closeModal}) {
 
 
     function calculateTotalPrice(){
-        if(carData.extended_rents.length === 0){
+        if(carData.extended_rent){
             return (carData.price_per_day - (carData.price_per_day * (carData.discount / 100))) * dayjs().diff(dayjs(carData.start_date, "DD/MM/YYYY"), 'days');
         }
     }
@@ -42,7 +43,8 @@ function AcceptCarForm({carData, currentPage, closeModal}) {
         
         carService.acceptCar({car_id: carData.car_id, note: inputData.note})
             .then(data =>{
-                dispatch(acceptCar({"carId:": carData.car_id, "page": currentPage}));
+                dispatch(returnCar({"carId": carData.car_id, "page": currentPage}));
+                dispatch(refreshFirstPage());
                 setReturnedCar(data);
             })
             .catch(errors =>{

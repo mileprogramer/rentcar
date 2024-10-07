@@ -5,27 +5,41 @@ import Loader from "../components/Loader.Component";
 import RentedCarsTable from "../components/RentedCarsTable.Component";
 import AcceptCarModalComponent from "../components/AcceptCarModal.Component";
 import EditRent from "../components/EditRent.Component";
-import SearchRented from "../components/SearchRented.Component";
 import { useDispatch, useSelector } from 'react-redux';
 import { saveCars, savePaginationData, selectCars, selectCurrentPage, selectPaginationData, selectShouldFetchNextPage, setCurrentPage } from '../redux/rentedCars.slicer';
 import Pagination from '../components/Pagination.Component';
 import ModalOverlay from '../components/ModalOverlay.Component';
+import Search from '../components/Search.Component';
 
 function RentedCars(props) {
 
-    const currentPage = useSelector((state) => selectCurrentPage(state));
-    const cars = useSelector((state) => selectCars(state, currentPage));
-    const paginationData = useSelector((state) => selectPaginationData(state, currentPage));
+    const [isSearched, setIsSearched] = useState(false);
+    let typeIsSearched = isSearched ? "searched" : "";
+
+    const currentPage = useSelector((state) => selectCurrentPage(state, typeIsSearched));
+    const cars = useSelector((state) => selectCars(state, currentPage, typeIsSearched));
+    const paginationData = useSelector((state) => selectPaginationData(state, typeIsSearched));
     const shouldFetchNextPage = useSelector((state) => selectShouldFetchNextPage(state));
     const carData = useRef({});
+    const searchTerm = useRef({});
     const dispatch = useDispatch();
     const [overlay, setActiveOverlay] = useState(true);
     const [loader, setLoader] = useState(true);
-    const [isSearched, setIsSearched] = useState(false);
     const [mistakes, setMistakes] = useState(null);
     const [acceptModal, setAcceptModal] = useState(false);
     const [rentModal, setRentModal] = useState(false);
     
+    if(isSearched === true && cars === null){
+        carService.searchAvailableCars(searchTerm.current, currentPage)
+            .then((data)=>{
+                dispatch(saveCars({"page": currentPage, "cars": data.cars, "type": "searched"}));
+            })
+            .catch((error)=>{
+                setMistakes(error);
+            })
+    }
+
+
     if(cars === null){
         getRentedCars(currentPage);
     }
@@ -55,17 +69,41 @@ function RentedCars(props) {
                 setMistakes(error);
             })
     }
+
+    function searchCars(term){
+        setLoader(true);
+        searchTerm.current = term;
+        carService.searchRentedCars(term)
+            .then((data)=>{
+                dispatch(setCurrentPage({"page" : 1, "type": "searched"}));
+                dispatch(saveCars({"page": 1, "cars": data.cars, "type": "searched"}));
+                dispatch(savePaginationData({"paginationData" : data.paginationData, "type": "searched"}));
+                setLoader(false);
+                setIsSearched(true);
+            })
+            .catch((error)=>{
+                setLoader(false);
+                setMistakes(error);
+            })
+    }
     
     return (
     <div className='position-relative' style={{height: "100vh"}}>
             <div className="container">
                 <Navbar/>
-                {/* <div className="d-flex gap-3 my-5">
-                    <SearchRented resetSearch={resetSearch} setLoader = {setLoader} search = {search}/>
-                </div> */}
+            
+                <div className="ml-auto mt-3">
+                    <Search
+                        setIsSearched={setIsSearched}
+                        getCarData={searchCars}
+                        setLoader = {setLoader}
+                        widthOfSearch='450' 
+                        placeholder={"Type license of car or the user personal data or card id"}
+                    />
+                </div>
                 <h4>Rented Cars</h4>
                 {
-                    cars?.length  > 0 ? 
+                    cars !== null ? 
                         <>
                             <RentedCarsTable cars={cars}
                                 setRentModal={setRentModal}

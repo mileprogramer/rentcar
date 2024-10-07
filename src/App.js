@@ -8,6 +8,7 @@ import {Provider} from "react-redux";
 import storeOptions from "./settings/store";
 import { configureStore } from '@reduxjs/toolkit';
 import StatisticsPage from './pages/Statistics.Page';
+import "./css/default.css"
 
 function App() {
     return (

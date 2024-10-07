@@ -8,7 +8,7 @@ import ModalOverlay from './ModalOverlay.Component.jsx';
 import { useDispatch } from 'react-redux';
 import { editCar } from '../redux/allCars.slicer.js';
 
-function EditModal({modalActive, setModalActive, currentPage, car}) {
+function EditModal({modalActive, setModalActive, currentPage, car, typeIsSearched}) {
 
     const [activeOverlay, setActiveOverlay] = useState(false);
     const airConditionerType = new AirConditioningType();
@@ -94,7 +94,7 @@ function EditModal({modalActive, setModalActive, currentPage, car}) {
 
         carService.updateCar(carData)
             .then(data =>{
-                dispatch(editCar({"page":currentPage, "car": carData}));
+                dispatch(editCar({"page":currentPage, "car": carData, "type": typeIsSearched}));
                 setEditedCar(data);
                 setTimeout(()=>{
                     setEditedCar(false);

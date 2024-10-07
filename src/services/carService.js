@@ -144,24 +144,27 @@ class CarService {
             url += "&page=" + page;
         }
         return axios.get(url)
-            .then(response => {
-                return {
-                    "cars" : response.data.data, 
-                    "paginationData": {
-                        "currentPage": response.data.current_page,
-                        "firstPage": response.data.from,
-                        "lastPage": response.data.last_page,
-                        "totalElements" : response.data.total,
-                        "elementsPerPage" : response.data.per_page
-                    }
-                };
-            })
+            .then(response => this.formatResponse(response))
             .catch(error => Promise.reject(this.handleError(error)));
     }
 
-    static searchRented(identifier) {
-        return axios.get(`${this.defaultUrl}/search-rented/${identifier}`)
-            .then(response => response.data)
+    static searchAllCars(searchParam, page) {
+        let url = `${this.defaultGetUrl}?search=${searchParam}`;
+        if(page){
+            url += "&page=" + page;
+        }
+        return axios.get(url)
+            .then(response => this.formatResponse(response))
+            .catch(error => Promise.reject(this.handleError(error)));
+    }
+
+    static searchRentedCars(searchParam, page) {
+        let url = `${this.defaultGetUrl}/rented?search=${searchParam}`;
+        if(page){
+            url += "&page=" + page;
+        }
+        return axios.get(url)
+            .then(response => this.formatResponse(response))
             .catch(error => Promise.reject(this.handleError(error)));
     }
 
@@ -204,6 +207,19 @@ class CarService {
         return str.toLowerCase().replace(/_([a-z])/g, function(match, letter) {
             return letter.toUpperCase();
         });
+    }
+
+    static formatResponse(response){
+        return {
+            "cars" : response.data.data, 
+            "paginationData": {
+                "currentPage": response.data.current_page,
+                "firstPage": response.data.from,
+                "lastPage": response.data.last_page,
+                "totalElements" : response.data.total,
+                "elementsPerPage" : response.data.per_page
+            }
+        };
     }
 }
 

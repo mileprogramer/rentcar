@@ -2,9 +2,13 @@ import React from 'react';
 
 function RentedCarsTable({cars, openAcceptCarModal}) {
 
+    if(cars.length === 0){
+        return "There is not rented cars";
+    }
+
     return (
         <>
-            <table className="table">
+            <table className="table table-striped">
                 <thead>
                 <tr>
                     <td>License</td>

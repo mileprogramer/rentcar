@@ -9,25 +9,37 @@ import Pagination from "../components/Pagination.Component";
 import { useDispatch, useSelector } from 'react-redux';
 import { saveCars, savePaginationData, selectCars, selectCurrentPage, selectPaginationData, setCurrentPage } from '../redux/allCars.slicer';
 import { selectShouldFetchNextPage } from '../redux/allCars.slicer';
+import Search from '../components/Search.Component';
 
 function EditDeletePage(props) {
 
+    const [isSearched, setIsSearched] = useState(false);
+    let typeIsSearched = isSearched ? "searched" : "";
+
     const [deleteCarModal, setDeleteCarModal] = useState(false);
     const [editCarModal, setEditCarModal] = useState(false);
-    const currentPage = useSelector((state) => selectCurrentPage(state));
-    const cars = useSelector((state) => selectCars(state, currentPage));
-    const paginationData = useSelector((state) => selectPaginationData(state, currentPage));
+    const currentPage = useSelector((state) => selectCurrentPage(state, typeIsSearched));
+    const cars = useSelector((state) => selectCars(state, currentPage, typeIsSearched));
+    const paginationData = useSelector((state) => selectPaginationData(state, typeIsSearched));
     const shouldFetchNextPage = useSelector(state => selectShouldFetchNextPage(state));
     const [loader, setLoader] = useState(false);
     const dispatch = useDispatch();
     const carData = useRef({});
+    const searchTerm = useRef({});
     
-    useEffect(()=>{
-        if(cars === null){
-            setLoader(true);
-            getCars(currentPage);
-        }
-    }, [currentPage])
+    if(isSearched === true && cars === null){
+        carService.searchAllCars(searchTerm.current, currentPage)
+            .then((data)=>{
+                dispatch(saveCars({"page": currentPage, "cars": data.cars, "type": "searched"}));
+            })
+            .catch((error)=>{
+                alert(error);
+            })
+    }
+
+    if(cars === null && isSearched === false){
+        getCars(currentPage);
+    }
 
     if(shouldFetchNextPage){
         // FETCH next page of cars for better UX
@@ -71,10 +83,35 @@ function EditDeletePage(props) {
             })
     }
 
+    function searchCars(term){
+        setLoader(true);
+        searchTerm.current = term;
+        carService.searchAllCars(term, null)
+            .then((data)=>{
+                dispatch(setCurrentPage({"page" : 1, "type": "searched"}));
+                dispatch(saveCars({"page": 1, "cars": data.cars, "type": "searched"}));
+                dispatch(savePaginationData({"paginationData" : data.paginationData, "type": "searched"}));
+                setLoader(false);
+                setIsSearched(true);
+            })
+            .catch((error)=>{
+                setLoader(false);
+                alert(error);
+            })
+    }
+
     return (
         <div className='position-relative'>
             <Navbar/>
             <div className="container">
+            <div className="ml-auto" style={{marginRight: "7rem"}}>
+                <Search
+                    setIsSearched={setIsSearched}
+                    getCarData={searchCars}
+                    setLoader = {setLoader} 
+                    placeholder={"Type license, brand, model of car"}
+                />
+            </div>
                 {loader === false && cars !== null ?
                 <>
                     <EditDeleteTable 
@@ -84,12 +121,13 @@ function EditDeletePage(props) {
                     />
                     <Pagination elementsPerPage={paginationData.elementsPerPage}
                         totalElements={paginationData.totalElements}
-                        changePage={(page) => dispatch(setCurrentPage({page}))}
+                        changePage={(page) => dispatch(setCurrentPage({page, "type": typeIsSearched}))}
                         currentPage={currentPage}
                     />
                 
                     {
                         deleteCarModal && <DeleteModal 
+                            typeIsSearched = {typeIsSearched}
                             modalActive={deleteCarModal}
                             currentPage = {currentPage}
                             car = {carData.current}
@@ -98,6 +136,7 @@ function EditDeletePage(props) {
                     }
                     {
                         editCarModal && <EditModal 
+                            typeIsSearched = {typeIsSearched}
                             modalActive={editCarModal}
                             setModalActive={(showOrHide) => setEditCarModal(showOrHide)}
                             currentPage = {currentPage}

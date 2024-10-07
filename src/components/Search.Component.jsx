@@ -1,19 +1,32 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
-function Search({setIsSearched, placeholder, getCarData}) {
+function Search({setIsSearched, placeholder, getCarData, label ,widthOfSearch = "300"}) {
 
     const [inputSearch, setInputSearch] = useState("");
-    
+    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(inputSearch);
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearchTerm(inputSearch);
+        }, 500); 
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [inputSearch]); 
+
+    useEffect(() => {
+        if (debouncedSearchTerm) {
+            getCarData(debouncedSearchTerm);
+        }
+    }, [debouncedSearchTerm]);
+
     const handleSearch = (event) => {
-        if(event.target.value === ""){
+        if (event.target.value === "") {
             setIsSearched(false);
         }
         setInputSearch(event.target.value);
-        if(inputSearch.length < 3){
-            return;
-        }
-        getCarData(inputSearch);
-    }
+    };
 
     const resetSearch = () =>{
         setInputSearch("");
@@ -21,7 +34,10 @@ function Search({setIsSearched, placeholder, getCarData}) {
     }
 
     return (
-        <div className="form-group mt-3 pe-4 ms-auto" style={{width: "300px"}}>
+        <div className="form-group pe-4 ms-auto" style={{width: widthOfSearch + "px"}}>
+            {
+                label && <label htmlFor='search'>{ label }</label> 
+            }
             <input
                 onChange={handleSearch}
                 value={inputSearch}
@@ -30,7 +46,7 @@ function Search({setIsSearched, placeholder, getCarData}) {
                 placeholder={placeholder}/>
             <div className='text-end'>
                 <p
-                    className='text-danger d-inline-block' 
+                    className='pt-1 text-danger d-inline-block' 
                     style={{cursor: "pointer"}}
                     onClick={()=> resetSearch()}
                 >

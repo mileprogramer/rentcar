@@ -32,7 +32,6 @@ function HomePage(props) {
     if(isSearched === true && cars === null){
         carService.searchAvailableCars(searchTerm.current, currentPage)
             .then((data)=>{
-                console.log(data.cars);
                 dispatch(saveCars({"page": currentPage, "cars": data.cars, "type": "searched"}));
             })
             .catch((error)=>{

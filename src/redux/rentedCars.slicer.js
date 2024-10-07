@@ -1,81 +1,101 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {value : {}};
+const initialState = { value: {} };
 
 const rentedCarsSlicer = createSlice({
     name: "rentedCars",
     initialState: initialState,
-    reducers : {
-
-        saveCars(state, action){
-            state.value[action.payload.page] = action.payload.cars;
+    reducers: {
+        saveCars(state, action) {
+            if (action.payload.type === "searched") {
+                state.value.searched = state.value.searched || {};
+                state.value.searched[action.payload.page] = action.payload.cars;
+            } else {
+                state.value[action.payload.page] = action.payload.cars;
+            }
         },
 
-        savePaginationData(state, action){
-            state.value.paginationData = action.payload.paginationData;
+        savePaginationData(state, action) {
+            if (action.payload.type === "searched") {
+                state.value.searched = state.value.searched || {};
+                state.value.searched.paginationData = action.payload.paginationData;
+            } else {
+                state.value.paginationData = action.payload.paginationData;
+            }
         },
 
-        setCurrentPage(state, action){
-            state.value.currentPage = action.payload.page;
+        setCurrentPage(state, action) {
+            if (action.payload.type === "searched") {
+                state.value.searched = state.value.searched || {};
+                state.value.searched.currentPage = action.payload.page;
+            } else {
+                state.value.currentPage = action.payload.page;
+            }
         },
 
-        acceptCar(state, action){
+        returnCar(state, action) {
             let { carId, page } = action.payload;
-            let cars = state.value[page] || [];
+            let carsState = state.value;
+            if (action.payload.type === "searched") {
+                carsState = state.value.searched || {};
+            }
 
-            state.value[page] = cars.filter(car => car.id !== carId);
+            carsState[page] = carsState[page].filter(car => car.id !== carId);
 
-            if (cars.length === 10) {
-                let nextPage = action.payload.page + 1;
-                let beforePage = action.payload.page;
-                
-                while(state.value.hasOwnProperty(nextPage)){
-                    state.value[beforePage].push(state.value[nextPage][0]);
-                    state.value[nextPage] = state.value[nextPage].slice(1);
+            if (carsState[page].length < 10) {
+                let nextPage = page + 1;
+                let beforePage = page;
+
+                while (carsState.hasOwnProperty(nextPage) && carsState[nextPage].length > 0) {
+                    carsState[beforePage].push(carsState[nextPage][0]);
+                    carsState[nextPage] = carsState[nextPage].slice(1);
                     nextPage++;
                     beforePage++;
                 }
             }
-            
         },
 
-        refreshFirstPage(state, action){
-            state.value[1] = null;
+        refreshFirstPage(state, action) {
+            if (action.payload.type === "searched") {
+                state.value.searched[1] = null;
+            } else {
+                state.value[1] = null;
+            }
         }
-
-    },
+    }
 });
 
-// selectors
-export const selectCars = (state, page) =>  {
-    if(state.rentedCarsStore.value.hasOwnProperty(page)){
-        return state.rentedCarsStore.value[page];
+// Selectors
+export const selectCars = (state, page, type) => {
+    let carsState = type === "searched" ? state.rentedCarsStore.value.searched : state.rentedCarsStore.value;
+    if (carsState.hasOwnProperty(page)) {
+        return carsState[page];
     }
     return null;
 };
 
-export const selectPaginationData = (state) =>  {
-    return state.rentedCarsStore.value.paginationData;
+export const selectPaginationData = (state, type) => {
+    return type === "searched" ? state.rentedCarsStore.value.searched.paginationData : state.rentedCarsStore.value.paginationData;
 };
 
-export const selectCurrentPage = (state) => {
-    return state.rentedCarsStore.value.currentPage;
-}
+export const selectCurrentPage = (state, type) => {
+    return type === "searched" ? state.rentedCarsStore.value.searched.currentPage : state.rentedCarsStore.value.currentPage;
+};
 
-export const selectShouldFetchNextPage = (state) =>{
-    let nextPage = state.rentedCarsStore.value.currentPage + 1;
-    if(!state.rentedCarsStore.value.hasOwnProperty(nextPage) || state.rentedCarsStore.value[nextPage]?.length === 9){
+export const selectShouldFetchNextPage = (state, type) => {
+    let cars = type === "searched" ? state.rentedCarsStore.value.searched : state.rentedCarsStore.value;
+    let nextPage = cars.currentPage + 1;
+    if (!cars.hasOwnProperty(nextPage) || cars[nextPage]?.length === 9) {
         return true;
     }
     return false;
-}
+};
 
 export const { 
     saveCars, 
     setCurrentPage, 
     savePaginationData, 
-    setRentedCar, 
-    setShouldFetchNextPage, 
+    returnCar, 
     refreshFirstPage 
 } = rentedCarsSlicer.actions;
 export default rentedCarsSlicer.reducer;

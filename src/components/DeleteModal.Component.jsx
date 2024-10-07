@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import { deleteCar } from '../redux/allCars.slicer';
 import FormValidation from '../services/FormValidation';
 
-function DeleteModal({modalActive, setModalActive, car, currentPage}) {
+function DeleteModal({ modalActive, setModalActive, car, currentPage, typeIsSearched }) {
 
     const [activeOverlay, setActiveOverlay] = useState(false);
     const [deletedCar, setDeletedCar] = useState(false);
@@ -28,7 +28,7 @@ function DeleteModal({modalActive, setModalActive, car, currentPage}) {
         }
         carService.deleteCar({"car_id": car.id, "reason_for_delete": inputData.reasonForDelete})
             .then(data => {
-                dispatch(deleteCar({"page": currentPage, "car": car}));
+                dispatch(deleteCar({"page": currentPage, "car": car, "type": typeIsSearched}));
                 setDeletedCar(data);
             })
             .catch(error =>{
