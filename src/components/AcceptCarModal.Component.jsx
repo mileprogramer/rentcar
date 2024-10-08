@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import carService from "../services/carService";
 import FormValidation from "../services/FormValidation";
 import "../css/modal.css"
@@ -6,6 +6,9 @@ import dayjs from 'dayjs';
 import { useDispatch } from 'react-redux';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { refreshFirstPage, returnCar } from '../redux/rentedCars.slicer';
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
+import "../css/accept-modal.css"
 
 dayjs.extend(customParseFormat);
 
@@ -13,10 +16,18 @@ function AcceptCarForm({carData, currentPage, closeModal}) {
     const [inputData, setInputData] = useState({
         note : "",
     });
-
+    const [open, setOpen] = useState(false);
     const dispatch = useDispatch();
     const [returnedCar, setReturnedCar] = useState(false);
     const [mistakes, setMistakes] = useState([]);
+    let images = (() => {
+        if (carData.car.images.length === 0) {
+            return [];
+        }
+        return carData.car.images.map(image => {
+            return { "src": image };
+        });
+    })();
 
     const handleInput = (event) => {
         const { name, value } = event.target;
@@ -79,6 +90,24 @@ function AcceptCarForm({carData, currentPage, closeModal}) {
                             onChange={handleInput}
                         />
                     </div>
+                    <div>
+                        <button
+                            className='btn btn-warning me-3 mb-3'
+                            onClick={() => setOpen(true)}
+                        >
+                            Open gallery
+                        </button>
+                        <em>All images before rent will be shown here</em>
+                    </div>
+                    <Lightbox
+                        open={open}
+                        close={() => setOpen(false)}
+                        slides={images}
+                    />
+
+                    
+
+
 
                     <table className='table'>
                         <thead className='table-dark'>

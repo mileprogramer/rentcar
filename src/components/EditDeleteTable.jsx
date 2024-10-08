@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import "../css/car-colors.css"
 import CarStatus from '../enums/CarStatus';
+import dayjs from 'dayjs';
 
 function EditDeleteTable({cars, openDeleteModal, openEditModal}) {
     let carStatus = new CarStatus();
@@ -13,6 +14,7 @@ function EditDeleteTable({cars, openDeleteModal, openEditModal}) {
                     <td>License</td>
                     <td>Brand</td>
                     <td>Model</td>
+                    <td>Last time edited</td>
                     <td>Edit car</td>
                     <td>Delete car</td>
                 </tr>
@@ -24,6 +26,7 @@ function EditDeleteTable({cars, openDeleteModal, openEditModal}) {
                         <td>{car.license}</td>
                         <td>{car.brand}</td>
                         <td>{car.model}</td>
+                        <td>{ car.last_time_updated !== null ? dayjs(car.last_time_updated).format("DD/MM/YYYY") : "" }</td>
                         <td>
                             {car.status !== carStatus.deleted ? 
                                 <button

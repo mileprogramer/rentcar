@@ -6,7 +6,9 @@ function Navbar(props) {
     return (
         <nav className="navbar navbar-expand">
             <div className="container">
-                <h1>Rent a car agency</h1>
+                <NavLink to="/" className="nav-link">
+                    <img src="http://localhost:3000/logo.png" width={100} alt="" />
+                </NavLink>
                 <ul className="navbar-nav d-flex gap-3">
                     <li className="nav-item">
                         <NavLink to="/" className="nav-link">
