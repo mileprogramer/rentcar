@@ -7,7 +7,7 @@ function EditDeleteTable({cars, openDeleteModal, openEditModal}) {
     let carStatus = new CarStatus();
     return (
         <>
-            <table className="table">
+            <table className="table table-striped">
                 <thead>
                 <tr>
                     <td>Status</td>

@@ -2,6 +2,7 @@ import axios from "axios";
 
 class CarService {
     static defaultGetUrl = "http://127.0.0.1:8000/api/cars";
+    static defaultSingularGetUrl = "http://127.0.0.1:8000/api/car";
     static defaultPostUrl = "http://127.0.0.1:8000/api/car";
 
     static getCars(page) {
@@ -132,9 +133,9 @@ class CarService {
             .catch(error => Promise.reject(this.handleError(error)));
     }
 
-    static search(searchParam) {
-        return axios.get(`${this.url}/search/${searchParam}`)
-            .then(response => response.data)
+    static searchByLicense(license) {
+        return axios.get(`${this.defaultSingularGetUrl}/show?license=${license}`)
+            .then(response => response)
             .catch(error => Promise.reject(this.handleError(error)));
     }
 

@@ -4,6 +4,7 @@ import FormValidation from "../services/FormValidation";
 import CarStatus from '../enums/CarStatus';
 import AirConditioningType from '../enums/AirConditiongType';
 import TransmissionType from '../enums/TransmissionsType';
+import ImageUploading from 'react-images-uploading';
 
 function AddCarForm(props) {
 
@@ -23,7 +24,8 @@ function AddCarForm(props) {
         transmissionType: '',
     };
     const [inputData, setInputData] = useState(initialInputData);
-
+    const [lightbox, setOpenLightBox] = useState(false);
+    const [images, setImages] = useState([]);
     const [addedCar, setAddedCar] = useState(false);
     const [mistakes, setMistakes] = useState([]);
 
@@ -33,6 +35,10 @@ function AddCarForm(props) {
             ...inputData,
             [name]: value
         });
+    };
+
+    const onChangeImage = (imageList, addUpdateIndex) => {
+        setImages(imageList);
     };
 
     const renderAirConditiongTypes = () =>{
@@ -233,6 +239,50 @@ function AddCarForm(props) {
                         {renderTransmissionTypes()}
                     </select>
                 </div>
+
+                <ImageUploading
+                        multiple
+                        value={images}
+                        onChange={onChangeImage}
+                        maxNumber={30}
+                        dataURLKey="data_url"
+                    >
+                        {({
+                        imageList,
+                        onImageUpload,
+                        onImageRemoveAll,
+                        onImageUpdate,
+                        onImageRemove,
+                        isDragging,
+                        dragProps,
+                        }) => (
+                        // write your building UI
+                        <div className="upload__image-wrapper">
+                            <p className='d-inline-block pe-3'>Add image by</p>
+                            <button
+                                className='btn btn-primary'
+                                style={isDragging ? { color: 'red' } : undefined}
+                                onClick={onImageUpload}
+                                {...dragProps}
+                            >
+                            Click or Drop here
+                            </button>
+                            &nbsp;
+                            <div className='car-gallery' style={{"gridTemplateColumns": "repeat(5, 1fr)"}}>
+                                {imageList.map((image, index) => (
+                                <div key={index} className='d-flex'>
+                                    <img src={image['data_url']} alt="" width="100" />
+                                    <div className="car-gallery-btns-vertical">
+                                        <button className='btn btn-warning' onClick={() => onImageUpdate(index)}>Update</button>
+                                        <button className='btn btn-danger' onClick={() => onImageRemove(index)}>Remove</button>
+                                    </div>
+                                </div>
+                                ))}
+                            </div>
+                        </div>
+                        )}
+                    </ImageUploading>
+
             </div>
 
             <button className="btn btn-primary w-50 offset-3 mt-5" onClick={addCar}>

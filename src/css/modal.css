@@ -29,6 +29,15 @@
     transform: translate(-50%, -50%);
 }
 .edit-modal{
-    width: 900px;
+    top: 0%;
+    right: 0%;
+    width: 1000px;
+    height: 100%;
+}
+
+.accept-modal{
+    position: absolute;
+    top: 50%;
+    left: 50%;
     transform: translate(-50%, -50%);
 }

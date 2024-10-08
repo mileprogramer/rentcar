@@ -76,6 +76,17 @@ export const selectCurrentPage = (state, type) => {
     return type === "searched" ? state.allCarsStore.value.searched?.currentPage : state.allCarsStore.value.currentPage;
 };
 
+export const selectCarData = (state, license) =>{
+    let page = 1;
+    while(state.allCarsStore.value.hasOwnProperty(page)){
+        let car = state.allCarsStore.value[page].find(car => car.license === license);
+        if(car !== undefined){
+            return car;
+        }
+    }
+    return null;
+}
+
 export const selectShouldFetchNextPage = (state, type) => {
     const carsState = type === "searched" ? state.allCarsStore.value.searched : state.allCarsStore.value;
     const nextPage = carsState?.currentPage + 1;
