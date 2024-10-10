@@ -8,54 +8,20 @@ class CarService {
     static getCars(page) {
         const url = page ? `${this.defaultGetUrl}?page=${page}` : this.defaultGetUrl;
         return axios.get(url)
-            .then(response => {
-                return {
-                    "cars" : response.data.data, 
-                    "paginationData": {
-                        "currentPage": response.data.current_page,
-                        "firstPage": response.data.from,
-                        "lastPage": response.data.last_page,
-                        "totalElements" : response.data.total,
-                        "elementsPerPage" : response.data.per_page
-                    }
-                };
-            })
+            .then(response => this.formatResponse(response))
             .catch(error => Promise.reject(this.handleError(error)));
     }
 
     static getAvailableCars(page) {
         const url = page ? `${this.defaultGetUrl}/available?page=${page}` : this.defaultGetUrl + "/available";
         return axios.get(url)
-            .then(response => {
-                return {
-                    "apiEndpoint": response.request.responseURL,
-                    "cars" : response.data.data, 
-                    "paginationData": {
-                        "currentPage": response.data.current_page,
-                        "firstPage": response.data.from,
-                        "lastPage": response.data.last_page,
-                        "totalElements" : response.data.total,
-                        "elementsPerPage" : response.data.per_page
-                    }
-                };
-            })
+            .then(response => this.formatResponse(response))
             .catch(error => Promise.reject(this.handleError(error)));
     }
 
     static getRentedCars(page) {
         return axios.get(this.defaultGetUrl + "/rented" + "?page="+ page)
-            .then(response => {
-                return {
-                    "cars" : response.data.data, 
-                    "paginationData": {
-                        "currentPage": response.data.current_page,
-                        "firstPage": response.data.from,
-                        "lastPage": response.data.last_page,
-                        "totalElements" : response.data.total,
-                        "elementsPerPage" : response.data.per_page
-                    }
-                }
-            })
+            .then(response => this.formatResponse(response))
             .catch(error => Promise.reject(this.handleError(error)));
     }
 
@@ -112,10 +78,10 @@ class CarService {
             });
     }
 
-    static editRent(data) {
-        return axios.patch(`${this.url}/edit-rent`, data)
+    static extendRent(data) {
+        return axios.post(`${this.defaultSingularGetUrl}/rent/extend`, data)
             .then(response => response.data)
-            .catch(error => Promise.reject(this.handleError(error)));
+            .catch(error => Promise.reject(error));
     }
 
     static rentCar(rentCarData) {

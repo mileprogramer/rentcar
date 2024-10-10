@@ -10,6 +10,7 @@ import { saveCars, savePaginationData, selectCars, selectCurrentPage, selectPagi
 import Pagination from '../components/Pagination.Component';
 import ModalOverlay from '../components/ModalOverlay.Component';
 import Search from '../components/Search.Component';
+import ExtendRentModal from '../components/ExtendRentModal.Component';
 
 function RentedCars(props) {
 
@@ -27,7 +28,7 @@ function RentedCars(props) {
     const [loader, setLoader] = useState(true);
     const [mistakes, setMistakes] = useState(null);
     const [acceptModal, setAcceptModal] = useState(false);
-    const [rentModal, setRentModal] = useState(false);
+    const [extendRentModal, setExtendRentModal] = useState(false);
     
     if(isSearched === true && cars === null){
         carService.searchAvailableCars(searchTerm.current, currentPage)
@@ -106,7 +107,10 @@ function RentedCars(props) {
                     cars !== null ? 
                         <>
                             <RentedCarsTable cars={cars}
-                                setRentModal={setRentModal}
+                                openExtendRentModal={license => {
+                                    carData.current = cars.find(car => car.car.license === license);
+                                    setExtendRentModal(true);
+                                }}
                                 openAcceptCarModal = {license => {
                                     carData.current = cars.find(car => car.car.license === license);
                                     setAcceptModal(true);
@@ -127,11 +131,15 @@ function RentedCars(props) {
                         <ModalOverlay setActiveOverlay={setActiveOverlay} setModalActive={(showOrHide) => setAcceptModal(showOrHide)}/>
                         </> 
                 }
-                {/* {
-                    rentModal && <EditRent rentedCarData={carData}
-                                            setRentModal = {setRentModal}
-                                            setRentCar ={handleEditRent}/>
-                } */}
+                {
+                    extendRentModal && <>
+                        <ExtendRentModal 
+                            currentPage={currentPage}
+                            carData = {carData.current}
+                            closeModal = {(showOrHide) => setExtendRentModal(showOrHide)}/>
+                        <ModalOverlay setActiveOverlay={setActiveOverlay} setModalActive={(showOrHide) => setExtendRentModal(showOrHide)}/>
+                        </> 
+                }
             </div>
         </div>
     );
