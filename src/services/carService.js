@@ -135,9 +135,9 @@ class CarService {
             .catch(error => Promise.reject(this.handleError(error)));
     }
 
-    static searchHistoryRented(data) {
-        return axios.get(`${this.url}/search-history-rented/${data.license}/${data.startDate}/${data.endDate}`)
-            .then(response => response.data)
+    static searchHistoryRented(query) {
+        return axios.get(`${this.defaultGetUrl}/statistics/search${query}`)
+            .then(response => this.formatStatsResponse(response))
             .catch(error => Promise.reject(this.handleError(error)));
     }
     
@@ -174,6 +174,19 @@ class CarService {
         return str.toLowerCase().replace(/_([a-z])/g, function(match, letter) {
             return letter.toUpperCase();
         });
+    }
+
+    static formatStatsResponse(response){
+        return {
+            "stats" : response.data.data, 
+            "paginationData": {
+                "currentPage": response.data.current_page,
+                "firstPage": response.data.from,
+                "lastPage": response.data.last_page,
+                "totalElements" : response.data.total,
+                "elementsPerPage" : response.data.per_page
+            }
+        }
     }
 
     static formatResponse(response){

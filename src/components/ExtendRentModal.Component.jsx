@@ -58,6 +58,7 @@ function ExtendRentModal({carData, currentPage, closeModal}) {
         delete extendRentData.start_date;
         carService.extendRent(extendRentData)
             .then(data =>{
+                dispatch(refreshFirstPage());
                 setReturnedCar(data);
             })
             .catch(errors =>{

@@ -56,7 +56,7 @@ const rentedCarsSlicer = createSlice({
         },
 
         refreshFirstPage(state, action) {
-            if (action.payload.type === "searched") {
+            if (action.payload?.type === "searched") {
                 state.value.searched[1] = null;
             } else {
                 state.value[1] = null;

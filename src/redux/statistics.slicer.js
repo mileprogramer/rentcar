@@ -43,7 +43,7 @@ const statisticsSlicer = createSlice({
 });
 
 // selectors
-export const selectStats = (state, page) =>  {
+export const selectStats = (state, page, type = "") =>  {
     if(state.statisticsStore.value.hasOwnProperty(page)){
         return state.statisticsStore.value[page];
     }
