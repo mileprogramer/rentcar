@@ -24,7 +24,7 @@ function SearchHistoryRented({ setLoader, setIsSearched, isSearched }) {
     const dispatch = useDispatch();
 
     const handleSearch = ()=> {
-        setLoader(true);
+        
         let query = "?";
         for(let prop in inputSearch){
             if(inputSearch[prop]){
@@ -36,7 +36,9 @@ function SearchHistoryRented({ setLoader, setIsSearched, isSearched }) {
             }
         }
     
+        if(query === "?") return ;
         query = query.slice(0, query.length-1);
+        setLoader(true);
         
         carService.searchHistoryRented(query)
             .then((data)=>{
@@ -70,7 +72,7 @@ function SearchHistoryRented({ setLoader, setIsSearched, isSearched }) {
         });
     }
 
-    const formatDates = () => {
+    const formatFilters = () => {
         let copyFilters = {...showFilters.filters};
         if(copyFilters.endDate){
             copyFilters.endDate = dayjs(copyFilters.endDate).format("DD/MM/YYYY");
@@ -78,12 +80,17 @@ function SearchHistoryRented({ setLoader, setIsSearched, isSearched }) {
         if(copyFilters.startDate){
             copyFilters.startDate = dayjs(copyFilters.startDate).format("DD/MM/YYYY");
         }
+        if(copyFilters.name){
+            copyFilters.personalData = copyFilters.name;
+            delete copyFilters.name;
+        }
         return copyFilters;
     }
 
     const renderFilters = () => {
         if(showFilters.show){
-            let copyFilters = formatDates();
+            let copyFilters = formatFilters();
+            console.log(copyFilters);
             return <ActiveFilters initialFiltersState={initialSearchData} filtersState={copyFilters} />
         }
         return "";
@@ -132,7 +139,7 @@ function SearchHistoryRented({ setLoader, setIsSearched, isSearched }) {
                 <input
                     onChange={handleInput}
                     value={inputSearch.name}
-                    type="text"
+                    type="search"
                     name="name"
                     className="form-control"/>
             </div>

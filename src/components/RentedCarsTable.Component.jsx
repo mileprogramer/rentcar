@@ -5,6 +5,13 @@ function RentedCarsTable({cars, openAcceptCarModal, openExtendRentModal}) {
     if(cars.length === 0){
         return "There is not rented cars";
     }
+    
+    function findReturnDate(data){
+        if(data.extended_rents?.length > 0){
+            return data.extended_rents[data.extended_rents.length-1].return_date;
+        }
+        return data.return_date;
+    }
 
     return (
         <>
@@ -12,9 +19,9 @@ function RentedCarsTable({cars, openAcceptCarModal, openExtendRentModal}) {
                 <thead>
                 <tr>
                     <td>License</td>
-                    <td>Personal Data</td>
-                    <td>Phone number</td>
+                    <td>First and last name</td>
                     <td>Id card user</td>
+                    <td>Phone number</td>
                     <td>Start rent date</td>
                     <td>End rent date</td>
                     <td>Price per day</td>
@@ -31,7 +38,7 @@ function RentedCarsTable({cars, openAcceptCarModal, openExtendRentModal}) {
                             <td>{rentedCar.user['card_id']}</td>
                             <td>{rentedCar.user['phone']}</td>
                             <td>{rentedCar.start_date}</td>
-                            <td>{rentedCar.return_date}</td>
+                            <td>{findReturnDate(rentedCar)}</td>
                             <td>{rentedCar.price_per_day}</td>
                             <td>
                                 <button

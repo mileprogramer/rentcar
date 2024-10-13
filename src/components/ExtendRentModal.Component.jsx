@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import { useDispatch } from 'react-redux';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { refreshFirstPage, returnCar } from '../redux/rentedCars.slicer';
+import { formatPrice } from '../helpers/functions';
 
 dayjs.extend(customParseFormat);
 
@@ -17,7 +18,7 @@ function ExtendRentModal({carData, currentPage, closeModal}) {
     const [extendRentData, setExtendRentData] = useState({
         car_id: carData.car.id,
         price_per_day: carData.price_per_day,
-        start_date: dayjs(carData.return_date, "DD/MM/YYYY").add(1, 'day').format("YYYY-MM-DD"),
+        start_date: findStartDate(carData),
         return_date: "",
         discount: 0,
         reasonForDiscount: ""
@@ -32,8 +33,19 @@ function ExtendRentModal({carData, currentPage, closeModal}) {
 
     function calculateTotalPrice(){
         if(!carData.extended_rent && extendRentData.return_date !== ""){
-            return Math.round((extendRentData.price_per_day - (extendRentData.price_per_day * (extendRentData.discount / 100))) * dayjs(extendRentData.return_date).diff(dayjs(extendRentData.start_date), 'day'), 2);
+            return formatPrice((extendRentData.price_per_day - (extendRentData.price_per_day * (extendRentData.discount / 100))) * dayjs(extendRentData.return_date).diff(dayjs(extendRentData.start_date), 'day'));
         }
+    }
+
+    function findStartDate(data){
+        let startDate = "";
+        if(carData.extended_rents?.length > 0){
+            startDate = carData.extended_rents[carData.extended_rents.length-1].return_date;
+        }
+        else{
+            startDate = carData.return_date;
+        } 
+        return dayjs(startDate, "DD/MM/YYYY").add(1, 'day').format("YYYY-MM-DD")
     }
 
     const extendRent = () => {

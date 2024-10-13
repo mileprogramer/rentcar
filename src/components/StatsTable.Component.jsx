@@ -1,9 +1,16 @@
 import React from 'react'
+import { formatPrice } from '../helpers/functions'
 
 export default function StatsTable({stats}) {
-
     if(!stats){
         return "There is not statistics data"
+    }
+
+    function findReturnDate(stats){
+        if(stats.extended_rents?.length > 0){
+            return stats.extended_rents[stats.extended_rents.length-1].return_date;
+        }
+        return stats.wanted_return_date;
     }
 
     return (
@@ -11,13 +18,14 @@ export default function StatsTable({stats}) {
             <thead>
                 <tr>
                     <td>License</td>
-                    <td>Personal Data</td>
+                    <td>First and last name</td>
                     <td>Phone number</td>
                     <td>Start rent date</td>
                     <td>Wanted return date</td>
                     <td>Real return date</td>
                     <td>Extended rent</td>
                     <td>User returned car</td>
+                    <td>Total price</td>
                     <td>  </td>
                 </tr>
             </thead>
@@ -29,7 +37,7 @@ export default function StatsTable({stats}) {
                             <td>{stat.user.name}</td>
                             <td>{stat.user.phone}</td>
                             <td>{stat.start_date}</td>
-                            <td>{stat.wanted_return_date}</td>
+                            <td>{findReturnDate(stat)}</td>
                             <td>{stat.real_return_date}</td>
                             <td>{stat.extend_rent ? 
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="green" className="bi bi-check-circle" viewBox="0 0 16 16">
@@ -53,6 +61,7 @@ export default function StatsTable({stats}) {
                                 </svg> 
                             }
                             </td>
+                            <td className='fw-bold'>{stat.total_price ? formatPrice(stat.total_price) : ""}</td>
                             <td>
                                 <button className='btn btn-primary'>
                                     See details

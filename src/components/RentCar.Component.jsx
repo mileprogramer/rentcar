@@ -45,8 +45,6 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
         setMistakes(false)
     }, [carData, oldCustomer])
 
-    
-
     useEffect(()=> {
         userSerice.getUsers()
             .then(data => {

@@ -8,11 +8,14 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { refreshFirstPage, returnCar } from '../redux/rentedCars.slicer';
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
-import "../css/car-gallery.css"
+import "../css/car-gallery.css";
+import { formatPrice } from '../helpers/functions';
+import ExtendedRentsTable from './ExtendedRentsTable.Component';
 
 dayjs.extend(customParseFormat);
 
 function AcceptCarForm({carData, currentPage, closeModal}) {
+
     const [inputData, setInputData] = useState({
         note : "",
     });
@@ -21,11 +24,48 @@ function AcceptCarForm({carData, currentPage, closeModal}) {
     const dispatch = useDispatch();
     const [returnedCar, setReturnedCar] = useState(false);
     const [mistakes, setMistakes] = useState([]);
+    const [rentedCarData, setRentetedCarData] = useState(carData);
     
     useEffect(() => {
-        if (carData.car.images) {
-            setImages(carData.car.images.map(image => ({ src: image })));
+        if (rentedCarData.car.images) {
+            setImages(rentedCarData.car.images.map(image => ({ src: image })));
         }
+        
+        // check for the first time rent
+        if(dayjs(rentedCarData.return_date, "DD/MM/YYYY").isAfter(dayjs(), 'day')) {
+            setRentetedCarData(prevData => ({
+                ...prevData,
+                return_date: dayjs().format("DD/MM/YYYY"),
+                extended_rents: []
+            }));
+            return;
+        }
+        
+        if (rentedCarData.extended_rents.length > 0) {
+            let updatedExtendedRents = [...rentedCarData.extended_rents];
+
+            for (let i = updatedExtendedRents.length - 1; i >= 0; i--) {
+                const rent = updatedExtendedRents[i];
+                
+                if (dayjs(rent.return_date, "DD/MM/YYYY").isAfter(dayjs())) {
+                    // Update the return_date to today's date
+                    updatedExtendedRents[i] = {
+                        ...rent,
+                        return_date: dayjs().format("DD/MM/YYYY")
+                    };
+                }
+
+                if (i === updatedExtendedRents.length - 1 && dayjs(rent.start_date, "DD/MM/YYYY").isAfter(dayjs())) {
+                    updatedExtendedRents.pop();
+                }
+            }
+
+            setRentetedCarData(prevData => ({
+                ...prevData,
+                extended_rents: updatedExtendedRents
+            }));
+        }
+
     }, []);
 
     const handleInput = (event) => {
@@ -36,11 +76,29 @@ function AcceptCarForm({carData, currentPage, closeModal}) {
         });
     };
 
-
-    function calculateTotalPrice(){
-        if(carData.extended_rent){
-            return (carData.price_per_day - (carData.price_per_day * (carData.discount / 100))) * dayjs().diff(dayjs(carData.start_date, "DD/MM/YYYY"), 'days');
+    function calculateTotalPrice(data, withFormat = true){
+        if(withFormat){
+            return formatPrice(
+                calculate(data)
+            );
         }
+    
+        return calculate(data);
+
+        function calculate(data){
+            const totalDays = dayjs(data.return_date, "DD/MM/YYYY").diff(dayjs(data.start_date, "DD/MM/YYYY"), 'days');
+            const totalPrice = data.price_per_day * totalDays;
+            const discountedPrice = totalPrice - (totalPrice * (data.discount / 100));
+            return discountedPrice;
+        }
+    }
+
+    function sumAllRents(data){
+        let firstRentedValue = calculateTotalPrice(data, false);
+        let total = data.extended_rents.reduce((totalPriceForNow, currentData) => {
+            return totalPriceForNow + calculateTotalPrice(currentData, false);
+        }, firstRentedValue);
+        return formatPrice(total);
     }
 
     const acceptCar = () => {
@@ -51,9 +109,9 @@ function AcceptCarForm({carData, currentPage, closeModal}) {
             return ;
         }
         
-        carService.acceptCar({car_id: carData.car_id, note: inputData.note})
+        carService.acceptCar({car_id: rentedCarData.car_id, note: inputData.note})
             .then(data =>{
-                dispatch(returnCar({"carId": carData.car_id, "page": currentPage}));
+                dispatch(returnCar({"carId": rentedCarData.car_id, "page": currentPage}));
                 dispatch(refreshFirstPage());
                 setReturnedCar(data);
             })
@@ -74,7 +132,7 @@ function AcceptCarForm({carData, currentPage, closeModal}) {
             {returnedCar && <div className="alert alert-success" role="alert">{returnedCar.message}</div>}
             <div className="card">
                 <div className="card-header">
-                    <h5>License: {carData?.car?.license}</h5>
+                    <h5>License: {rentedCarData?.car?.license}</h5>
                 </div>
                 <div className="card-body">
                     <div className="form-group py-3">
@@ -105,33 +163,37 @@ function AcceptCarForm({carData, currentPage, closeModal}) {
                         slides={images}
                     />
 
-                    <table className='table'>
-                        <thead className='table-dark'>
-                            <tr>
-                                <td>Started Rent</td>
-                                <td>End rent/today date</td>
-                                <td>Days Total</td>
-                                <td>Price per day</td> 
-                                <td>Discount</td> 
-                                <td>Total price</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>{carData.start_date}</td>
-                                <td>{dayjs().format("DD/MM/YYYY")}</td>
-                                <td>
-                                    {dayjs().diff(dayjs(carData.start_date, "DD/MM/YYYY"), 'days')}
-                                </td>
-                                <td>{carData.price_per_day}</td>
-                                <td>{carData.discount}%</td>
-                                <td className='fw-bold'>
-                                    {calculateTotalPrice()}$
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
+                    {
+                    rentedCarData.extended_rents?.length > 0 ?
+                        <ExtendedRentsTable rentedCarData={rentedCarData} calculateTotalPrice={calculateTotalPrice} sumAllRents={sumAllRents} />
+                        : 
+                        <table className='table'>
+                            <thead className='table-dark'>
+                                <tr>
+                                    <td>Started Rent</td>
+                                    <td>End rent/today date</td>
+                                    <td>Days Total</td>
+                                    <td>Price per day</td> 
+                                    <td>Discount</td> 
+                                    <td>Total price</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{rentedCarData.start_date}</td>
+                                    <td>{dayjs().format("DD/MM/YYYY")}</td>
+                                    <td>
+                                        {dayjs().diff(dayjs(rentedCarData.start_date, "DD/MM/YYYY"), 'days')}
+                                    </td>
+                                    <td>{rentedCarData.price_per_day}</td>
+                                    <td>{rentedCarData.discount}%</td>
+                                    <td className='fw-bold'>
+                                        {calculateTotalPrice({...rentedCarData, return_date:dayjs().format("DD/MM/YYYY")})}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    }
                 </div>
                 <div className="card-footer d-flex justify-content-between">
                     <button
