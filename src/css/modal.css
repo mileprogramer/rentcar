@@ -51,3 +51,12 @@
     transform: translate(-50%, -50%);
     width: 950px;
 }
+
+.stat-modal{
+    max-height: 700px;
+    overflow-y: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

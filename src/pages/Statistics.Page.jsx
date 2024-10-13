@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import carService from "../services/carService";
 import Navbar from "../components/Navbar.Component";
 import SearchHistoryRented from "../components/SearchHistoryRented.Component";
@@ -7,6 +7,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { saveStats, savePaginationData, selectStats, selectCurrentPage, selectPaginationData, setCurrentPage, selectShouldFetchNextPage, selectFilterStats, selectFilterPaginationData, selectFilterCurrentPage, setFilterCurrentPage } from '../redux/statistics.slicer';
 import StatsTable from '../components/StatsTable.Component';
 import Loader from '../components/Loader.Component';
+import StatDetails from '../components/StatDetails.Component';
+import ModalOverlay from "../components/ModalOverlay.Component"
+import dayjs from 'dayjs';
 
 function StatisticsPage(props) {
 
@@ -23,7 +26,10 @@ function StatisticsPage(props) {
 
     const [mistakes, setMistakes] = useState([]);
     const [loader, setLoader] = useState(false);
-    const [isSearched, setIsSearched] = useState(false); 
+    const [isSearched, setIsSearched] = useState(false);
+    const [detailsModel, setDetailsModel] = useState(false);
+    const [activeOverlay, setActiveOverlay] = useState(false);
+    const detailsModelData = useRef({});
 
     if(stats === null){
         getHistoryRented(currentPage);
@@ -41,6 +47,11 @@ function StatisticsPage(props) {
             })
     }
 
+    function openDetails (statId){
+        detailsModelData.current = stats.find(stat => stat.id === statId);
+        setDetailsModel(true)
+    }
+
     function getHistoryRented(page = 1){
         carService.getHistoryRented(page)
             .then((data)=>{
@@ -56,7 +67,7 @@ function StatisticsPage(props) {
     }
     
     return (
-        <>
+        <div className='postion-relative'>
             <div className="container">
                 <Navbar/>
                 <h4 className="my-3">Statistics</h4>
@@ -71,7 +82,10 @@ function StatisticsPage(props) {
                     
                         isSearched === false ?
                             <>
-                                <StatsTable stats={stats} /> 
+                                <StatsTable 
+                                    stats={stats} 
+                                    openDetails={(statId) => openDetails(statId)} 
+                                    /> 
                                 <Pagination 
                                     elementsPerPage={paginationData.elementsPerPage}
                                     totalElements={paginationData.totalElements}
@@ -80,7 +94,11 @@ function StatisticsPage(props) {
                             </> :
 
                             <>
-                                <StatsTable stats={filteredStats} /> 
+                                <StatsTable 
+                                    stats={filteredStats} 
+                                    openDetails={(statId) => openDetails(statId)}  
+                                    
+                                /> 
                                 <Pagination 
                                     elementsPerPage={filteredPaginationData.elementsPerPage}
                                     totalElements={filteredPaginationData.totalElements}
@@ -88,8 +106,18 @@ function StatisticsPage(props) {
                                     currentPage={currentFilterPage}/>
                             </> 
                 }
+
+                {
+                    detailsModel && <>
+                        <StatDetails 
+                            rentedCarData={detailsModelData.current} 
+                            closeModal = {() => {setDetailsModel(false)}}
+                        />
+                        <ModalOverlay setActiveOverlay={setActiveOverlay} setModalActive={(showOrHide) => setDetailsModel(showOrHide)}/>
+                    </> 
+                }
             </div>
-        </>
+        </div>
     );
 }
 

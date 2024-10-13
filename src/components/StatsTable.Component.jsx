@@ -1,7 +1,7 @@
 import React from 'react'
 import { formatPrice } from '../helpers/functions'
 
-export default function StatsTable({stats}) {
+export default function StatsTable({ stats, openDetails }) {
     if(!stats){
         return "There is not statistics data"
     }
@@ -63,11 +63,10 @@ export default function StatsTable({stats}) {
                             </td>
                             <td className='fw-bold'>{stat.total_price ? formatPrice(stat.total_price) : ""}</td>
                             <td>
-                                <button className='btn btn-primary'>
+                                <button 
+                                    onClick={() => openDetails(stat.id)}
+                                    className='btn btn-primary'>
                                     See details
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" className="bi bi-arrow-down ps-1" viewBox="0 0 16 16">
-                                        <path fillRule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1"/>
-                                    </svg>
                                 </button>
                             </td>
                         </tr>)

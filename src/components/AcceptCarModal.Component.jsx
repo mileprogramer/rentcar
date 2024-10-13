@@ -9,7 +9,7 @@ import { refreshFirstPage, returnCar } from '../redux/rentedCars.slicer';
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import "../css/car-gallery.css";
-import { formatPrice } from '../helpers/functions';
+import { calculateTotalPrice, formatPrice } from '../helpers/functions';
 import ExtendedRentsTable from './ExtendedRentsTable.Component';
 
 dayjs.extend(customParseFormat);
@@ -27,43 +27,9 @@ function AcceptCarForm({carData, currentPage, closeModal}) {
     const [rentedCarData, setRentetedCarData] = useState(carData);
     
     useEffect(() => {
+       
         if (rentedCarData.car.images) {
             setImages(rentedCarData.car.images.map(image => ({ src: image })));
-        }
-        
-        // check for the first time rent
-        if(dayjs(rentedCarData.return_date, "DD/MM/YYYY").isAfter(dayjs(), 'day')) {
-            setRentetedCarData(prevData => ({
-                ...prevData,
-                return_date: dayjs().format("DD/MM/YYYY"),
-                extended_rents: []
-            }));
-            return;
-        }
-        
-        if (rentedCarData.extended_rents.length > 0) {
-            let updatedExtendedRents = [...rentedCarData.extended_rents];
-
-            for (let i = updatedExtendedRents.length - 1; i >= 0; i--) {
-                const rent = updatedExtendedRents[i];
-                
-                if (dayjs(rent.return_date, "DD/MM/YYYY").isAfter(dayjs())) {
-                    // Update the return_date to today's date
-                    updatedExtendedRents[i] = {
-                        ...rent,
-                        return_date: dayjs().format("DD/MM/YYYY")
-                    };
-                }
-
-                if (i === updatedExtendedRents.length - 1 && dayjs(rent.start_date, "DD/MM/YYYY").isAfter(dayjs())) {
-                    updatedExtendedRents.pop();
-                }
-            }
-
-            setRentetedCarData(prevData => ({
-                ...prevData,
-                extended_rents: updatedExtendedRents
-            }));
         }
 
     }, []);
@@ -75,31 +41,6 @@ function AcceptCarForm({carData, currentPage, closeModal}) {
             [name]: value
         });
     };
-
-    function calculateTotalPrice(data, withFormat = true){
-        if(withFormat){
-            return formatPrice(
-                calculate(data)
-            );
-        }
-    
-        return calculate(data);
-
-        function calculate(data){
-            const totalDays = dayjs(data.return_date, "DD/MM/YYYY").diff(dayjs(data.start_date, "DD/MM/YYYY"), 'days');
-            const totalPrice = data.price_per_day * totalDays;
-            const discountedPrice = totalPrice - (totalPrice * (data.discount / 100));
-            return discountedPrice;
-        }
-    }
-
-    function sumAllRents(data){
-        let firstRentedValue = calculateTotalPrice(data, false);
-        let total = data.extended_rents.reduce((totalPriceForNow, currentData) => {
-            return totalPriceForNow + calculateTotalPrice(currentData, false);
-        }, firstRentedValue);
-        return formatPrice(total);
-    }
 
     const acceptCar = () => {
         let mistakes = FormValidation.validateInputFields(inputData);
@@ -165,7 +106,7 @@ function AcceptCarForm({carData, currentPage, closeModal}) {
 
                     {
                     rentedCarData.extended_rents?.length > 0 ?
-                        <ExtendedRentsTable rentedCarData={rentedCarData} calculateTotalPrice={calculateTotalPrice} sumAllRents={sumAllRents} />
+                        <ExtendedRentsTable rentedCarData={rentedCarData} />
                         : 
                         <table className='table'>
                             <thead className='table-dark'>
