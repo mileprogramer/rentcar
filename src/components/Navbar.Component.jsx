@@ -12,6 +12,10 @@ function Navbar(props) {
                 <ul className="navbar-nav d-flex gap-3">
                     <li className="nav-item">
                         <NavLink to="/" className="nav-link">
+                         Home </NavLink>
+                    </li>
+                    <li className="nav-item">
+                        <NavLink to="/available-cars" className="nav-link">
                          Available Cars </NavLink>
                     </li>
                     <li className="nav-item">

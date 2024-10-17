@@ -1,0 +1,18 @@
+.embla {
+    overflow: hidden;
+}
+.embla__container {
+    display: flex;
+    gap: 15px;
+}
+.embla__slide {
+    flex: 0 0;
+    min-width: 0;
+}
+
+.slider-buttons{
+    cursor: pointer;
+}
+.slider-buttons .disabled{
+    cursor: default;
+}

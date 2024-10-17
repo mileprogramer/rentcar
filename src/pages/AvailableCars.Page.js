@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectCars, selectPaginationData, selectCurrentPage, selectShouldFetchNextPage } from '../redux/car.slicer';
 import { saveCars, savePaginationData, setCurrentPage } from '../redux/car.slicer';
 
-function HomePage(props) {
+function AvailableCars(props) {
 
     const [isSearched, setIsSearched] = useState(false);
     let typeIsSearched = isSearched ? "searched" : "";
@@ -151,4 +151,4 @@ function HomePage(props) {
     );
 }
 
-export default HomePage;
+export default AvailableCars;

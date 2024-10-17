@@ -28,18 +28,7 @@ class CarService {
     static getHistoryRented(page) {
         const url = page ? `${this.defaultGetUrl}/statistics?page=${page}` : `${this.defaultGetUrl}/statistics`;
         return axios.get(url)
-            .then(response => {
-                return {
-                    "stats" : response.data.data, 
-                    "paginationData": {
-                        "currentPage": response.data.current_page,
-                        "firstPage": response.data.from,
-                        "lastPage": response.data.last_page,
-                        "totalElements" : response.data.total,
-                        "elementsPerPage" : response.data.per_page
-                    }
-                }
-            })
+            .then(response => this.formatStatsResponse(response))
             .catch(error => Promise.reject(this.handleError(error)));
     }
 
@@ -140,6 +129,43 @@ class CarService {
             .then(response => this.formatStatsResponse(response))
             .catch(error => Promise.reject(this.handleError(error)));
     }
+
+    static getNumberOfAvaialableCars(){
+        return axios.get(`${this.defaultGetUrl}/available/total`)
+            .then(response => Promise.resolve(response))
+            .catch(error => Promise.reject(this.handleError(error)));
+    }
+
+    static getNumberOfRentedCars(){
+        return axios.get(`${this.defaultGetUrl}/rented/total`)
+            .then(response => Promise.resolve(response))
+            .catch(error => Promise.reject(this.handleError(error)));
+    }
+
+    static getNumOfRentedCarsMonth(){
+        return axios.get(`${this.defaultGetUrl}/rented/total?month=true`)
+            .then(response => Promise.resolve(response))
+            .catch(error => Promise.reject(this.handleError(error)));
+    }
+
+    static getNumOfReturnedCarsMonth(){
+        return axios.get(`${this.defaultGetUrl}/returned/total?month=true`)
+            .then(response => Promise.resolve(response))
+            .catch(error => Promise.reject(this.handleError(error)));
+    }
+
+    static getLatestRentedCars(){
+        return axios.get(`${this.defaultGetUrl}/rented/latest`)
+            .then(response => Promise.resolve(response))
+            .catch(error => Promise.reject(this.handleError(error)));
+    }
+
+    static getLatestReturnedCars(){
+        return axios.get(`${this.defaultGetUrl}/returned/latest`)
+            .then(response => Promise.resolve(response))
+            .catch(error => Promise.reject(this.handleError(error)));
+    }
+    
     
     static handleError(data) {
         let mistakes = [];
