@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar.Component'
 import Spinner from "../components/Spinner.Component"
 import carService from '../services/carService'

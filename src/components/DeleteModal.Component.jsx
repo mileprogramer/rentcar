@@ -5,6 +5,7 @@ import "../css/modal.css"
 import { useDispatch } from 'react-redux';
 import { deleteCar } from '../redux/allCars.slicer';
 import FormValidation from '../services/FormValidation';
+import { setDefault } from '../redux/car.slicer';
 
 function DeleteModal({ modalActive, setModalActive, car, currentPage, typeIsSearched }) {
 
@@ -20,7 +21,8 @@ function DeleteModal({ modalActive, setModalActive, car, currentPage, typeIsSear
         setModalActive(false);
     }
 
-    function handleDeleteCar(){
+    function handleDeleteCar(event){
+        event.target.disabled = true;
         let mistakes = FormValidation.validateInputFields(inputData);
         if(mistakes.length > 0){
             setMistakes(mistakes);    
@@ -28,6 +30,7 @@ function DeleteModal({ modalActive, setModalActive, car, currentPage, typeIsSear
         }
         carService.deleteCar({"car_id": car.id, "reason_for_delete": inputData.reasonForDelete})
             .then(data => {
+                dispatch(setDefault());
                 dispatch(deleteCar({"page": currentPage, "car": car, "type": typeIsSearched}));
                 setDeletedCar(data);
             })
@@ -66,7 +69,7 @@ function DeleteModal({ modalActive, setModalActive, car, currentPage, typeIsSear
                     <div onClick={() => closeModal()} className="btn btn-warning">Close modal</div>
                     <button
                         className="btn btn-danger float-end"
-                        onClick={(event) => handleDeleteCar()}
+                        onClick={(event) => handleDeleteCar(event)}
                     >
                         Delete Car
                     </button>

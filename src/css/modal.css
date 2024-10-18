@@ -60,3 +60,11 @@
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+.edit-user{
+    position: absolute !important;
+    width: 700px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

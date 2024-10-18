@@ -10,6 +10,7 @@ import StatisticsPage from './pages/Statistics.Page';
 import "./css/default.css"
 import AvailableCars from './pages/AvailableCars.Page';
 import HomePage from './pages/HomePage';
+import EditUsers from './pages/EditUsers.Page';
 
 function App() {
     return (
@@ -22,6 +23,7 @@ function App() {
                     <Route exact path="/statistics" element={<StatisticsPage />} />
                     <Route path="/add-car" element={<AddCar />} />
                     <Route path="/edit-delete-cars" element={<EditDeletePage />} />
+                    <Route path="/edit-users" element={<EditUsers />} />
                 </Routes>
             </Router>
         </Provider>

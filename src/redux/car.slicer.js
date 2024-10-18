@@ -31,6 +31,10 @@ const carSlicer = createSlice({
                 state.value.currentPage = action.payload.page;
         },
 
+        setDefault(state, payload){
+            state.value = initialState;
+        },
+
         setRentedCar(state, action){
             let { carId, page } = action.payload;
             let carsState = state.value;
@@ -90,5 +94,5 @@ export const selectShouldFetchNextPage = (state, type) =>{
     return false;
 }
 
-export const { saveCars, setCurrentPage, savePaginationData, setRentedCar, setShouldFetchNextPage } = carSlicer.actions;
+export const { saveCars, setCurrentPage, savePaginationData, setRentedCar, setShouldFetchNextPage, setDefault } = carSlicer.actions;
 export default carSlicer.reducer;

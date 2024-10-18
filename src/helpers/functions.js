@@ -32,3 +32,20 @@ export function calculateTotalPrice(data, withFormat = true){
         return discountedPrice;
     }
 }
+
+export class HandleInput{
+
+    constructor(setData, data){
+        this.setData = setData;
+        this.data = data;
+    }
+
+    handle = (event) => {
+        const { name, value } = event.target;
+        this.setData({
+            ...this.data,
+            [name]: value
+        });
+    }
+
+}

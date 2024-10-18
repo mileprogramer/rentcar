@@ -34,6 +34,10 @@ function Navbar(props) {
                         <NavLink to="/edit-delete-cars" className="nav-link">
                          Edit/Delete Cars </NavLink>
                     </li>
+                    <li className="nav-item">
+                        <NavLink to="/edit-users" className="nav-link">
+                         Edit users </NavLink>
+                    </li>
                 </ul>
             </div>
         </nav>
