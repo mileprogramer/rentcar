@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "../css/drop-down.css"
 
-const SearchableDropdown = ({ options, inputLabel, label, additionalLabel = null, validationErrors = [], id, selectedVal, handleChange }) => {
+const SearchableDropdown = ({ options, search, getData ,inputLabel, label, additionalLabel = null, validationErrors = [], id, selectedVal, handleChange }) => {
 
     const [query, setQuery] = useState("");
     const [isOpen, setIsOpen] = useState(false);
@@ -17,6 +17,12 @@ const SearchableDropdown = ({ options, inputLabel, label, additionalLabel = null
             document.removeEventListener("click", toggle);
         };
     }, []);
+
+    useEffect(()=>{
+        if(!query){
+            getData();
+        }
+    }, [query])
 
     const selectOption = (option) => {
         setQuery(() => "");
@@ -36,9 +42,13 @@ const SearchableDropdown = ({ options, inputLabel, label, additionalLabel = null
     };
 
     const filter = (options) => {
-        return options.filter(
+        let results = options.filter(
             (option) => option[label].toLowerCase().indexOf(query.toLowerCase()) > -1 || option[additionalLabel].toLowerCase().indexOf(query.toLowerCase()) > -1
         );
+        if(results.length === 0){
+            search(query);
+        }
+        return results;
     };
 
     return (

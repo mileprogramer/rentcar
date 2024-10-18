@@ -9,6 +9,7 @@ import userSerice from '../services/userService';
 import dayjs from 'dayjs';
 import { refreshFirstPage, updateCars } from '../redux/rentedCars.slicer';
 import { refreshStatFirstPage } from '../redux/statistics.slicer';
+import userService from '../services/userService';
 
 function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, carLicense, typeIsSearched}) {
 
@@ -46,13 +47,7 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
     }, [carData, oldCustomer])
 
     useEffect(()=> {
-        userSerice.getUsers()
-            .then(data => {
-                setUsers(data.users);
-            })
-            .catch(errors => {
-                alert(errors);
-            })
+        getUsers();
     }, [addNewUser])
 
     const handleInput = (event) => {
@@ -72,6 +67,24 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
             return dayjs(inputData.returnDate).diff(inputData.startDate, "day");
         }
         return "";
+    }
+
+    function getUsers(){
+        userSerice.getUsers()
+        .then(data => {
+            setUsers(data.users);
+        })
+        .catch(errors => {
+            alert(errors);
+        })
+    }
+
+    function searchUsers(searchTerm){
+        userService.search(searchTerm)
+            .then(data => {
+                setUsers(data.users);
+            })
+            .catch(error => alert(JSON.stringify(error)))
     }
 
     const closeModal = ()=>{
@@ -222,7 +235,9 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
                         {
                             oldCustomer && 
                             <SearchableDropdown
-                                options={users}
+                                options = {users}
+                                getData = {getUsers}
+                                search = {searchUsers}
                                 label="name"
                                 id="id"
                                 validationErrors={mistakes.userId}

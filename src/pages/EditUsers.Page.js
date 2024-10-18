@@ -31,7 +31,7 @@ export default function EditUsers(){
         userService.search(searchTerm)
             .then(data => {
                 setLoader(false);
-                dispatch(setCurrentPage({page : data.currentPage}))
+                dispatch(setCurrentPage({page : data.paginationData.currentPage}))
                 dispatch(setPaginationData({paginationData: data.paginationData}))
                 dispatch(saveUsers({users : data.users}));
             })
@@ -43,7 +43,7 @@ export default function EditUsers(){
             .then(data => {
                 setIsSearched(true)
                 setLoader(false);
-                dispatch(setCurrentPage({page : data.currentPage}))
+                dispatch(setCurrentPage({page : data.paginationData.currentPage}))
                 dispatch(setPaginationData({paginationData: data.paginationData}))
                 dispatch(saveUsers({users : data.users}));
             })
@@ -54,6 +54,7 @@ export default function EditUsers(){
         setEditModal(true);
         userData.current = users.find(user => user.card_id === editUserCardId);
     }
+    console.log(currentPageOfUsers)
 
     return (
         <div>
