@@ -3,7 +3,7 @@ import "../css/car-colors.css";
 
 
 function CarsTable({cars, openRentCarModal}) {
-    console.log(cars[0]);
+    
     return (
         <>
         <table className="table table-striped">

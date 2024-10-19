@@ -70,31 +70,35 @@ function AddCarForm(props) {
     }
 
     const addCar = () => {
-        let mistakes = FormValidation.validateInputFields(inputData);
+        let mistakes = FormValidation.validateInputFields({...inputData, images});
         if(mistakes.length !== 0){
             setMistakes(mistakes);
             return;
         }
 
-        let carData = {
-            license: inputData.license,
-            brand: inputData.brand,
-            model: inputData.model,
-            year: inputData.year,
-            price_per_day: inputData.price,
-            number_of_doors: inputData.numberOfDoors,
-            person_fit_in: inputData.personFitIn,
-            car_consumption: inputData.consumption,
-            air_conditioning_type: inputData.airConditioner,
-            transmission_type: inputData.transmissionType,
-            status: carStatus.available
-        }
+        const formData = new FormData();
+        formData.append('license', inputData.license);
+        formData.append('brand', inputData.brand);
+        formData.append('model', inputData.model);
+        formData.append('year', inputData.year);
+        formData.append('price_per_day', inputData.price);
+        formData.append('number_of_doors', inputData.numberOfDoors);
+        formData.append('person_fit_in', inputData.personFitIn);
+        formData.append('car_consumption', inputData.consumption);
+        formData.append('air_conditioning_type', inputData.airConditioner);
+        formData.append('transmission_type', inputData.transmissionType);
+        formData.append('status', carStatus.available);
+        
+        images.forEach(image => {
+            formData.append('images[]', image.file);
+        });
 
-        carService.addCar(carData)
+        carService.addCar(formData)
             .then(data =>{
                 setMistakes([]);
                 setAddedCar(true);
                 setTimeout(()=> {
+                    setImages([]);
                     setInputData(initialInputData);
                     setAddedCar(false);
                 }, 3000)

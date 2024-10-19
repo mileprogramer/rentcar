@@ -97,24 +97,27 @@ function EditModal({modalActive, setModalActive, currentPage, car, typeIsSearche
             setMistakes(mistakes);
         }
 
-        let carData = {
-            id: car.id,
-            license: inputData.license,
-            brand: inputData.brand,
-            model: inputData.model,
-            year: inputData.year,
-            price_per_day: inputData.pricePerDay,
-            number_of_doors: inputData.numberOfDoors,
-            person_fit_in: inputData.personFitIn,
-            car_consumption: inputData.consumption,
-            air_conditioning_type: inputData.airConditioner,
-            transmission_type: inputData.transmissionType,
-            status: car.status,
-        }
+        const formData = new FormData();
+        formData.append('id', car.id);
+        formData.append('license', inputData.license);
+        formData.append('brand', inputData.brand);
+        formData.append('model', inputData.model);
+        formData.append('year', inputData.year);
+        formData.append('price_per_day', inputData.pricePerDay);
+        formData.append('number_of_doors', inputData.numberOfDoors);
+        formData.append('person_fit_in', inputData.personFitIn);
+        formData.append('car_consumption', inputData.consumption);
+        formData.append('air_conditioning_type', inputData.airConditioner);
+        formData.append('transmission_type', inputData.transmissionType);
+        formData.append('status', car.status);
 
-        carService.updateCar(carData)
+        images.forEach(image => {
+            formData.append('images[]', image.file);
+        });
+
+        carService.updateCar(formData)
             .then(data =>{
-                dispatch(editCar({"page":currentPage, "car": carData, "type": typeIsSearched}));
+                dispatch(editCar({"page":currentPage, "car": data.updatedCar, "type": typeIsSearched}));
                 setEditedCar(data);
                 setTimeout(()=>{
                     setEditedCar(false);
