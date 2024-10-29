@@ -11,6 +11,7 @@ import "yet-another-react-lightbox/styles.css";
 import "../css/car-gallery.css";
 import { calculateTotalPrice, formatPrice } from '../helpers/functions';
 import ExtendedRentsTable from './ExtendedRentsTable.Component';
+import { refreshStatFirstPage } from '../redux/statistics.slicer';
 
 dayjs.extend(customParseFormat);
 
@@ -52,7 +53,7 @@ function AcceptCarForm({carData, currentPage, closeModal}) {
         
         carService.acceptCar({car_id: rentedCarData.car_id, note: inputData.note})
             .then(data =>{
-                dispatch(returnCar({"carId": rentedCarData.car_id, "page": currentPage}));
+                dispatch(refreshStatFirstPage());
                 dispatch(refreshFirstPage());
                 setReturnedCar(data);
             })

@@ -32,29 +32,7 @@ const rentedCarsSlicer = createSlice({
                 state.value.currentPage = action.payload.page;
             }
         },
-
-        returnCar(state, action) {
-            let { carId, page } = action.payload;
-            let carsState = state.value;
-            if (action.payload.type === "searched") {
-                carsState = state.value.searched || {};
-            }
-
-            carsState[page] = carsState[page].filter(car => car.id !== carId);
-
-            if (carsState[page].length < 10) {
-                let nextPage = page + 1;
-                let beforePage = page;
-
-                while (carsState.hasOwnProperty(nextPage) && carsState[nextPage].length > 0) {
-                    carsState[beforePage].push(carsState[nextPage][0]);
-                    carsState[nextPage] = carsState[nextPage].slice(1);
-                    nextPage++;
-                    beforePage++;
-                }
-            }
-        },
-
+    
         refreshFirstPage(state, action) {
             if (action.payload?.type === "searched") {
                 state.value.searched[1] = null;
@@ -95,7 +73,6 @@ export const {
     saveCars, 
     setCurrentPage, 
     savePaginationData, 
-    returnCar, 
     refreshFirstPage 
 } = rentedCarsSlicer.actions;
 export default rentedCarsSlicer.reducer;

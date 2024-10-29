@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { refreshFirstPage, returnCar } from '../redux/rentedCars.slicer';
 import { formatPrice } from '../helpers/functions';
+import { refreshStatFirstPage } from '../redux/statistics.slicer';
 
 dayjs.extend(customParseFormat);
 
@@ -70,6 +71,7 @@ function ExtendRentModal({carData, currentPage, closeModal}) {
         delete extendRentData.start_date;
         carService.extendRent(extendRentData)
             .then(data =>{
+                dispatch(refreshStatFirstPage());
                 dispatch(refreshFirstPage());
                 setReturnedCar(data);
             })
