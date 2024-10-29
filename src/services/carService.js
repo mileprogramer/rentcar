@@ -95,7 +95,7 @@ class CarService {
     }
 
     static searchAvailableCars(searchParam, page) {
-        let url = `${this.defaultGetUrl}/available?search=${searchParam}`;
+        let url = `${this.defaultGetUrl}/available/search?term=${searchParam}`;
         if(page){
             url += "&page=" + page;
         }
@@ -105,7 +105,7 @@ class CarService {
     }
 
     static searchAllCars(searchParam, page) {
-        let url = `${this.defaultGetUrl}?search=${searchParam}`;
+        let url = `${this.defaultGetUrl}/search?term=${searchParam}`;
         if(page){
             url += "&page=" + page;
         }
@@ -115,7 +115,7 @@ class CarService {
     }
 
     static searchRentedCars(searchParam, page) {
-        let url = `${this.defaultGetUrl}/rented?search=${searchParam}`;
+        let url = `${this.defaultGetUrl}/rented/search?term=${searchParam}`;
         if(page){
             url += "&page=" + page;
         }
@@ -156,13 +156,13 @@ class CarService {
 
     static getLatestRentedCars(){
         return axios.get(`${this.defaultGetUrl}/rented/latest`)
-            .then(response => Promise.resolve(response))
+            .then(response => Promise.resolve(this.formatResponse(response)))
             .catch(error => Promise.reject(this.handleError(error)));
     }
 
     static getLatestReturnedCars(){
         return axios.get(`${this.defaultGetUrl}/returned/latest`)
-            .then(response => Promise.resolve(response))
+            .then(response => Promise.resolve(this.formatResponse(response)))
             .catch(error => Promise.reject(this.handleError(error)));
     }
     

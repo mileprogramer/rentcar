@@ -37,24 +37,28 @@ const carSlicer = createSlice({
 
         setRentedCar(state, action){
             let { carId, page } = action.payload;
-            let carsState = state.value;
+            removeCarFromState(state.value);
             if(action.payload.type === "searched"){
-                carsState = state.value.searched || {};
+                removeCarFromState(state.value.searched || {});
             }
+            
+            function removeCarFromState(carsState){
+                carsState[page] = carsState[page].filter(car => car.id !== carId);
 
-            carsState[page] = carsState[page].filter(car => car.id !== carId);
-
-            if (carsState[page].length < 10) {
-                let nextPage = action.payload.page + 1;
-                let beforePage = action.payload.page;
-                
-                while(carsState.hasOwnProperty(nextPage) && carsState[nextPage].length > 0){
-                    carsState[beforePage].push(carsState[nextPage][0]);
-                    carsState[nextPage] = carsState[nextPage].slice(1);
-                    nextPage++;
-                    beforePage++;
+                if (carsState[page].length < 10) {
+                    let nextPage = action.payload.page + 1;
+                    let beforePage = action.payload.page;
+                    
+                    while(carsState.hasOwnProperty(nextPage) && carsState[nextPage].length > 0){
+                        carsState[beforePage].push(carsState[nextPage][0]);
+                        carsState[nextPage] = carsState[nextPage].slice(1);
+                        nextPage++;
+                        beforePage++;
+                    }
                 }
             }
+
+            
         }
 
     },

@@ -4,6 +4,7 @@ import Spinner from "../components/Spinner.Component"
 import carService from '../services/carService'
 import LatestRentedCars from '../components/LatestRentedCars.Component'
 import LatestReturnedCars from '../components/LatestReturnedCars.Component'
+import { NavLink } from 'react-router-dom'
 
 export default function HomePage() {
 
@@ -33,11 +34,11 @@ export default function HomePage() {
             .catch(error => alert('Failed to fetch rented cars for the month: ' + (error?.message || error)));
 
         carService.getLatestRentedCars()
-            .then(response => setLatestRentedCars(response.data))
+            .then(response => setLatestRentedCars(response.cars))
             .catch(error => alert('Failed to fetch latest rented cars: ' + (error?.message || error)));
 
         carService.getLatestReturnedCars()
-            .then(response => setLatestReturnedCars(response.data))
+            .then(response => setLatestReturnedCars(response.cars))
             .catch(error => alert('Failed to fetch latest returned cars: ' + (error?.message || error)));
 
 
@@ -58,7 +59,9 @@ export default function HomePage() {
                     </h3>
                 </div>
                 <div className='card-footer'>
-                    <button className='btn btn-primary'>Rent a car</button>
+                    <NavLink to="/available-cars" className="btn btn-primary">
+                        Rent a car
+                    </NavLink>
                 </div>
             </div>
             
@@ -70,7 +73,9 @@ export default function HomePage() {
                     </h3>
                 </div>
                 <div className='card-footer'>
-                    <button className='btn btn-primary'>Return a car</button>
+                    <NavLink to="/rented-cars" className="btn btn-primary">
+                        Return a car
+                    </NavLink>
                 </div>
             </div>
 
@@ -82,7 +87,10 @@ export default function HomePage() {
                     </h3>
                 </div>
                 <div className='card-footer'>
-                    <button className='btn btn-primary'>See available cars</button>
+                    
+                    <NavLink to="/available-cars" className="btn btn-primary">
+                        See available cars
+                    </NavLink>
                 </div>
             </div>
 
@@ -94,7 +102,9 @@ export default function HomePage() {
                     </h3>
                 </div>
                 <div className='card-footer'>
-                    <button className='btn btn-primary'>See rented cars</button>
+                    <NavLink to="/rented-cars" className="btn btn-primary">
+                        See rented cars
+                    </NavLink>
                 </div>
             </div>
         </div>     

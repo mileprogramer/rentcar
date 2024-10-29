@@ -184,7 +184,7 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
                 emptyInputFields();
                 setMistakes([]);
                 dispatch(setRentedCar({"page": page, "carId": rentCarData.car_id, "type": typeIsSearched}))
-                dispatch(refreshFirstPage());
+                dispatch(refreshFirstPage()); // for rented cars
                 dispatch(refreshStatFirstPage());
                 setTimeout(()=>{
                     if(modalRentCar)

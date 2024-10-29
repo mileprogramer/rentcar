@@ -31,7 +31,7 @@ function RentedCars(props) {
     const [extendRentModal, setExtendRentModal] = useState(false);
     
     if(isSearched === true && cars === null){
-        carService.searchAvailableCars(searchTerm.current, currentPage)
+        carService.searchRentedCars(searchTerm.current, currentPage)
             .then((data)=>{
                 dispatch(saveCars({"page": currentPage, "cars": data.cars, "type": "searched"}));
             })

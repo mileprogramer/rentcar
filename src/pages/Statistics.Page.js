@@ -8,8 +8,7 @@ import { saveStats, savePaginationData, selectStats, selectCurrentPage, selectPa
 import StatsTable from '../components/StatsTable.Component';
 import Loader from '../components/Loader.Component';
 import StatDetails from '../components/StatDetails.Component';
-import ModalOverlay from "../components/ModalOverlay.Component"
-import dayjs from 'dayjs';
+import ModalOverlay from "../components/ModalOverlay.Component";
 
 function StatisticsPage(props) {
 
@@ -48,7 +47,12 @@ function StatisticsPage(props) {
     }
 
     function openDetails (statId){
-        detailsModelData.current = stats.find(stat => stat.id === statId);
+        if(filteredStats){
+            detailsModelData.current = filteredStats.find(stat => stat.id === statId);
+        }
+        else{
+            detailsModelData.current = stats.find(stat => stat.id === statId);
+        }
         setDetailsModel(true)
     }
 
@@ -111,7 +115,9 @@ function StatisticsPage(props) {
                     detailsModel && <>
                         <StatDetails 
                             rentedCarData={detailsModelData.current} 
-                            closeModal = {() => {setDetailsModel(false)}}
+                            closeModal = {() => {
+                                setDetailsModel(false)
+                            }}
                         />
                         <ModalOverlay setActiveOverlay={setActiveOverlay} setModalActive={(showOrHide) => setDetailsModel(showOrHide)}/>
                     </> 

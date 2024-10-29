@@ -4,10 +4,10 @@ import "../css/modal.css";
 export default function StatDetails({ rentedCarData, closeModal }) {
 
   return (
-    <div className="stat-modal z-3">
+    <div className="stat-modal z-3" id="statistics-model">
       <div className="card">
         <div className="card-header">
-          <p> License: {rentedCarData.car.license} </p>
+          <p> License: {rentedCarData.car?.license} </p>
         </div>
         <div className="card-body">
           <p className="display-6">User info</p>

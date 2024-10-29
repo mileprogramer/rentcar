@@ -6,7 +6,7 @@ import { formatPrice } from '../helpers/functions';
 export default function LatestRentedCars({ latestRentedCars }){
     
     const [emblaRef, emblaApi] = useEmblaCarousel();
-
+    
     return (
         <>
         <h6 className='display-6 mt-5'>Latest Rented cars</h6>

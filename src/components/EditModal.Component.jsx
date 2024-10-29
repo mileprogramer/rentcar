@@ -285,7 +285,7 @@ function EditModal({modalActive, setModalActive, currentPage, car, typeIsSearche
                         isDragging,
                         dragProps,
                         }) => (
-                        // write your building UI
+                            // mine UI
                         <div className="upload__image-wrapper">
                             <p className='d-inline-block pe-3'>Add image by</p>
                             <button
