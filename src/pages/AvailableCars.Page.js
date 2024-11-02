@@ -6,32 +6,46 @@ import Loader from "../components/Loader.Component";
 import RentCar from "../components/RentCar.Component";
 import Pagination from "../components/Pagination.Component";
 import ModalOverlay from "../components/ModalOverlay.Component";
-import { useDispatch, useSelector } from 'react-redux';
-import { selectCars, selectPaginationData, selectCurrentPage, selectShouldFetchNextPage } from '../redux/car.slicer';
-import { saveCars, savePaginationData, setCurrentPage } from '../redux/car.slicer';
 import DefaultTable from '../components/DefaultTable.Component';
+import Mistakes from "../components/MistakesAlert.Component";
+import { useQuery } from '@tanstack/react-query';
 
 function AvailableCars(props) {
 
     const [isSearched, setIsSearched] = useState(false);
-    let typeIsSearched = isSearched ? "searched" : "";
-
-    const currentPage = useSelector((state) => selectCurrentPage(state, typeIsSearched));
-    const cars = useSelector((state) => selectCars(state, currentPage, typeIsSearched));
-    const paginationData = useSelector((state) => selectPaginationData(state, typeIsSearched));
-    const shouldFetchNextPage = useSelector((state) => selectShouldFetchNextPage(state));
-    const dispatch = useDispatch();
-    
     const searchTerm = useRef("");
-    const [loader, setLoader] = useState(true);
     const [modalRentCar, setModalRentCar] = useState(false);
-    const [mistakesAPI, setMistakesAPI] = useState(null);
     const [isActiveOverlay, setActiveOverlay] = useState(false);
-    const [rentedCarLicense, setRentedCarLicense] = useState("");
-    const columnsForTable = ["License", "Brand", "Model", "Years old", "Air Conditioner", "Person fit in", "Car consumption in city", "Transmissions type", "Reservation"]
-    
+    const [rentedCarData, setRentedCarData] = useState({});
+
+    const fetchCars = async (page) => {
+        if (isSearched) {
+            const response = await carService.searchAvailableCars(searchTerm.current, page);
+            return response;
+        } else {
+            const response = await carService.getAvailableCars(page);
+            return response;
+        }
+    };
+
+    const { data, error, isError, isLoading, refetch } = useQuery({
+        queryKey: ['availableCars', searchTerm.current, isSearched],
+        queryFn: ({ queryKey }) => fetchCars(queryKey[1]),
+        keepPreviousData: true,
+        staleTime: 30000,
+    });
+
+    const totalElements = data?.paginationData?.totalElements || 0;
+    const elementsPerPage = data?.paginationData?.elementsPerPage || 10;
+
+    const searchCars = (term) => {
+        searchTerm.current = term;
+        setIsSearched(true);
+        refetch();
+    };
+
     const renderTableRow = (car) => {
-        if(car){
+        if(car) {
             return <>
                 <td>{car.license}</td>
                 <td>{car.brand}</td>
@@ -53,76 +67,20 @@ function AvailableCars(props) {
         }
     }
 
-    if(isSearched === true && cars === null){
-        carService.searchAvailableCars(searchTerm.current, currentPage)
-            .then((data)=>{
-                dispatch(saveCars({"page": currentPage, "cars": data.cars, "type": "searched"}));
-            })
-            .catch((error)=>{
-                setMistakesAPI(error);
-            })
-    }
-
-    if(cars === null && isSearched === false){
-        getCars(currentPage);
-    }
-    
-    if(shouldFetchNextPage){
-        // FETCHING next page of cars for better UX and getting the next available car
-        let nextPage = currentPage + 1;
-        carService.getAvailableCars(nextPage)
-            .then((data)=>{
-                dispatch(saveCars({"page": nextPage, "cars": data.cars}));
-            })
-            .catch((error)=>{
-                console.log(error);
-            })
-    }
-
-    function getCars(page = 1){
-        carService.getAvailableCars(page)
-            .then((data)=>{
-                dispatch(setCurrentPage({"page" : page}));
-                dispatch(saveCars({"page": page, "cars": data.cars}));
-                dispatch(savePaginationData({"paginationData" : data.paginationData}));
-                setLoader(false);
-            })
-            .catch((error)=>{
-                setLoader(false);
-                setMistakesAPI(error);
-            })
-    }
-
-    function searchCars(term){
-        setLoader(true);
-        searchTerm.current = term;
-        carService.searchAvailableCars(term)
-            .then((data)=>{
-                dispatch(setCurrentPage({"page" : 1, "type": "searched"}));
-                dispatch(saveCars({"page": 1, "cars": data.cars, "type": "searched"}));
-                dispatch(savePaginationData({"paginationData" : data.paginationData, "type": "searched"}));
-                setLoader(false);
-                setIsSearched(true);
-            })
-            .catch((error)=>{
-                setLoader(false);
-                setMistakesAPI(error);
-            })
-    }
-
-    const openRentCarModal = (license)=>{
+    const openRentCarModal = (license) => {
+        setRentedCarData(() =>  data.cars.find(car => car.license === license));
         setActiveOverlay(true);
-        setRentedCarLicense(license);
         setModalRentCar(true);
     }
 
     const renderLoaderOrCarsTable = () => {
-        if (cars === null) {
+        if (isLoading) {
             return <Loader />;
-        } else if (mistakesAPI !== null) {
-            return <div className="alert alert-danger">{mistakesAPI.message}</div>;
-        } else {
-            
+        } 
+        else if (isError) {
+            <Mistakes mistakes = {error}  /> 
+        } 
+        else {
             return (
                 <>
                     {
@@ -134,14 +92,16 @@ function AvailableCars(props) {
                         />
                     }
                     <DefaultTable
-                        data={cars}
-                        columns={columnsForTable}
+                        data={data.cars}
+                        columns={["License", "Brand", "Model", "Years old", "Air Conditioner", "Person fit in", "Car consumption in city", "Transmissions type", "Reservation"]}
                         renderRow={renderTableRow}
                     />
-                    <Pagination elementsPerPage={paginationData.elementsPerPage}
-                                totalElements={paginationData.totalElements}
-                                changePage={(page) => dispatch(setCurrentPage({page, "type": typeIsSearched}))}
-                                currentPage={currentPage}/>
+                    <Pagination 
+                        elementsPerPage={elementsPerPage}
+                        totalElements={totalElements}
+                        changePage={(page) => refetch({ page })}
+                        currentPage={data.paginationData.currentPage}
+                    />
                 </>
 
             );
@@ -156,7 +116,6 @@ function AvailableCars(props) {
                     <Search 
                         setIsSearched={setIsSearched}
                         getCarData={searchCars}
-                        setLoader = {setLoader} 
                         placeholder={"Type license, brand, model of car"}
                     />
                 </div>
@@ -164,9 +123,7 @@ function AvailableCars(props) {
                 <RentCar 
                     setModalRentCar = {setModalRentCar}
                     modalRentCar = {modalRentCar}
-                    carLicense = {rentedCarLicense}
-                    carFromPage = {currentPage}
-                    typeIsSearched={typeIsSearched}
+                    carData = {rentedCarData}
                     setActiveOverlay={setActiveOverlay}
                 />
 
