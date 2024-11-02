@@ -10,6 +10,7 @@ import ModalOverlay from "../components/ModalOverlay.Component";
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCars, selectPaginationData, selectCurrentPage, selectShouldFetchNextPage } from '../redux/car.slicer';
 import { saveCars, savePaginationData, setCurrentPage } from '../redux/car.slicer';
+import DefaultTable from '../components/DefaultTable.Component';
 
 function AvailableCars(props) {
 
@@ -28,7 +29,31 @@ function AvailableCars(props) {
     const [mistakesAPI, setMistakesAPI] = useState(null);
     const [isActiveOverlay, setActiveOverlay] = useState(false);
     const [rentedCarLicense, setRentedCarLicense] = useState("");
+    const columnsForTable = ["License", "Brand", "Model", "Years old", "Air Conditioner", "Person fit in", "Car consumption in city", "Transmissions type", "Reservation"]
     
+    const renderTableRow = (car) => {
+        if(car){
+            return <>
+                <td>{car.license}</td>
+                <td>{car.brand}</td>
+                <td>{car.model}</td>
+                <td>{car.year}</td>
+                <td>{car.air_conditioning_type}</td>
+                <td>{car.person_fit_in}</td>
+                <td>{car.car_consumption}l/100km</td>
+                <td>{car.transmission_type}</td>
+                <td>
+                    <button
+                        onClick={() => openRentCarModal(car.license)}
+                        className="btn btn-primary"
+                    >
+                        Rent car
+                    </button>
+                </td>
+            </>
+        }
+    }
+
     if(isSearched === true && cars === null){
         carService.searchAvailableCars(searchTerm.current, currentPage)
             .then((data)=>{
@@ -86,9 +111,9 @@ function AvailableCars(props) {
             })
     }
 
-    const openRentCarModal = (event)=>{
+    const openRentCarModal = (license)=>{
         setActiveOverlay(true);
-        setRentedCarLicense(event.target.name);
+        setRentedCarLicense(license);
         setModalRentCar(true);
     }
 
@@ -109,11 +134,10 @@ function AvailableCars(props) {
                             setActiveOverlay = {(showOrHide) => setActiveOverlay(showOrHide)} 
                         />
                     }
-                    <CarsTable
-                        cars={cars}
-                        setIsSearched={setIsSearched}
-                        setRentCarModal={openRentCarModal}
-                        openRentCarModal={openRentCarModal}
+                    <DefaultTable
+                        data={cars}
+                        columns={columnsForTable}
+                        renderRow={renderTableRow}
                     />
                     <Pagination elementsPerPage={paginationData.elementsPerPage}
                                 totalElements={paginationData.totalElements}
@@ -138,7 +162,8 @@ function AvailableCars(props) {
                     />
                 </div>
                 {renderLoaderOrCarsTable()}
-                <RentCar setModalRentCar = {setModalRentCar}
+                <RentCar 
+                    setModalRentCar = {setModalRentCar}
                     modalRentCar = {modalRentCar}
                     carLicense = {rentedCarLicense}
                     carFromPage = {currentPage}
