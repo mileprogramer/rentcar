@@ -1,4 +1,3 @@
-import React, {useEffect, useState} from 'react';
 import "../css/car-colors.css"
 import CarStatus from '../enums/CarStatus';
 import dayjs from 'dayjs';

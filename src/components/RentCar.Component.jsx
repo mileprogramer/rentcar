@@ -14,7 +14,7 @@ import userService from '../services/userService';
 function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, carLicense, typeIsSearched}) {
 
     const carData = useSelector(state => selectCarData(state, carLicense, carFromPage, typeIsSearched));
-    const selectedUser = useRef({});
+    const [selectedUser, setSelectedUser] = useState({});
     const page = useSelector(state => selectCurrentPage(state));
     const [users, setUsers] = useState([]);
     const addNewUser = useRef(false);
@@ -38,7 +38,6 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
         returnDate: '',
         startDate: dayjs().format("YYYY-MM-DD"),
     };
-
     const [inputData, setInputData] = useState(initialInputData);
 
     useEffect(()=> {
@@ -88,7 +87,7 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
     }
 
     const closeModal = ()=>{
-        selectedUser.current = {};
+        setSelectedUser({});
         setRentMessage({});
         setActiveOverlay(false)
         emptyInputFields()
@@ -227,6 +226,7 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
                                 onClick={() => {
                                     setOldCustomer(false);
                                     setNewCustomer(true);
+                                    setSelectedUser({})
                                 }}
                             >New customer</button>
                         </li>
@@ -242,10 +242,10 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
                                 id="id"
                                 validationErrors={mistakes.userId}
                                 additionalLabel = "card_id"
-                                selectedVal={selectedUser.current?.name}
+                                selectedVal={selectedUser?.name}
                                 inputLabel="Type or choose old customer"
                                 handleChange={(val) => {
-                                    selectedUser.current = val;
+                                    setSelectedUser(val)
                                     setInputData({...inputData, "userId": val?.id})
                                 }}
                             />
@@ -467,7 +467,7 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
                     <div onClick={() => closeModal()} className="btn btn-danger">Close modal</div>
                     <button
                         className="btn btn-primary float-end"
-                        onClick={(event) => validateInputFields(event)} // onClick handler directly within the button element
+                        onClick={(event) => validateInputFields(event)}
                         name={carData?.license}
                     >
                         Rent

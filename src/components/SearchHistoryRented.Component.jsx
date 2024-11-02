@@ -1,11 +1,12 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import carService from "../services/carService";
 import { saveFilterPaginationData, saveFilterStats, setFilterCurrentPage } from '../redux/statistics.slicer';
 import { useDispatch } from 'react-redux';
 import ActiveFilters from './ActiveFilters.Components';
 import dayjs from 'dayjs';
+import Mistakes from "../components/MistakesAlert.Component"
 
-function SearchHistoryRented({ setLoader, setIsSearched, isSearched }) {
+function SearchHistoryRented({ setLoader, setIsSearched, isSearched, currentPage }) {
 
     const initialSearchData = {
         license: '',
@@ -22,6 +23,22 @@ function SearchHistoryRented({ setLoader, setIsSearched, isSearched }) {
         show : false,
     });
     const dispatch = useDispatch();
+    const [query, setQuery] = useState("");
+    
+    useEffect(() => {
+        // user wants next page
+        if (currentPage) {
+            carService.searchHistoryRented(query + "&page=" + currentPage)
+                .then((data)=>{
+                    dispatch(saveFilterStats({"page": currentPage, "stats": data.stats}));
+                })
+                .catch((error)=>{
+                    console.log(error);
+
+                })
+        }
+    }, [currentPage])
+
 
     const handleSearch = ()=> {
         
@@ -38,6 +55,7 @@ function SearchHistoryRented({ setLoader, setIsSearched, isSearched }) {
     
         if(query === "?") return ;
         query = query.slice(0, query.length-1);
+        setQuery(query);
         setLoader(true);
         
         carService.searchHistoryRented(query)
@@ -99,13 +117,7 @@ function SearchHistoryRented({ setLoader, setIsSearched, isSearched }) {
     return (
         <>
         <div className="my-5 form-group d-flex gap-3 justify-content-end">
-            {mistakes?.length > 0 && (
-                <div className="alert alert-danger" role="alert">
-                    {mistakes.map((error, index) => (
-                        <div key={index}>{error?.message || error}</div>
-                    ))}
-                </div>
-            )}
+            <Mistakes mistakes = {mistakes} />
             <div className="form-group">
                 <p>Insert license for car</p>
                 <input

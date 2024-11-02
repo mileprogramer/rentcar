@@ -5,7 +5,7 @@ import "../css/modal.css"
 import dayjs from 'dayjs';
 import { useDispatch } from 'react-redux';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { refreshFirstPage, returnCar } from '../redux/rentedCars.slicer';
+import { refreshFirstPage } from '../redux/rentedCars.slicer';
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import "../css/car-gallery.css";

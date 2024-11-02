@@ -6,6 +6,7 @@ import Pagination from "../components/Pagination.Component"
 import Navbar from "../components/Navbar.Component"
 import userService from "../services/userService";
 import EditUserModal from "../components/EditUserModal.Component";
+import DefaultTable from "../components/DefaultTable.Component";
 
 export default function EditUsers(){
 
@@ -20,14 +21,35 @@ export default function EditUsers(){
     const dispatch = useDispatch();
 
     useEffect(()=>{
-        getUsers()
-    }, [])
+        getUsers(currentPageOfUsers)
+    }, [currentPageOfUsers])
     
     useEffect(()=>{
-        getUsers();
+        if(isSearhed === false){
+            getUsers();
+        }
     }, [isSearhed])
 
+    const renderTableRow = (user) => {
+        if(user){
+            return <>
+            <td>{user.card_id}</td>
+            <td>{user.name}</td>
+            <td>{user.phone}</td>
+            <td>{user.email}</td>
+            <td>
+                <button 
+                    onClick={(event) => {openEditModal(user.card_id)}}
+                    className="btn btn-warning">
+                    Edit {user.name}
+                </button>
+            </td>
+        </>
+        }
+    }
+
     function search(searchTerm){
+        setIsSearched(true)
         userService.search(searchTerm)
             .then(data => {
                 setLoader(false);
@@ -38,10 +60,9 @@ export default function EditUsers(){
             .catch(error => setErrors(error))
     }
 
-    function getUsers(){
-        userService.getUsers()
+    function getUsers(page){
+        userService.getUsers(page)
             .then(data => {
-                setIsSearched(true)
                 setLoader(false);
                 dispatch(setCurrentPage({page : data.paginationData.currentPage}))
                 dispatch(setPaginationData({paginationData: data.paginationData}))
@@ -54,8 +75,7 @@ export default function EditUsers(){
         setEditModal(true);
         userData.current = users.find(user => user.card_id === editUserCardId);
     }
-    console.log(currentPageOfUsers)
-
+    
     return (
         <div>
             <div className="container postion-relative">
@@ -66,34 +86,12 @@ export default function EditUsers(){
                     setLoader = {setLoader} 
                     placeholder = {"Type user card id, personal data"}
                 />
-                <table className="table table-striped">
-                    <thead>
-                        <tr>
-                            <td>Card id</td>
-                            <td>First and last name</td>
-                            <td>Phone</td>
-                            <td>Email</td>
-                            <td>Edit user</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {users?.length > 0 ? users.map((user, index) => {
-                            return <tr key={index}>
-                                <td>{user.card_id}</td>
-                                <td>{user.name}</td>
-                                <td>{user.phone}</td>
-                                <td>{user.email}</td>
-                                <td>
-                                    <button 
-                                        onClick={(event) => {openEditModal(user.card_id)}}
-                                        className="btn btn-warning">
-                                        Edit {user.name}
-                                    </button>
-                                </td>
-                            </tr>
-                        }) : null}
-                    </tbody>
-                </table>
+                <DefaultTable
+                    data = {users}
+                    columns={["Card id", "First and last name", "Phone", "Email", "Edit user"]}
+                    renderRow={renderTableRow}
+                    noDataMsg = "There is not data for the users"
+                />
                 {users?.length > 0 ?
                 <Pagination
                     elementsPerPage={paginationData.elementsPerPage}

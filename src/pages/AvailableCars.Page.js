@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
 import Navbar from "../components/Navbar.Component";
 import Search from "../components/Search.Component";
-import CarsTable from "../components/CarsTable.Component";
 import carService from "../services/carService";
 import Loader from "../components/Loader.Component";
 import RentCar from "../components/RentCar.Component";

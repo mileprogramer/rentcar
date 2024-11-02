@@ -1,6 +1,12 @@
 import "../css/table.css"
 
-export default function DefaultTable({ data, columns, renderRow, classForTable = "table table-striped", classForThead, classForBody }){
+export default function DefaultTable({ data, columns, renderRow, noDataMsg, classForTable = "table table-striped", classForThead, classForBody }){
+
+    if(!data){
+        return <div className="alert alert-warning">
+            {noDataMsg ? noDataMsg : "There is not data"}
+        </div>
+    }
 
     const renderColumns = () => {
         if(columns instanceof Array && columns?.length > 0){

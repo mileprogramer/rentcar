@@ -4,8 +4,8 @@ export default class userService {
     static defaultUrl = "http://localhost:8000/api/users";
     static defaultPostUrl = "http://localhost:8000/api/user";
 
-    static getUsers() {
-        return axios.get(this.defaultUrl)
+    static getUsers(page) {
+        return axios.get(this.defaultUrl + "?page=" + page) 
             .then(response => this.formatResponse(response))
             .catch(error => Promise.reject(this.handleError(error)));
     }

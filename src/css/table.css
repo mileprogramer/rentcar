@@ -1,3 +1,7 @@
 .table-striped tbody > tr:hover > td {
     background-color: #B8DAFF;
 }
+
+.table-container{
+    overflow-x: auto;
+}
