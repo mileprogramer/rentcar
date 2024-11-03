@@ -2,9 +2,19 @@ import { useState } from "react";
 import Mistake from "../components/MistakesAlert.Component"
 import "../css/drop-down.css"
 
-export default function SearchableDropDown({ options, selectOption, renderName, resetSearch,  setSearchTerm, validationErrors, isLoading, inputLabel }) {
+export default function SearchableDropDown({ 
+    options, 
+    selectOption, 
+    renderName, 
+    resetSearch,  
+    setSearchTerm, 
+    inputValue, 
+    setInputValue,
+    validationErrors, 
+    isLoading, 
+    inputLabel 
+}) {
     
-    const [inputValue, setInputValue] = useState("");
     const [isOpen, setIsOpen] = useState("");
 
     const handleSearch = (e) => {

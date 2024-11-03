@@ -5,7 +5,6 @@ import carService from "../services/carService";
 import Loader from "../components/Loader.Component";
 import RentCar from "../components/RentCar.Component";
 import Pagination from "../components/Pagination.Component";
-import ModalOverlay from "../components/ModalOverlay.Component";
 import DefaultTable from '../components/DefaultTable.Component';
 import Mistakes from "../components/MistakesAlert.Component";
 import { useQuery } from '@tanstack/react-query';
@@ -83,14 +82,6 @@ function AvailableCars(props) {
         else {
             return (
                 <>
-                    {
-                        isActiveOverlay && 
-                        <ModalOverlay 
-                            bgColor="transparent" 
-                            setModalActive={(showOrHide) => setModalRentCar(showOrHide)} 
-                            setActiveOverlay = {(showOrHide) => setActiveOverlay(showOrHide)} 
-                        />
-                    }
                     <DefaultTable
                         data={data.cars}
                         columns={["License", "Brand", "Model", "Years old", "Air Conditioner", "Person fit in", "Car consumption in city", "Transmissions type", "Reservation"]}

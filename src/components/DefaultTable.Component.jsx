@@ -2,7 +2,7 @@ import "../css/table.css"
 
 export default function DefaultTable({ data, columns, renderRow, noDataMsg, classForTable = "table table-striped", classForThead, classForBody }){
 
-    if(!data){
+    if(Array.isArray(data) && data.length === 0){
         return <div className="alert alert-warning">
             {noDataMsg ? noDataMsg : "There is not data"}
         </div>

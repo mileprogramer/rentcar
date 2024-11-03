@@ -71,7 +71,7 @@ export default function EditUserModal({userData, setModalActive}){
                                     type="text" 
                                     name="cardId" 
                                     value={inputData.cardId} 
-                                    onChange={handleInput.handle}
+                                    onChange={handleInput}
                                 />
                             </td>
                             <td>
@@ -80,7 +80,7 @@ export default function EditUserModal({userData, setModalActive}){
                                     type="text" 
                                     name="name" 
                                     value={inputData.name} 
-                                    onChange={handleInput.handle}
+                                    onChange={handleInput}
                                 />
                             </td>
                             <td>
@@ -89,7 +89,7 @@ export default function EditUserModal({userData, setModalActive}){
                                     type="text" 
                                     name="phone" 
                                     value={inputData.phone} 
-                                    onChange={handleInput.handle}
+                                    onChange={handleInput}
                                 />
                             </td>
                             <td>
@@ -98,7 +98,7 @@ export default function EditUserModal({userData, setModalActive}){
                                     type="email" 
                                     name="email" 
                                     value={inputData.email} 
-                                    onChange={handleInput.handle}
+                                    onChange={handleInput}
                                 />
                             </td>
                         </tr>

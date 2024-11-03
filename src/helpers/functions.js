@@ -38,6 +38,8 @@ export class HandleInput{
     constructor(setData, data){
         this.setData = setData;
         this.data = data;
+
+        return this.handle;
     }
 
     handle = (event) => {

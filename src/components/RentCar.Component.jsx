@@ -1,29 +1,34 @@
 import React, {useEffect, useRef, useState} from 'react';
 import "../css/modal.css"
 import carService from "../services/carService";
-import { useDispatch, useSelector } from 'react-redux';
-import { selectCarData, selectCurrentPage } from '../redux/car.slicer';
-import { setRentedCar } from "../redux/car.slicer"
 import SearchableDropdown from './SearchableDropDown.Component';
-import userSerice from '../services/userService';
 import dayjs from 'dayjs';
-import { refreshFirstPage, updateCars } from '../redux/rentedCars.slicer';
-import { refreshStatFirstPage } from '../redux/statistics.slicer';
 import userService from '../services/userService';
+import { useQuery } from '@tanstack/react-query';
+import { HandleInput } from '../helpers/functions';
+import ModalOverlay from './ModalOverlay.Component';
+import { useQueryClient } from '@tanstack/react-query';
 
-function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, carLicense, typeIsSearched}) {
+function RentCar({carData, modalRentCar, setModalRentCar}) {
 
-    const carData = useSelector(state => selectCarData(state, carLicense, carFromPage, typeIsSearched));
-    const [selectedUser, setSelectedUser] = useState({});
-    const page = useSelector(state => selectCurrentPage(state));
-    const [users, setUsers] = useState([]);
+    const [isActiveOverlay, setActiveOverlay] = useState(false);
     const addNewUser = useRef(false);
+    const [inputUserValue, setInputUserValue] = useState("")
     const [oldCustomer, setOldCustomer] = useState(true);
     const [newCustomer, setNewCustomer] = useState(false);
     const [mistakes, setMistakes] = useState(false);
     const [rentMessage, setRentMessage] = useState({});
-    const dispatch = useDispatch();
-    
+    const [searchTerm, setSearchTerm] = useState("");
+    const queryClient = useQueryClient();
+
+    const { data: users, error, isLoading } = useQuery({
+        queryKey: ['searchUsers', searchTerm],
+        queryFn: () => userService.search(searchTerm),
+        enabled: !!searchTerm,
+        staleTime: 30000,
+        select: (data) => data.users || []
+    });
+
     const initialInputData = {  
         carId: carData?.id,
         license: carData?.license || null,
@@ -39,59 +44,27 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
         startDate: dayjs().format("YYYY-MM-DD"),
     };
     const [inputData, setInputData] = useState(initialInputData);
+    const handleInput = new HandleInput(setInputData, inputData);
 
     useEffect(()=> {
         setInputData(initialInputData);
         setMistakes(false)
     }, [carData, oldCustomer])
 
-    useEffect(()=> {
-        getUsers();
-    }, [addNewUser])
-
-    const handleInput = (event) => {
-        const { name, value } = event.target;
-        setInputData({
-            ...inputData,
-            [name]: value
-        });
-    };
-
-    const emptyInputFields = ()=>{
-        setInputData(initialInputData)
-    }
-
-    const calculaDays = () => {
+    const calculateDays = () => {
         if(inputData.returnDate){
             return dayjs(inputData.returnDate).diff(inputData.startDate, "day");
         }
         return "";
     }
 
-    function getUsers(){
-        userSerice.getUsers()
-        .then(data => {
-            setUsers(data.users);
-        })
-        .catch(errors => {
-            alert(errors);
-        })
-    }
-
-    function searchUsers(searchTerm){
-        userService.search(searchTerm)
-            .then(data => {
-                setUsers(data.users);
-            })
-            .catch(error => alert(JSON.stringify(error)))
-    }
-
-    const closeModal = ()=>{
-        setSelectedUser({});
-        setRentMessage({});
+    function closeModal(){
         setActiveOverlay(false)
-        emptyInputFields()
+        setRentMessage({});
+        setActiveOverlay(false);
+        setInputData(initialInputData);
         setModalRentCar(false);
+        setInputUserValue("")
     }
 
     const validateInputFields = (event) => {
@@ -180,18 +153,8 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
             .then(data =>{
                 setRentMessage({"message": data.message});
                 setMistakes([]);
-                emptyInputFields();
-                setMistakes([]);
-                dispatch(setRentedCar({"page": page, "carId": rentCarData.car_id, "type": typeIsSearched}))
-                dispatch(refreshFirstPage()); // for rented cars
-                dispatch(refreshStatFirstPage());
-                setTimeout(()=>{
-                    if(modalRentCar)
-                    {
-                        event.target.disabled = false;
-                        closeModal();
-                    }
-                }, 3000);
+                event.target.disabled = true;
+                queryClient.invalidateQueries(['availableCars']);
             })
             .catch(errors =>{
                 event.target.disabled = false;
@@ -203,8 +166,17 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
         // initial load
         return <div className={`rent-car-model rent-car-model-unactive`}></div>;
     }
-    
+
     return (
+        <>
+        {
+            modalRentCar && 
+            <ModalOverlay
+                bgColor='transparent'
+                setModalActive={(showOrHide) => {console.log("ulazi ovde"); closeModal()}} 
+                setActiveOverlay = {(showOrHide) => setActiveOverlay(showOrHide)} 
+            />
+        }
         <div className={`rent-car-model row align-center ${modalRentCar === true ? "rent-car-model-active" : "rent-car-model-unactive"} `}>
             {rentMessage?.message && <div className="alert alert-success" role="alert">{rentMessage.message}</div>}
             <div className="card">
@@ -226,7 +198,6 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
                                 onClick={() => {
                                     setOldCustomer(false);
                                     setNewCustomer(true);
-                                    setSelectedUser({})
                                 }}
                             >New customer</button>
                         </li>
@@ -235,18 +206,17 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
                         {
                             oldCustomer && 
                             <SearchableDropdown
-                                options = {users}
-                                getData = {getUsers}
-                                search = {searchUsers}
-                                label="name"
-                                id="id"
-                                validationErrors={mistakes.userId}
-                                additionalLabel = "card_id"
-                                selectedVal={selectedUser?.name}
+                                options = {users} 
+                                renderName = {(user) => user.name + " " + user.card_id}
+                                isLoading = {isLoading}
+                                setSearchTerm = {setSearchTerm}
+                                inputValue = {inputUserValue}
+                                setInputValue = {setInputUserValue}
+                                resetSearch = {() => setSearchTerm("")}
+                                validationErrors={error}
                                 inputLabel="Type or choose old customer"
-                                handleChange={(val) => {
-                                    setSelectedUser(val)
-                                    setInputData({...inputData, "userId": val?.id})
+                                selectOption={(val) => {
+                                    setInputData({...inputData, "userId": val.id})
                                 }}
                             />
                         }
@@ -449,12 +419,12 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>{ calculaDays() }</td>
+                                        <td>{ calculateDays() }</td>
                                         <td>{inputData.pricePerDay}$</td>
                                         <td>{inputData.discount}%</td>
                                         <td className='fw-bold'>
                                             {
-                                                Math.round(calculaDays() * inputData.pricePerDay * (1 - inputData.discount / 100), 2) 
+                                                Math.round(calculateDays() * inputData.pricePerDay * (1 - inputData.discount / 100), 2) 
                                             }
                                         </td>
                                     </tr>
@@ -476,6 +446,7 @@ function RentCar({modalRentCar, setModalRentCar, setActiveOverlay, carFromPage, 
                 </div>
             </div>
         </div>
+        </>
     );
 }
 
