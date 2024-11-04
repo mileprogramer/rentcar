@@ -1,12 +1,9 @@
-import React, {useEffect, useRef, useState} from 'react';
-import carService from "../services/carService";
-import { saveFilterPaginationData, saveFilterStats, setFilterCurrentPage } from '../redux/statistics.slicer';
-import { useDispatch } from 'react-redux';
+import React, { useState } from 'react';
 import ActiveFilters from './ActiveFilters.Components';
 import dayjs from 'dayjs';
-import Mistakes from "../components/MistakesAlert.Component"
+import { HandleInput } from '../helpers/functions';
 
-function SearchHistoryRented({ setLoader, setIsSearched, isSearched, currentPage }) {
+function SearchHistoryRented({ search, clearSearch }) {
 
     const initialSearchData = {
         license: '',
@@ -17,31 +14,10 @@ function SearchHistoryRented({ setLoader, setIsSearched, isSearched, currentPage
         returnedCar: "",
     };
     const [inputSearch, setInputSearch] = useState(initialSearchData);
-    const [mistakes, setMistakes] = useState([]);
-    const showFilters = useRef({
-        filters : {},
-        show : false,
-    });
-    const dispatch = useDispatch();
-    const [query, setQuery] = useState("");
-    
-    useEffect(() => {
-        // user wants next page
-        if (currentPage) {
-            carService.searchHistoryRented(query + "&page=" + currentPage)
-                .then((data)=>{
-                    dispatch(saveFilterStats({"page": currentPage, "stats": data.stats}));
-                })
-                .catch((error)=>{
-                    console.log(error);
-
-                })
-        }
-    }, [currentPage])
-
+    const [filters, setFilters] = useState([]);
+    const handleInput = new HandleInput(setInputSearch, inputSearch);
 
     const handleSearch = ()=> {
-        
         let query = "?";
         for(let prop in inputSearch){
             if(inputSearch[prop]){
@@ -55,43 +31,17 @@ function SearchHistoryRented({ setLoader, setIsSearched, isSearched, currentPage
     
         if(query === "?") return ;
         query = query.slice(0, query.length-1);
-        setQuery(query);
-        setLoader(true);
-        
-        carService.searchHistoryRented(query)
-            .then((data)=>{
-                dispatch(setFilterCurrentPage({"page" : 1}));
-                dispatch(saveFilterStats({"page": 1, "stats": data.stats}));
-                dispatch(saveFilterPaginationData({"paginationData" : data.paginationData}));
-                setIsSearched(true);
-                setLoader(false);
-                showFilters.show = true;
-                showFilters.filters = inputSearch;
-            })
-            .catch((error)=>{
-                setLoader(false);
-                setMistakes(error);
-
-            })
+        search(query);
     }
 
-    const handleResetSearch = () =>{
-        setIsSearched(false);
+    const handleResetSearch = () => {
+        clearSearch();
         setInputSearch(initialSearchData);
-        showFilters.filters = {};
-        showFilters.show = false;
-    }
-
-    const handleInput = (event) =>{
-        const { name, value } = event.target;
-        setInputSearch({
-            ...inputSearch,
-            [name]: value
-        });
+        setFilters([])
     }
 
     const formatFilters = () => {
-        let copyFilters = {...showFilters.filters};
+        let copyFilters = {...filters};
         if(copyFilters.endDate){
             copyFilters.endDate = dayjs(copyFilters.endDate).format("DD/MM/YYYY");
         }
@@ -106,9 +56,8 @@ function SearchHistoryRented({ setLoader, setIsSearched, isSearched, currentPage
     }
 
     const renderFilters = () => {
-        if(showFilters.show){
+        if(filters.length > 0){
             let copyFilters = formatFilters();
-            console.log(copyFilters);
             return <ActiveFilters initialFiltersState={initialSearchData} filtersState={copyFilters} />
         }
         return "";
@@ -117,7 +66,6 @@ function SearchHistoryRented({ setLoader, setIsSearched, isSearched, currentPage
     return (
         <>
         <div className="my-5 form-group d-flex gap-3 justify-content-end">
-            <Mistakes mistakes = {mistakes} />
             <div className="form-group">
                 <p>Insert license for car</p>
                 <input

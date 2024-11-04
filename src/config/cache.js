@@ -2,7 +2,8 @@ export const cacheNames = {
     "availableCars" : "availableCars",
     "users": "users",
     "allCars": "allCars",
-    "rentedCars": "rentedCars"
+    "rentedCars": "rentedCars",
+    "statistics": "statistics"
 }
 
 Object.freeze(cacheNames);

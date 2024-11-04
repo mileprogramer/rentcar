@@ -124,7 +124,7 @@ class CarService {
             .catch(error => Promise.reject(this.handleError(error)));
     }
 
-    static searchHistoryRented(query) {
+    static searchHistoryRented(query, page) {
         return axios.get(`${this.defaultGetUrl}/statistics/search${query}`)
             .then(response => this.formatStatsResponse(response))
             .catch(error => Promise.reject(this.handleError(error)));

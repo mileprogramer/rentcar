@@ -3,15 +3,12 @@ import carService from "../services/carService";
 import FormValidation from "../services/FormValidation";
 import "../css/modal.css"
 import dayjs from 'dayjs';
-import { useDispatch } from 'react-redux';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { refreshFirstPage } from '../redux/rentedCars.slicer';
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import "../css/car-gallery.css";
-import { calculateTotalPrice, formatPrice, HandleInput } from '../helpers/functions';
+import { calculateTotalPrice, HandleInput } from '../helpers/functions';
 import ExtendedRentsTable from './ExtendedRentsTable.Component';
-import { refreshStatFirstPage } from '../redux/statistics.slicer';
 import ModalOverlay from './ModalOverlay.Component';
 import { useQueryClient } from '@tanstack/react-query';
 import { cacheNames } from '../config/cache';
