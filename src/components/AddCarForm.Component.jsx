@@ -5,6 +5,8 @@ import CarStatus from '../enums/CarStatus';
 import AirConditioningType from '../enums/AirConditiongType';
 import TransmissionType from '../enums/TransmissionsType';
 import ImageUploading from 'react-images-uploading';
+import { useQueryClient } from "@tanstack/react-query";
+import { cacheNames } from "../config/cache.js";
 
 function AddCarForm(props) {
 
@@ -24,10 +26,10 @@ function AddCarForm(props) {
         transmissionType: '',
     };
     const [inputData, setInputData] = useState(initialInputData);
-    const [lightbox, setOpenLightBox] = useState(false);
     const [images, setImages] = useState([]);
     const [addedCar, setAddedCar] = useState(false);
     const [mistakes, setMistakes] = useState([]);
+    const queryClient = useQueryClient();
 
     const handleInput = (event) => {
         const { name, value } = event.target;
@@ -97,6 +99,7 @@ function AddCarForm(props) {
             .then(data =>{
                 setMistakes([]);
                 setAddedCar(true);
+                queryClient.invalidateQueries([cacheNames.availableCars])
                 setTimeout(()=> {
                     setImages([]);
                     setInputData(initialInputData);
@@ -260,7 +263,7 @@ function AddCarForm(props) {
                         isDragging,
                         dragProps,
                         }) => (
-                        // write your building UI
+
                         <div className="upload__image-wrapper">
                             <p className='d-inline-block pe-3'>Add image by</p>
                             <button
@@ -269,9 +272,8 @@ function AddCarForm(props) {
                                 onClick={onImageUpload}
                                 {...dragProps}
                             >
-                            Click or Drop here
+                            Click or Drop here Image
                             </button>
-                            &nbsp;
                             <div className='car-gallery' style={{"gridTemplateColumns": "repeat(5, 1fr)"}}>
                                 {imageList.map((image, index) => (
                                 <div key={index} className='d-flex'>

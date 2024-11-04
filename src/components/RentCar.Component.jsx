@@ -173,7 +173,7 @@ function RentCar({carData, modalRentCar, setModalRentCar}) {
             modalRentCar && 
             <ModalOverlay
                 bgColor='transparent'
-                setModalActive={(showOrHide) => {console.log("ulazi ovde"); closeModal()}} 
+                setModalActive={(showOrHide) => {closeModal()}} 
                 setActiveOverlay = {(showOrHide) => setActiveOverlay(showOrHide)} 
             />
         }

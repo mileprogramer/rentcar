@@ -23,14 +23,14 @@ function Search({setIsSearched, placeholder, getCarData, label ,widthOfSearch = 
 
     const handleSearch = (event) => {
         if (event.target.value === "") {
-            setIsSearched(false);
+            setIsSearched(() => false);
         }
         setInputSearch(event.target.value);
     };
 
     const resetSearch = () =>{
         setInputSearch("");
-        setIsSearched(false);
+        setIsSearched(() => false);
     }
 
     return (

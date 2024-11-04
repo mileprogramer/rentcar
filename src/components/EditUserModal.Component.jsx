@@ -5,8 +5,8 @@ import FormValidation from "../services/FormValidation";
 import { HandleInput } from "../helpers/functions";
 import userService from "../services/userService";
 import MistakesAlert from "./MistakesAlert.Component";
-import { useDispatch } from "react-redux";
-import { setEditUser } from "../redux/user.slicer";
+import { useQueryClient } from "@tanstack/react-query";
+import { cacheNames } from "../config/cache.js"
 
 export default function EditUserModal({userData, setModalActive}){
 
@@ -21,7 +21,7 @@ export default function EditUserModal({userData, setModalActive}){
     const [errors, setErrors] = useState([]);
     const [successMsg, setSuccessMsg] = useState("");
     const handleInput = new HandleInput(setInputData, inputData);
-    const dispatch = useDispatch();
+    const queryClient = useQueryClient();
 
     const editUser = (event) => {
         let mistakes = FormValidation.validateInputFields(inputData);
@@ -37,9 +37,9 @@ export default function EditUserModal({userData, setModalActive}){
         // api request
         userService.edit(data)
             .then((response) => {
+                queryClient.invalidateQueries([cacheNames.users]);
                 setSuccessMsg(response.data.message);
                 event.target.disabled = false;
-                dispatch(setEditUser({userData : data}));
                 setTimeout(() => setSuccessMsg(""), 2000);
             })
             .catch(error => setErrors(error))

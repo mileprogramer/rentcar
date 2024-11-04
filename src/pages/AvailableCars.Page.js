@@ -1,47 +1,26 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import Navbar from "../components/Navbar.Component";
 import Search from "../components/Search.Component";
-import carService from "../services/carService";
 import Loader from "../components/Loader.Component";
 import RentCar from "../components/RentCar.Component";
 import Pagination from "../components/Pagination.Component";
 import DefaultTable from '../components/DefaultTable.Component';
 import Mistakes from "../components/MistakesAlert.Component";
-import { useQuery } from '@tanstack/react-query';
+import useFetchAvailableCars from '../hooks/useFetchAvailableCars';
 
 function AvailableCars(props) {
-
-    const [isSearched, setIsSearched] = useState(false);
-    const searchTerm = useRef("");
+    
     const [modalRentCar, setModalRentCar] = useState(false);
-    const [isActiveOverlay, setActiveOverlay] = useState(false);
     const [rentedCarData, setRentedCarData] = useState({});
-
-    const fetchCars = async (page) => {
-        if (isSearched) {
-            const response = await carService.searchAvailableCars(searchTerm.current, page);
-            return response;
-        } else {
-            const response = await carService.getAvailableCars(page);
-            return response;
-        }
-    };
-
-    const { data, error, isError, isLoading, refetch } = useQuery({
-        queryKey: ['availableCars', searchTerm.current, isSearched],
-        queryFn: ({ queryKey }) => fetchCars(queryKey[1]),
-        keepPreviousData: true,
-        staleTime: 30000,
-    });
-
-    const totalElements = data?.paginationData?.totalElements || 0;
-    const elementsPerPage = data?.paginationData?.elementsPerPage || 10;
-
-    const searchCars = (term) => {
-        searchTerm.current = term;
-        setIsSearched(true);
-        refetch();
-    };
+    const { 
+        data, 
+        isError, 
+        error,
+        isLoading, 
+        searchCars, 
+        changePage,
+        setIsSearched
+    } = useFetchAvailableCars();
 
     const renderTableRow = (car) => {
         if(car) {
@@ -68,7 +47,6 @@ function AvailableCars(props) {
 
     const openRentCarModal = (license) => {
         setRentedCarData(() =>  data.cars.find(car => car.license === license));
-        setActiveOverlay(true);
         setModalRentCar(true);
     }
 
@@ -88,9 +66,9 @@ function AvailableCars(props) {
                         renderRow={renderTableRow}
                     />
                     <Pagination 
-                        elementsPerPage={elementsPerPage}
-                        totalElements={totalElements}
-                        changePage={(page) => refetch({ page })}
+                        elementsPerPage={data.paginationData.elementsPerPage}
+                        totalElements={data.paginationData.totalElements}
+                        changePage={(page) => changePage(page)}
                         currentPage={data.paginationData.currentPage}
                     />
                 </>
@@ -115,7 +93,6 @@ function AvailableCars(props) {
                     setModalRentCar = {setModalRentCar}
                     modalRentCar = {modalRentCar}
                     carData = {rentedCarData}
-                    setActiveOverlay={setActiveOverlay}
                 />
 
             </div>
