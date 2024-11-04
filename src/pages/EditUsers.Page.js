@@ -6,7 +6,9 @@ import EditUserModal from "../components/EditUserModal.Component";
 import DefaultTable from "../components/DefaultTable.Component";
 import Loader from "../components/Loader.Component";
 import MistakesAlert from "../components/MistakesAlert.Component";
-import useFetchUsers from "../hooks/useFetchUsers";
+import useFetchStandard from "../hooks/useFetchStandard";
+import { cacheNames } from "../config/cache";
+import userService from "../services/userService";
 
 export default function EditUsers(){
 
@@ -15,14 +17,17 @@ export default function EditUsers(){
     
     const {
         data,
-        isLoading,
-        isError,
         error,
-        searchUsers,
+        isError,
+        isLoading,
+        searchFn,
         changePage,
         clearSearch,
-
-    } = useFetchUsers();
+    } = useFetchStandard({
+        mainKey: cacheNames.users,
+        fnForGetSource: userService.getUsers.bind(userService),
+        fnForSearch: userService.search.bind(userService),
+     });
 
     const users = data?.users;
     const paginationData = data?.paginationData
@@ -92,7 +97,7 @@ export default function EditUsers(){
                 <Navbar />
                 <Search
                     clearSearch = {clearSearch}
-                    search = {searchUsers}
+                    search = {searchFn}
                     placeholder = {"Type user card id, personal data"}
                 />
                 { renderPageContent() } 

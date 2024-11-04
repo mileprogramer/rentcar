@@ -9,23 +9,28 @@ import { refreshFirstPage } from '../redux/rentedCars.slicer';
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import "../css/car-gallery.css";
-import { calculateTotalPrice, formatPrice } from '../helpers/functions';
+import { calculateTotalPrice, formatPrice, HandleInput } from '../helpers/functions';
 import ExtendedRentsTable from './ExtendedRentsTable.Component';
 import { refreshStatFirstPage } from '../redux/statistics.slicer';
+import ModalOverlay from './ModalOverlay.Component';
+import { useQueryClient } from '@tanstack/react-query';
+import { cacheNames } from '../config/cache';
 
 dayjs.extend(customParseFormat);
 
-function AcceptCarForm({carData, currentPage, closeModal}) {
+function AcceptCarForm({carData, closeModal}) {
 
     const [inputData, setInputData] = useState({
         note : "",
     });
     const [open, setOpen] = useState(false);
     const [images, setImages] = useState([]);
-    const dispatch = useDispatch();
     const [returnedCar, setReturnedCar] = useState(false);
     const [mistakes, setMistakes] = useState([]);
     const [rentedCarData, setRentetedCarData] = useState(carData);
+    const [activeOverlay, setActiveOverlay] = useState(true);
+    const handleInput = new HandleInput(setInputData, inputData);
+    const queryClient = useQueryClient();
     
     useEffect(() => {
        
@@ -34,14 +39,6 @@ function AcceptCarForm({carData, currentPage, closeModal}) {
         }
 
     }, []);
-
-    const handleInput = (event) => {
-        const { name, value } = event.target;
-        setInputData({
-            ...inputData,
-            [name]: value
-        });
-    };
 
     const acceptCar = () => {
         let mistakes = FormValidation.validateInputFields(inputData);
@@ -53,8 +50,7 @@ function AcceptCarForm({carData, currentPage, closeModal}) {
         
         carService.acceptCar({car_id: rentedCarData.car_id, note: inputData.note})
             .then(data =>{
-                dispatch(refreshStatFirstPage());
-                dispatch(refreshFirstPage());
+                queryClient.invalidateQueries(cacheNames.rentedCars);
                 setReturnedCar(data);
             })
             .catch(errors =>{
@@ -62,7 +58,8 @@ function AcceptCarForm({carData, currentPage, closeModal}) {
             })
     };
     
-    return (
+    return <>
+        <ModalOverlay setActiveOverlay={setActiveOverlay} setModalActive={(showOrHide) => closeModal(showOrHide)}/>
         <div className="accept-modal z-3">
             {mistakes.length > 0 && (
                 <div className="alert alert-danger" role="alert">
@@ -149,7 +146,7 @@ function AcceptCarForm({carData, currentPage, closeModal}) {
 
 
         </div>
-    );
+    </>
 }
 
 export default AcceptCarForm;

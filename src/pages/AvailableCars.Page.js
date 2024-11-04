@@ -6,21 +6,27 @@ import RentCar from "../components/RentCar.Component";
 import Pagination from "../components/Pagination.Component";
 import DefaultTable from '../components/DefaultTable.Component';
 import Mistakes from "../components/MistakesAlert.Component";
-import useFetchAvailableCars from '../hooks/useFetchAvailableCars';
+import useFetchStandard from '../hooks/useFetchStandard';
+import { cacheNames } from '../config/cache';
+import carService from '../services/carService';
 
 function AvailableCars(props) {
     
     const [modalRentCar, setModalRentCar] = useState(false);
     const [rentedCarData, setRentedCarData] = useState({});
-    const { 
-        data, 
-        isError, 
+    const {
+        data,
         error,
-        isLoading, 
-        searchCars, 
+        isError,
+        isLoading,
+        searchFn,
         changePage,
-        clearSearch
-    } = useFetchAvailableCars();
+        clearSearch,
+    } = useFetchStandard({
+        mainKey: cacheNames.availableCars,
+        fnForGetSource: carService.getAvailableCars.bind(carService),
+        fnForSearch: carService.searchAvailableCars.bind(carService),
+     });
 
     const renderTableRow = (car) => {
         if(car) {
@@ -84,7 +90,7 @@ function AvailableCars(props) {
                 <div className="ml-auto">
                     <Search 
                         clearSearch={clearSearch}
-                        search={searchCars}
+                        search={searchFn}
                         placeholder={"Type license, brand, model of car"}
                     />
                 </div>

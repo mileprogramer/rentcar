@@ -3,17 +3,19 @@ import carService from "../services/carService";
 import FormValidation from "../services/FormValidation";
 import "../css/modal.css"
 import dayjs from 'dayjs';
-import { useDispatch } from 'react-redux';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { refreshFirstPage, returnCar } from '../redux/rentedCars.slicer';
-import { formatPrice } from '../helpers/functions';
-import { refreshStatFirstPage } from '../redux/statistics.slicer';
+import { formatPrice, HandleInput } from '../helpers/functions';
+import { useQueryClient } from '@tanstack/react-query';
+import { cacheNames } from '../config/cache';
+import MistakesAlert from './MistakesAlert.Component';
+import ModalOverlay from './ModalOverlay.Component';
 
 dayjs.extend(customParseFormat);
 
-function ExtendRentModal({carData, currentPage, closeModal}) {
+function ExtendRentModal({carData, closeModal}) {
 
-    const dispatch = useDispatch();
+    const queryClient = useQueryClient();
+    const [activeOverlay, setActiveOverlay] = useState(true);
     const [returnedCar, setReturnedCar] = useState(false);
     const [mistakes, setMistakes] = useState([]);
     const [extendRentData, setExtendRentData] = useState({
@@ -24,13 +26,7 @@ function ExtendRentModal({carData, currentPage, closeModal}) {
         discount: 0,
         reasonForDiscount: ""
     })
-    const handleInput = (event) => {
-        const { name, value } = event.target;
-        setExtendRentData({
-            ...extendRentData,
-            [name]: value
-        });
-    };
+    const handleInput = new HandleInput(setExtendRentData, extendRentData);
 
     function calculateTotalPrice(){
         if(!carData.extended_rent && extendRentData.return_date !== ""){
@@ -71,8 +67,7 @@ function ExtendRentModal({carData, currentPage, closeModal}) {
         delete extendRentData.start_date;
         carService.extendRent(extendRentData)
             .then(data =>{
-                dispatch(refreshStatFirstPage());
-                dispatch(refreshFirstPage());
+                queryClient.invalidateQueries(cacheNames.rentedCars)
                 setReturnedCar(data);
             })
             .catch(errors =>{
@@ -80,15 +75,10 @@ function ExtendRentModal({carData, currentPage, closeModal}) {
             })
     };
     
-    return (
+    return <>
+        {activeOverlay && <ModalOverlay setActiveOverlay={setActiveOverlay} setModalActive={(showOrHide) => closeModal(showOrHide)}/>}
         <div className="extend-modal z-3">
-            {mistakes?.length > 0 && (
-                <div className="alert alert-danger" role="alert">
-                    {mistakes.map((error, index) => (
-                        <div key={index}>{error?.message || error}</div>
-                    ))}
-                </div>
-            )}
+            <MistakesAlert mistakes = {mistakes} />
             {returnedCar && <div className="alert alert-success" role="alert">{returnedCar.message}</div>}
             <div className="card">
                 <div className="card-header">
@@ -173,10 +163,8 @@ function ExtendRentModal({carData, currentPage, closeModal}) {
                     </button>
                 </div>
             </div>
-
-
         </div>
-    );
+    </>
 }
 
 export default ExtendRentModal;
