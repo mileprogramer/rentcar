@@ -19,7 +19,7 @@ function AvailableCars(props) {
         isLoading, 
         searchCars, 
         changePage,
-        setIsSearched
+        clearSearch
     } = useFetchAvailableCars();
 
     const renderTableRow = (car) => {
@@ -83,8 +83,8 @@ function AvailableCars(props) {
                 <Navbar/>
                 <div className="ml-auto">
                     <Search 
-                        setIsSearched={setIsSearched}
-                        getCarData={searchCars}
+                        clearSearch={clearSearch}
+                        search={searchCars}
                         placeholder={"Type license, brand, model of car"}
                     />
                 </div>

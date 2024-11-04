@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 
-function Search({setIsSearched, placeholder, getCarData, label ,widthOfSearch = "300"}) {
+function Search({clearSearch, placeholder, search, label, widthOfSearch = "300"}) {
 
     const [inputSearch, setInputSearch] = useState("");
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(inputSearch);
@@ -17,20 +17,20 @@ function Search({setIsSearched, placeholder, getCarData, label ,widthOfSearch = 
 
     useEffect(() => {
         if (debouncedSearchTerm) {
-            getCarData(debouncedSearchTerm);
+            search(debouncedSearchTerm);
         }
     }, [debouncedSearchTerm]);
 
     const handleSearch = (event) => {
         if (event.target.value === "") {
-            setIsSearched(() => false);
+            clearSearch();
         }
         setInputSearch(event.target.value);
     };
 
     const resetSearch = () =>{
         setInputSearch("");
-        setIsSearched(() => false);
+        clearSearch();
     }
 
     return (

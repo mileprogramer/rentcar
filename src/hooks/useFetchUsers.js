@@ -9,7 +9,7 @@ export default function useFetchUsers() {
     const [page, setPage] = useState(1);
     const [searchedPage, setSearchedPage] = useState(1);
 
-    const fetchUsers = async (queryKey) => {
+    const fetchUsers = async () => {
         
         if (isSearched) {
             const response = await userService.search(searchTerm, searchedPage);
@@ -21,17 +21,23 @@ export default function useFetchUsers() {
         }
     };
 
+
     const { data, error, isError, isLoading } = useQuery({
-        queryKey: ['users', searchTerm, isSearched, page, searchedPage],
+        queryKey: ['users', searchTerm, page, searchedPage],
         queryFn: fetchUsers,
         keepPreviousData: true,
-        staleTime: 3000000,
+        staleTime: 30000,
     });
 
     const searchUsers = (term) => {
         setIsSearched(true);
         setSearchTerm(term);
         setSearchedPage(1);
+    };
+
+    const clearSearch = () => {
+        setIsSearched(false); 
+        setSearchTerm("");
     };
 
     const changePage = (page) => {
@@ -51,7 +57,7 @@ export default function useFetchUsers() {
         searchTerm,
         searchUsers,
         changePage,
-        setIsSearched,
+        clearSearch,
     }
 
 

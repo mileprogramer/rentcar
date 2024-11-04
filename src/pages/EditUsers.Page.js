@@ -20,7 +20,7 @@ export default function EditUsers(){
         error,
         searchUsers,
         changePage,
-        setIsSearched,
+        clearSearch,
 
     } = useFetchUsers();
 
@@ -91,8 +91,8 @@ export default function EditUsers(){
             <div className="container postion-relative">
                 <Navbar />
                 <Search
-                    setIsSearched = {setIsSearched}
-                    getCarData = {searchUsers}
+                    clearSearch = {clearSearch}
+                    search = {searchUsers}
                     placeholder = {"Type user card id, personal data"}
                 />
                 { renderPageContent() } 

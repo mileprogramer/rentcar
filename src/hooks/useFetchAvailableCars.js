@@ -9,7 +9,7 @@ export default function useFetchAvailableCars() {
     const [page, setPage] = useState(1);
     const [searchedPage, setSearchedPage] = useState(1);
 
-    const fetchCars = async (queryKey) => {
+    const fetchCars = async () => {
         
         if (isSearched) {
             const response = await CarService.searchAvailableCars(searchTerm, searchedPage);
@@ -22,7 +22,7 @@ export default function useFetchAvailableCars() {
     };
 
     const { data, error, isError, isLoading } = useQuery({
-        queryKey: ['availableCars', searchTerm, isSearched, page, searchedPage],
+        queryKey: ['availableCars', searchTerm, page, searchedPage],
         queryFn: fetchCars,
         keepPreviousData: true,
         staleTime: 3000000,
@@ -32,6 +32,11 @@ export default function useFetchAvailableCars() {
         setIsSearched(true);
         setSearchTerm(term);
         setSearchedPage(1);
+    };
+
+    const clearSearch = () => {
+        setIsSearched(false); 
+        setSearchTerm("");
     };
 
     const changePage = (page) => {
@@ -51,7 +56,7 @@ export default function useFetchAvailableCars() {
         searchTerm,
         searchCars,
         changePage,
-        setIsSearched,
+        clearSearch,
     }
 
 }
