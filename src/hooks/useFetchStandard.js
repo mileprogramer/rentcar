@@ -1,37 +1,39 @@
-import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import userService from "../services/userService";
+import { useQuery } from "@tanstack/react-query";
 
-// TO DO: ADD FILTERS
-
-export default function useFetchUsers() {
+export default function useFetchStandard({
+    mainKey,
+    fnForSearch,
+    fnForGetSource,
+    staleTime = 3000000,
+    keepPreviousData = true,
+}) {
 
     const [isSearched, setIsSearched] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [page, setPage] = useState(1);
     const [searchedPage, setSearchedPage] = useState(1);
 
-    const fetchUsers = async () => {
+    const fetch = async () => {
         
         if (isSearched) {
-            const response = await userService.search(searchTerm, searchedPage);
+            const response = await fnForSearch(searchTerm, searchedPage);
             return response;
         } 
         else {
-            const response = await userService.getUsers(page);
+            const response = await fnForGetSource(page);
             return response;
         }
     };
 
-
     const { data, error, isError, isLoading } = useQuery({
-        queryKey: ['users', searchTerm, page, searchedPage],
-        queryFn: fetchUsers,
-        keepPreviousData: true,
-        staleTime: 30000,
+        queryKey: [mainKey, searchTerm, page, searchedPage],
+        queryFn: fetch,
+        keepPreviousData: keepPreviousData,
+        staleTime: staleTime,
     });
 
-    const searchUsers = (term) => {
+    const searchFn = (term) => {
         setIsSearched(true);
         setSearchTerm(term);
         setSearchedPage(1);
@@ -57,10 +59,9 @@ export default function useFetchUsers() {
         isLoading,
         page,
         searchTerm,
-        searchUsers,
+        searchFn,
         changePage,
         clearSearch,
     }
-
 
 }

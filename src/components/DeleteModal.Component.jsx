@@ -2,20 +2,19 @@ import React, {useState} from 'react';
 import carService from "../services/carService";
 import ModalOverlay from "./ModalOverlay.Component";
 import "../css/modal.css"
-import { useDispatch } from 'react-redux';
-import { deleteCar } from '../redux/allCars.slicer';
 import FormValidation from '../services/FormValidation';
-import { setDefault } from '../redux/car.slicer';
+import { useQueryClient } from '@tanstack/react-query';
+import { cacheNames } from '../config/cache';
 
-function DeleteModal({ modalActive, setModalActive, car, currentPage, typeIsSearched }) {
+function DeleteModal({ modalActive, setModalActive, car }) {
 
-    const [activeOverlay, setActiveOverlay] = useState(false);
+    const [activeOverlay, setActiveOverlay] = useState(true);
     const [deletedCar, setDeletedCar] = useState(false);
     const [mistakes, setMistakes] = useState(false);
     const [inputData, setInputData] = useState({
         "reasonForDelete": ""
     });
-    const dispatch = useDispatch();
+    const queryClient = useQueryClient();
 
     const closeModal = ()=>{
         setModalActive(false);
@@ -30,8 +29,7 @@ function DeleteModal({ modalActive, setModalActive, car, currentPage, typeIsSear
         }
         carService.deleteCar({"car_id": car.id, "reason_for_delete": inputData.reasonForDelete})
             .then(data => {
-                dispatch(setDefault());
-                dispatch(deleteCar({"page": currentPage, "car": car, "type": typeIsSearched}));
+                queryClient.invalidateQueries(cacheNames.allCars)
                 setDeletedCar(data);
             })
             .catch(error =>{
@@ -42,7 +40,7 @@ function DeleteModal({ modalActive, setModalActive, car, currentPage, typeIsSear
 
     return (
         <>
-        <ModalOverlay setActiveOverlay={setActiveOverlay} setModalActive={closeModal} />
+        {activeOverlay && <ModalOverlay setActiveOverlay={setActiveOverlay} setModalActive={closeModal} />}
         <div className={`edit-delete-modal position-absolute top-50 start-50 ${modalActive === false ? "d-none" : ""} `}>
             {deletedCar && <div className="alert alert-success" role="alert">{deletedCar.message}</div>}
             {mistakes.length > 0 && (

@@ -5,14 +5,14 @@ import FormValidation from "../services/FormValidation";
 import AirConditioningType from '../enums/AirConditiongType';
 import TransmissionType from '../enums/TransmissionsType.js';
 import ModalOverlay from './ModalOverlay.Component.jsx';
-import { useDispatch } from 'react-redux';
-import { editCar } from '../redux/allCars.slicer.js';
 import Lightbox from 'yet-another-react-lightbox';
 import ImageUploading from 'react-images-uploading';
+import { useQueryClient } from '@tanstack/react-query';
+import { cacheNames } from '../config/cache.js';
 
-function EditModal({modalActive, setModalActive, currentPage, car, typeIsSearched}) {
+function EditModal({modalActive, setModalActive, car,}) {
 
-    const [activeOverlay, setActiveOverlay] = useState(false);
+    const [activeOverlay, setActiveOverlay] = useState(true);
     const airConditionerType = new AirConditioningType();
     const transmissionType = new TransmissionType();
     const [editedCar, setEditedCar] = useState(false);
@@ -33,7 +33,7 @@ function EditModal({modalActive, setModalActive, currentPage, car, typeIsSearche
         airConditioner: car.air_conditioning_type,
         consumption: car.car_consumption,
     });
-    const dispatch = useDispatch();
+    const queryClient = useQueryClient();
 
     useEffect(() => {
 
@@ -117,11 +117,8 @@ function EditModal({modalActive, setModalActive, currentPage, car, typeIsSearche
 
         carService.updateCar(formData)
             .then(data =>{
-                dispatch(editCar({"page":currentPage, "car": data.updatedCar, "type": typeIsSearched}));
                 setEditedCar(data);
-                setTimeout(()=>{
-                    setEditedCar(false);
-                }, 3000)
+                queryClient.invalidateQueries(cacheNames.allCars)
             })
             .catch(errors =>{
                 setMistakes(errors);
@@ -130,7 +127,7 @@ function EditModal({modalActive, setModalActive, currentPage, car, typeIsSearche
 
     return (
         <>
-        <ModalOverlay setActiveOverlay={setActiveOverlay} setModalActive={closeModal} />
+        {activeOverlay && <ModalOverlay setActiveOverlay={setActiveOverlay} setModalActive={closeModal} />}
         <div className={`edit-modal position-fixed ${modalActive === false ? "d-none" : ""} `}>
             {editedCar && <div className="alert alert-success" role="alert">{editedCar.message}</div>}
             {mistakes.length > 0 && (
