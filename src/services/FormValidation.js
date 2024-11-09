@@ -3,7 +3,7 @@ class FormValidation{
         const newMistakes = [];
 
         for (let prop in inputData) {
-            if (inputData[prop] === '' || inputData[prop]?.length === 0) {
+            if (inputData[prop] === '' || inputData[prop]?.length === 0 || inputData[prop] === " ") {
                 prop = this.convertToNormalizeCase(prop);
                 newMistakes.push(`You did not fill ${prop} field`);
             }

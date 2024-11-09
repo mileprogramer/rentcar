@@ -1,8 +1,10 @@
 import axios from "axios";
+import { hostname } from "../config/globals";
 
 export default class userService {
-    static defaultUrl = "http://localhost:8000/api/users";
-    static defaultPostUrl = "http://localhost:8000/api/user";
+
+    static defaultUrl = hostname + "api/users";
+    static defaultPostUrl = hostname + "api/user";
 
     static getUsers(page) {
         let url = page ? "?page=" + page : "";
@@ -21,6 +23,21 @@ export default class userService {
         return axios.post(this.defaultPostUrl + "/edit", data)
             .then(response => Promise.resolve(response))
             .catch(error => Promise.reject(this.handleError(error)));
+    }
+
+    static getCookies() {
+        return axios.get(hostname + "sanctum/csrf-cookie", { withCredentials : true })
+            .then(response => response)
+            .catch(response => Promise.reject(response))
+    }
+
+    static loginAdmin(loginData) {
+        return axios.post(hostname + "api/admin/login", loginData, {
+            withCredentials: true,
+            withXSRFToken : true,
+        })
+        .then(response => Promise.resolve(response))
+        .catch(error => Promise.reject(error))
     }
 
     static formatResponse(response){
