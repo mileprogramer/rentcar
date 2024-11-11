@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import '../css/loader.css'
 
-function Loader(props) {
+function Loader({ addDelay = true, onCenter }) {
     const [className, setClassName] = useState('');
 
     useEffect(() => {
+
+        if(!addDelay) {
+            return;
+        }
+
         const timer = setTimeout(() => {
             setClassName('loader');
         }, 500);
@@ -12,8 +17,25 @@ function Loader(props) {
         return () => clearTimeout(timer);
     }, []);
 
+    const renderClasses = () => {
+        let classToOutput = "";
+
+        if(addDelay) {
+            classToOutput += " " + className;
+        }
+        else if(addDelay === false) {
+            classToOutput += " loader"
+        }
+
+        if(onCenter) {
+            classToOutput += " loader-center"
+        }
+
+        return classToOutput;
+    }
+
     return (
-        <div className={className}></div>
+        <div className={renderClasses()}></div>
     );
 }
 
