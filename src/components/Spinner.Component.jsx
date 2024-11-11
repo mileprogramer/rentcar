@@ -1,5 +1,5 @@
 
-export default function HomePage({ color = "" }) {
+export default function Spinner({ color = "" }) {
 
     return (
         <div className={`spinner-border ${color !== "" ? "text-" + color : ""} `} role="status">

@@ -3,8 +3,8 @@ import Navbar from "../components/Navbar.Component"
 import { HandleInput } from "../helpers/functions"
 import MistakesAlert from "../components/MistakesAlert.Component"
 import FormValidation from "../services/FormValidation";
-import userService from "../services/userService";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function LoginPage() {
 
@@ -14,7 +14,8 @@ export default function LoginPage() {
     };
     const [inputData, setInputData] = useState(initialInputData);
     const handleInput = new HandleInput(setInputData, inputData);
-    const [submitingForm, setSubmitingForm] = useState(false);
+    const { loginAdmin, loading } = useAuth();
+
 
     const [mistakes, setMistakes] = useState([]);
     const navigate = useNavigate();
@@ -25,20 +26,11 @@ export default function LoginPage() {
             setMistakes(mistakes);
             return;
         }
+        
+        loginAdmin(inputData)
+            .then(response => navigate("/"))
+            .catch(error => setMistakes(error.message))
 
-        try {
-            setSubmitingForm(true);
-            await userService.getCookies();
-            await userService.loginAdmin(inputData);
-            setSubmitingForm(false)
-            navigate("/");
-        }
-        catch (error) {
-            if (error?.message) {
-                setMistakes(() => error.message)
-            }
-            setSubmitingForm(false);
-        }
     }
 
     return <>
@@ -75,7 +67,7 @@ export default function LoginPage() {
                 </div>
                 <div className="card-footer">
                     { 
-                        submitingForm ? 
+                        loading ? 
 
                         <button className="btn btn-primary" type="button" disabled>
                             <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>

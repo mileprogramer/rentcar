@@ -7,8 +7,8 @@ export default class userService {
     static defaultPostUrl = hostname + "api/user";
 
     static getUsers(page) {
-        let url = page ? "?page=" + page : "";
-        return axios.get(this.defaultUrl + url) 
+        let query = page ? "?page=" + page : "";
+        return axios.get(this.defaultUrl + query) 
             .then(response => this.formatResponse(response))
             .catch(error => Promise.reject(this.handleError(error)));
     }
@@ -26,18 +26,21 @@ export default class userService {
     }
 
     static getCookies() {
-        return axios.get(hostname + "sanctum/csrf-cookie", { withCredentials : true })
+        return axios.get(hostname + "sanctum/csrf-cookie")
             .then(response => response)
             .catch(response => Promise.reject(response))
     }
 
     static loginAdmin(loginData) {
-        return axios.post(hostname + "api/admin/login", loginData, {
-            withCredentials: true,
-            withXSRFToken : true,
-        })
+        return axios.post(hostname + "api/admin/login", loginData)
         .then(response => Promise.resolve(response))
         .catch(error => Promise.reject(error))
+    }
+
+    static checkAuthStatus() {
+        return axios.get(hostname + "api/admin/logged")
+            .then(response => response)
+            .catch(error => error)
     }
 
     static formatResponse(response){
