@@ -39,10 +39,18 @@ export function AuthProvider ({ children })  {
             setLoading(false);
         }
     };
-
-    // logout to do
+    
     async function logoutAdmin () {
-        await userService.logout();
+        let confirmLogout = window.confirm("Are you sure you want to logout");
+        if(!confirmLogout) {
+            return;
+        }
+        try {
+            await userService.logoutAdmin();
+        }
+        catch (error) {
+            alert("Logout failed try again later, mistake is" + error?.message);
+        }
         setAdmin(null);
     };
 

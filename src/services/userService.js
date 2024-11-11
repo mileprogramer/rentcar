@@ -33,8 +33,14 @@ export default class userService {
 
     static loginAdmin(loginData) {
         return axios.post(hostname + "api/admin/login", loginData)
-        .then(response => Promise.resolve(response))
-        .catch(error => Promise.reject(error))
+            .then(response => Promise.resolve(response))
+            .catch(error => Promise.reject(error))
+    }
+
+    static logoutAdmin() {
+        return axios.post(hostname + "api/admin/logout")
+            .then(response => Promise.resolve(response))
+            .catch(error => Promise.reject(error))
     }
 
     static checkAuthStatus() {
