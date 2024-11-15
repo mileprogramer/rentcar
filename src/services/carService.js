@@ -7,7 +7,7 @@ class CarService {
     static defaultPostUrl = hostname + "api/car/";
 
     static getCars(page) {
-        const url = page ? `${this.defaultGetUrl}?page=${page}` : this.defaultGetUrl;
+        const url = page ? `${hostname + "api/cars"}?page=${page}` : this.defaultGetUrl;
         return axios.get(url)
             .then(response => this.formatResponse(response))
             .catch(error => Promise.reject(this.handleError(error)));
