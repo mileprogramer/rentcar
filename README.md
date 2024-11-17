@@ -9,12 +9,12 @@ To deploy the project, go to the `src/config/globals.js` folder and follow these
 2. Change the `frontendUrl`.
    
 ### Libraries
-Axios
-Embla carousel 
-Yet another react lightbox
-React images uploading
-Bootstrap
-Dayjs
+1.Axios
+2.Embla carousel 
+3.Yet another react lightbox
+4.React images uploading
+5.Bootstrap
+6.Dayjs
 
 
 ## Business Scenario
