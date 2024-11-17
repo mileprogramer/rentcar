@@ -7,6 +7,15 @@ To start the project, run the following commands:
 To deploy the project, go to the `src/config/globals.js` folder and follow these steps:
 1. Change the `hostname`.
 2. Change the `frontendUrl`.
+   
+### Libraries
+Axios
+Embla carousel 
+Yet another react lightbox
+React images uploading
+Bootstrap
+Dayjs
+
 
 ## Business Scenario
 We are developing a car rental app for a car rental agency that wants the ability to add, edit, rent, and return cars. The agency also wants to maintain a history of rented cars and generate statistics.
