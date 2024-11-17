@@ -9,13 +9,12 @@ To deploy the project, go to the `src/config/globals.js` folder and follow these
 2. Change the `frontendUrl`.
    
 ### Libraries
-1.Axios
-2.Embla carousel 
-3.Yet another react lightbox
-4.React images uploading
-5.Bootstrap
-6.Dayjs
-
+<li>Axios</li>
+<li>Embla carousel</li>
+<li>Yet another react lightbox</li>
+<li>React images uploading</li>
+<li>Bootstrap</li>
+<li>Dayjs</li>
 
 ## Business Scenario
 We are developing a car rental app for a car rental agency that wants the ability to add, edit, rent, and return cars. The agency also wants to maintain a history of rented cars and generate statistics.
