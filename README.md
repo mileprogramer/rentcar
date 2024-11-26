@@ -1,70 +1,49 @@
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## Project Commands
+To start the project, run the following commands:
+1. `npm install`
+2. `npm start`
 
 ### Deployment
+To deploy the project, go to the `src/config/globals.js` folder and follow these steps:
+1. Change the `hostname`.
+2. Change the `frontendUrl`.
+   
+### Libraries
+<li>Axios</li>
+<li>Embla carousel</li>
+<li>Yet another react lightbox</li>
+<li>React images uploading</li>
+<li>Bootstrap</li>
+<li>Dayjs</li>
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## Business Scenario
+We are developing a car rental app for a car rental agency that wants the ability to add, edit, rent, and return cars. The agency also wants to maintain a history of rented cars and generate statistics.
 
-### `npm run build` fails to minify
+**Renting a Car:**  
+For example, a client arrives at the agency and wants to rent a car. The administrator enters the client's information, including the return date, any discount, and the reason for the discount. The start date is the day the client rents the car.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**Returning a Car:**  
+For example, when a client returns a car, the administrator can look up the car in the system, write any notes about the client if applicable, and review the pricing details.
+
+**Extending the Rent:**  
+For example, if a client wants to extend the rental period, they call the administrator and provide a new potential return date. The administrator can offer a discount and inform the client that the extended rental period starts the day after the initial return date.
+
+**Statistics:**  
+The administrator can view rental information, track whether clients return cars on time, check if they extend rentals, and see how much money the agency has earned.
+
+### Project Structure
+
+The `public` folder contains only static files, and there is nothing important to mention here.
+
+The `src` folder contains the following directories:
+
+- **config**: Contains environment variables and some general settings.
+- **components**: Contains JSX files for React components. The naming convention for components is `<componentName>.Component.jsx`.
+- **context**: Contains the useContext files, which are primarily used for authentication.
+- **css**: Since Bootstrap is used in this project, there isn't a need for extensive custom CSS. Any custom CSS is placed here.
+- **enums**: Contains files that define data structures that do not change often but are useful to store in one place.
+- **helpers**: Contains a `function.js` file with some basic utility functions.
+- **hooks**: Contains functions used for data fetching.
+- **pages**: Contains files with the `.js` extension. These files are separated from components to keep the project organized.
+- **services**: Contains JavaScript files for form validation (basic validation actions) and other API services.
+- **utils**: Contains routing logic, specifically for protected routes in the project.
