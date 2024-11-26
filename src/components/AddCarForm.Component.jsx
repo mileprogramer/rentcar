@@ -19,8 +19,6 @@ function AddCarForm(props) {
         model: '',
         year: '',
         price: '',
-        numberOfDoors: 5,
-        personFitIn: 4,
         consumption: 0,
         airConditioner: '',
         transmissionType: '',
@@ -178,7 +176,26 @@ function AddCarForm(props) {
             </div>
 
             <div className='row mt-3'>
-                <div className="form-group col-4">
+
+                <div className="form-group col-3">
+                    <label htmlFor="airConditioner">Air conditioner</label>
+                    <select className='form-select' name="airConditioner" id="airConditioner" onChange={(event) => {
+                        setInputData({...inputData, "airConditioner":event.target.value})
+                    }}>
+                        {renderAirConditiongTypes()}
+                    </select>
+                </div>
+
+                <div className="form-group col-3">
+                    <label htmlFor="transmissionType">Transmission type</label>
+                    <select className='form-select' name="transmissionType" id="transmissionType" onChange={(event) => {
+                        setInputData({...inputData, "transmissionType": event.target.value})
+                    }}>
+                        {renderTransmissionTypes()}
+                    </select>
+                </div>
+
+                <div className="form-group col-3">
                     <label htmlFor="price">Price per day</label>
                     <input
                         id="price"
@@ -190,7 +207,7 @@ function AddCarForm(props) {
                     />
                 </div>
 
-                <div className="form-group col-4">
+                <div className="form-group col-3">
                     <label htmlFor="price">Car consumption litars/100km</label>
                     <input
                         id="consumption"
@@ -201,51 +218,9 @@ function AddCarForm(props) {
                         onChange={handleInput}
                     />
                 </div>
-
-                <div className="form-group col-4">
-                    <label htmlFor="numberOfDoors">Number of doors</label>
-                    <input
-                        id="numberOfDoors"
-                        name="numberOfDoors"
-                        type="number"
-                        className="form-control"
-                        value={inputData.numberOfDoors}
-                        onChange={handleInput}
-                    />
-                </div>
             </div>
 
-            <div className="row">
-
-                <div className="form-group my-3 col-4">
-                    <label htmlFor="personFitIn">Person fit in</label>
-                    <input
-                        id="personFitIn"
-                        name="personFitIn"
-                        type="number"
-                        className="form-control"
-                        value={inputData.personFitIn}
-                        onChange={handleInput}
-                    />
-                </div>
-
-                <div className="form-group my-3 col-4">
-                    <label htmlFor="airConditioner">Air conditioner</label>
-                    <select className='form-select' name="airConditioner" id="airConditioner" onChange={(event) => {
-                        setInputData({...inputData, "airConditioner":event.target.value})
-                    }}>
-                        {renderAirConditiongTypes()}
-                    </select>
-                </div>
-
-                <div className="form-group my-3 col-4">
-                    <label htmlFor="transmissionType">Transmission type</label>
-                    <select className='form-select' name="transmissionType" id="transmissionType" onChange={(event) => {
-                        setInputData({...inputData, "transmissionType": event.target.value})
-                    }}>
-                        {renderTransmissionTypes()}
-                    </select>
-                </div>
+            <div className="row mt-5">
 
                 <ImageUploading
                         multiple
