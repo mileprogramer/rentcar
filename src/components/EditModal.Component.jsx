@@ -4,6 +4,7 @@ import "../css/modal.css"
 import FormValidation from "../services/FormValidation";
 import AirConditioningType from '../enums/AirConditiongType';
 import TransmissionType from '../enums/TransmissionsType.js';
+import MistakesAlert from "../components/MistakesAlert.Component.jsx"
 import ModalOverlay from './ModalOverlay.Component.jsx';
 import Lightbox from 'yet-another-react-lightbox';
 import ImageUploading from 'react-images-uploading';
@@ -16,7 +17,7 @@ function EditModal({modalActive, setModalActive, car,}) {
     const airConditionerType = new AirConditioningType();
     const transmissionType = new TransmissionType();
     const [editedCar, setEditedCar] = useState(false);
-    const [mistakes, setMistakes] = useState(false);
+    const [mistakes, setMistakes] = useState([]);
     const [images, setImages] = useState([]);
     const [imageIndex, setIndexImage] = useState(1);
     const [lightbox, setOpenLightBox] = useState(false);
@@ -27,12 +28,15 @@ function EditModal({modalActive, setModalActive, car,}) {
         model: car.model,
         year: car.year,
         pricePerDay: car.price_per_day,
-        numberOfDoors: car.number_of_doors,
-        personFitIn: car.person_fit_in,
         transmissionType: car.transmission_type,
         airConditioner: car.air_conditioning_type,
         consumption: car.car_consumption,
     });
+    const imageUploadErrors = {
+        "maxFileSize": "Max file size for image is 2MB",
+        "resolution": "Width of image must be less then 1000px, height of image must be less then 700px",
+        "maxNumber": "You can upload up to 30 pictures",
+    }
     const queryClient = useQueryClient();
 
     useEffect(() => {
@@ -56,6 +60,20 @@ function EditModal({modalActive, setModalActive, car,}) {
 
     const closeModal = ()=>{
         setModalActive(false);
+    }
+
+    const showErrorMsg = (error) => {
+        console.log(error)
+        // THIS NEEDS DO BE CORRECTED
+        if(error.maxFileSize) {
+            alert(imageUploadErrors.maxFileSize);
+        }
+        else if(error.resolution) {
+            alert(imageUploadErrors.resolution)
+        }
+        else if(error.maxNumber) {
+            alert(imageUploadErrors.maxNumber);
+        }
     }
 
     const onChangeImage = (imageList, addUpdateIndex) => {
@@ -104,8 +122,6 @@ function EditModal({modalActive, setModalActive, car,}) {
         formData.append('model', inputData.model);
         formData.append('year', inputData.year);
         formData.append('price_per_day', inputData.pricePerDay);
-        formData.append('number_of_doors', inputData.numberOfDoors);
-        formData.append('person_fit_in', inputData.personFitIn);
         formData.append('car_consumption', inputData.consumption);
         formData.append('air_conditioning_type', inputData.airConditioner);
         formData.append('transmission_type', inputData.transmissionType);
@@ -121,6 +137,7 @@ function EditModal({modalActive, setModalActive, car,}) {
                 queryClient.invalidateQueries(cacheNames.allCars)
             })
             .catch(errors =>{
+                console.log(errors);
                 setMistakes(errors);
             })
     }
@@ -130,13 +147,7 @@ function EditModal({modalActive, setModalActive, car,}) {
         {activeOverlay && <ModalOverlay setActiveOverlay={setActiveOverlay} setModalActive={closeModal} />}
         <div className={`edit-modal position-fixed ${modalActive === false ? "d-none" : ""} `}>
             {editedCar && <div className="alert alert-success" role="alert">{editedCar.message}</div>}
-            {mistakes.length > 0 && (
-                <div className="alert alert-danger" role="alert">
-                    {mistakes.map((error, index) => (
-                        <div key={index}>{error.message}</div>
-                    ))}
-                </div>
-            )}
+            <MistakesAlert mistakes={mistakes} />
             <div className="card" style={{"height": "100%"}}>
                     <div className="card-header">
                         Edit car with license: {car.license}
@@ -144,7 +155,7 @@ function EditModal({modalActive, setModalActive, car,}) {
                     <div className="card-body" style={{height: "470px", overflowY:"auto"}}>
                         <p className='container-gallery-heading'>Car info</p>
                         <div className="row">
-                            <div className="form-group col-3">
+                            <div className="form-group col-4">
                                 <label htmlFor="brand">Type license</label>
                                 <input
                                     id="license"
@@ -156,7 +167,7 @@ function EditModal({modalActive, setModalActive, car,}) {
                                 />
                             </div>
 
-                            <div className="form-group col-3">
+                            <div className="form-group col-4">
                                 <label htmlFor="brand">Type brand</label>
                                 <input
                                     id="brand"
@@ -168,7 +179,7 @@ function EditModal({modalActive, setModalActive, car,}) {
                                 />
                             </div>
 
-                            <div className="form-group col-3">
+                            <div className="form-group col-4">
                                 <label htmlFor="brand">Type model</label>
                                 <input
                                     id="model"
@@ -179,8 +190,10 @@ function EditModal({modalActive, setModalActive, car,}) {
                                     onChange={handleInput}
                                 />
                             </div>
+                        </div>
 
-                            <div className="form-group col-3">
+                        <div className='row mt-3'>
+                            <div className="form-group col-4">
                                 <label htmlFor="year">Type year</label>
                                 <input
                                     id="year"
@@ -191,9 +204,24 @@ function EditModal({modalActive, setModalActive, car,}) {
                                     onChange={handleInput}
                                 />
                             </div>
-                        </div>
+                            <div className="form-group col-4">
+                                <label htmlFor="airConditioner">Air conditioner</label>
+                                <select value={inputData.airConditioner} className='form-select' name="airConditioner" id="airConditioner" onChange={(event) => {
+                                    setInputData({...inputData, "airConditioner":event.target.value})
+                                }}>
+                                    {renderAirConditiongTypes()}
+                                </select>
+                            </div>
 
-                        <div className='row mt-3'>
+                            <div className="form-group col-4">
+                                <label htmlFor="transmissionType">Transmission type</label>
+                                <select value={inputData.transmissionType} className='form-select' name="transmissionType" id="transmissionType" onChange={(event) => {
+                                    setInputData({...inputData, "transmissionType": event.target.value})
+                                }}>
+                                    {renderTransmissionTypes()}
+                                </select>
+                            </div>
+
                             <div className="form-group col-4">
                                 <label htmlFor="pricePerDay">Price per day</label>
                                 <input
@@ -217,66 +245,31 @@ function EditModal({modalActive, setModalActive, car,}) {
                                     onChange={handleInput}
                                 />
                             </div>
-
-                            <div className="form-group col-4">
-                                <label htmlFor="numberOfDoors">Number of doors</label>
-                                <input
-                                    id="numberOfDoors"
-                                    name="numberOfDoors"
-                                    type="number"
-                                    className="form-control"
-                                    value={inputData.numberOfDoors}
-                                    onChange={handleInput}
-                                />
-                            </div>
                         </div>
 
                     <div className="row">
 
-                        <div className="form-group my-3 col-4">
-                            <label htmlFor="personFitIn">Person fit in</label>
-                            <input
-                                id="personFitIn"
-                                name="personFitIn"
-                                type="number"
-                                className="form-control"
-                                value={inputData.personFitIn}
-                                onChange={handleInput}
-                            />
-                        </div>
-
-                        <div className="form-group my-3 col-4">
-                            <label htmlFor="airConditioner">Air conditioner</label>
-                            <select value={inputData.airConditioner} className='form-select' name="airConditioner" id="airConditioner" onChange={(event) => {
-                                setInputData({...inputData, "airConditioner":event.target.value})
-                            }}>
-                                {renderAirConditiongTypes()}
-                            </select>
-                        </div>
-
-                        <div className="form-group my-3 col-4">
-                            <label htmlFor="transmissionType">Transmission type</label>
-                            <select value={inputData.transmissionType} className='form-select' name="transmissionType" id="transmissionType" onChange={(event) => {
-                                setInputData({...inputData, "transmissionType": event.target.value})
-                            }}>
-                                {renderTransmissionTypes()}
-                            </select>
-                        </div>
+                        
                     </div>
                     <p className='container-gallery-heading'>Car gallery</p>
                     <div className='container-gallery'>
                         
                     <ImageUploading
+                        maxFileSize={2000000}
+                        resolutionType = {"less"}
+                        resolutionWidth = {1000}
+                        resolutionHeight = {700}
                         multiple
                         value={images}
                         onChange={onChangeImage}
+                        errors
+                        onError={(errors) => showErrorMsg(errors)}
                         maxNumber={30}
                         dataURLKey="data_url"
                     >
                         {({
                         imageList,
                         onImageUpload,
-                        onImageRemoveAll,
                         onImageUpdate,
                         onImageRemove,
                         isDragging,
@@ -284,6 +277,7 @@ function EditModal({modalActive, setModalActive, car,}) {
                         }) => (
                             // mine UI
                         <div className="upload__image-wrapper">
+                            <div>Image size must be lower than 2048MB and width must be less than 1000px and height must be less than 700px  </div>
                             <p className='d-inline-block pe-3'>Add image by</p>
                             <button
                                 className='btn btn-primary'
@@ -308,8 +302,16 @@ function EditModal({modalActive, setModalActive, car,}) {
                                         <img src={image['data_url']} alt="" width="100" />
                                     </div>
                                     <div className="car-gallery-btns">
-                                        <button className='btn btn-warning' onClick={() => onImageUpdate(index)}>Update</button>
-                                        <button className='btn btn-danger' onClick={() => onImageRemove(index)}>Remove</button>
+                                        <button 
+                                            className='btn btn-warning'
+                                            onClick={() => onImageUpdate(index)}>
+                                                Update
+                                        </button>
+                                        <button 
+                                            className='btn btn-danger' 
+                                            onClick={() => onImageRemove(index)}>
+                                                Remove
+                                        </button>
                                     </div>
                                 </div>
                                 ))}
