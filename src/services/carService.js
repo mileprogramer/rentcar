@@ -43,7 +43,7 @@ class CarService {
     static updateCar(carInfo) {
         return axios.post(`${this.defaultPostUrl}update`, carInfo)
             .then(response => response.data)
-            .catch(error => Promise.reject(this.handleError(error)));
+            .catch(error => Promise.reject(error.response.data.errors));
     }
 
     static deleteCar(data) {

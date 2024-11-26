@@ -36,7 +36,6 @@ function AvailableCars(props) {
                 <td>{car.model}</td>
                 <td>{car.year}</td>
                 <td>{car.air_conditioning_type}</td>
-                <td>{car.person_fit_in}</td>
                 <td>{car.car_consumption}l/100km</td>
                 <td>{car.transmission_type}</td>
                 <td>
@@ -68,7 +67,7 @@ function AvailableCars(props) {
                 <>
                     <DefaultTable
                         data={data.cars}
-                        columns={["License", "Brand", "Model", "Years old", "Air Conditioner", "Person fit in", "Car consumption in city", "Transmissions type", "Reservation"]}
+                        columns={["License", "Brand", "Model", "Years old", "Air Conditioner", "Car consumption in city", "Transmissions type", "Reservation"]}
                         renderRow={renderTableRow}
                     />
                     <Pagination 
