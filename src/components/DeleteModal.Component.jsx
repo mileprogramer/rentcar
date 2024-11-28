@@ -33,7 +33,6 @@ function DeleteModal({ modalActive, setModalActive, car }) {
                 setDeletedCar(data);
             })
             .catch(error =>{
-                console.log(error);
                 setMistakes(error);
             })
     }
