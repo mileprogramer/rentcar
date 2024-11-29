@@ -50,15 +50,15 @@ export default function ExtendedRentsTable({ rentedCarData }) {
 
     return (
         <table className='table'>
-        <thead className='table-dark'>
-            <tr>
-                <td>Start rent</td>
-                <td>End rent</td>
-                <td>Total Days</td>
-                <td>Price per day</td> 
-                <td>Discount</td>
-                <td>Price</td>
-            </tr>
+            <thead className='table-dark'>
+                <tr>
+                    <td>Start rent</td>
+                    <td>End rent</td>
+                    <td>Total Days</td>
+                    <td>Price per day</td> 
+                    <td>Discount</td>
+                    <td>Price</td>
+                </tr>
         </thead>
         <tbody>
             <tr>

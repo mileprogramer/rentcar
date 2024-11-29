@@ -73,4 +73,22 @@
     .extend-modal {
         width: 100%;
     }
+    .rent-car-model{
+        width: 100%;
+    }
+    .edit-modal{
+        width: 100%;
+    }
+    .edit-delete-modal{
+        width: 100%;
+    }
+    .accept-modal {
+        width: 85%;
+        max-height: unset;
+    }
+    .stat-modal {
+        width: 80%;
+        max-height: 100%;
+
+    }
 }

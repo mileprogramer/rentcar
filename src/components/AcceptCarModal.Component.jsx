@@ -98,38 +98,39 @@ function AcceptCarForm({carData, closeModal}) {
                         close={() => setOpen(false)}
                         slides={images}
                     />
-
+                    <div className="table-container">
                     {
-                    rentedCarData.extended_rents?.length > 0 ?
-                        <ExtendedRentsTable rentedCarData={rentedCarData} />
-                        : 
-                        <table className='table'>
-                            <thead className='table-dark'>
-                                <tr>
-                                    <td>Started Rent</td>
-                                    <td>End rent/today date</td>
-                                    <td>Days Total</td>
-                                    <td>Price per day</td> 
-                                    <td>Discount</td> 
-                                    <td>Total price</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>{rentedCarData.start_date}</td>
-                                    <td>{dayjs().format("DD/MM/YYYY")}</td>
-                                    <td>
-                                        {dayjs().diff(dayjs(rentedCarData.start_date, "DD/MM/YYYY"), 'days')}
-                                    </td>
-                                    <td>{rentedCarData.price_per_day}</td>
-                                    <td>{rentedCarData.discount}%</td>
-                                    <td className='fw-bold'>
-                                        {calculateTotalPrice({...rentedCarData, return_date:dayjs().format("DD/MM/YYYY")})}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        rentedCarData.extended_rents?.length > 0 ?
+                            <ExtendedRentsTable rentedCarData={rentedCarData} />
+                            : 
+                            <table className='table'>
+                                <thead className='table-dark'>
+                                    <tr>
+                                        <td>Started Rent</td>
+                                        <td>End rent/today date</td>
+                                        <td>Days Total</td>
+                                        <td>Price per day</td> 
+                                        <td>Discount</td> 
+                                        <td>Total price</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{rentedCarData.start_date}</td>
+                                        <td>{dayjs().format("DD/MM/YYYY")}</td>
+                                        <td>
+                                            {dayjs().diff(dayjs(rentedCarData.start_date, "DD/MM/YYYY"), 'days')}
+                                        </td>
+                                        <td>{rentedCarData.price_per_day}</td>
+                                        <td>{rentedCarData.discount}%</td>
+                                        <td className='fw-bold'>
+                                            {calculateTotalPrice({...rentedCarData, return_date:dayjs().format("DD/MM/YYYY")})}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                     }
+                    </div>
                 </div>
                 <div className="card-footer d-flex justify-content-between">
                     <button

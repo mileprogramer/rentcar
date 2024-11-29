@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ActiveFilters from './ActiveFilters.Components';
 import dayjs from 'dayjs';
 import { HandleInput } from '../helpers/functions';
+import "../css/statistics-filter.css"
 
 function SearchHistoryRented({ search, clearSearch }) {
 
@@ -65,7 +66,7 @@ function SearchHistoryRented({ search, clearSearch }) {
 
     return (
         <>
-        <div className="my-5 form-group d-flex gap-3 justify-content-end">
+        <div className="statistics-filter-group my-5 form-group">
             <div className="form-group">
                 <p>Insert license for car</p>
                 <input

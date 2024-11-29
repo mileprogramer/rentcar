@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 function EditDeleteTable({cars, openDeleteModal, openEditModal}) {
     let carStatus = new CarStatus();
     return (
-        <>
+        <div className="table-container">
             <table className="table table-striped">
                 <thead>
                 <tr>
@@ -55,7 +55,7 @@ function EditDeleteTable({cars, openDeleteModal, openEditModal}) {
                 </tbody>
             </table>
 
-        </>
+        </div>
     );
 }
 
