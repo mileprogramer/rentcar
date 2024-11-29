@@ -124,7 +124,7 @@ function RentedCars(props) {
                         clearSearch={clearSearch}
                         search={searchFn}
                         widthOfSearch='450' 
-                        placeholder={"Type license of car or the user personal data or card id"}
+                        placeholder={"Type license or the user personal data"}
                     />
                 </div>
                 { renderContentPage() }
