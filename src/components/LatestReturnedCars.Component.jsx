@@ -13,7 +13,7 @@ export default function LatestReturnedCars({ latestReturnedCars }){
             <div className='embla__viewport' ref={emblaRef}>
                 <div className='embla__container'>
                     {latestReturnedCars?.length > 0 ? latestReturnedCars.map((carData, index) => {
-                        return <div key={index} className='embla__slide card' style={{flexBasis: "calc(33.5% - 15px)"}}>
+                        return <div key={index} className='embla__slide card'>
                             <div className='card-header'>
                                 License : {carData.car.license}
                                 <hr/>

@@ -85,73 +85,75 @@ function ExtendRentModal({carData, closeModal}) {
                     <h5>License: {carData?.car?.license}</h5>
                 </div>
                 <div className="card-body">
-                    <table className='table table-bordered '>
-                        <thead className='table-dark'>
-                            <tr>
-                                <td>Start date</td>
-                                <td>End rent</td>
-                                <td>Days Total</td>
-                                <td>Price per day</td> 
-                                <td>Discount</td> 
-                                <td>Reason for discount</td> 
-                                <td>Total price</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td> 
-                                    {dayjs(extendRentData.start_date).format("DD/MM/YYYY")}
-                                </td>
-                                <td>
-                                    <input 
-                                        className='form-control'
-                                        type="date" 
-                                        name='return_date'
-                                        id='return_date'
-                                        value={extendRentData.return_date}
-                                        onChange={handleInput}
-                                        min={extendRentData.start_date}
-                                    />
-                                </td>
-                                <td>
-                                    {extendRentData.return_date ? 
-                                    dayjs(extendRentData.return_date).diff(dayjs(extendRentData.start_date), 'day') : ""}
-                                </td>
-                                <td>{extendRentData.price_per_day}</td>
-                                <td>
-                                    <div className="input-group" style={{width: "110px"}}>
+                    <div className="table-container">
+                        <table className='table table-bordered '>
+                            <thead className='table-dark'>
+                                <tr>
+                                    <td>Start date</td>
+                                    <td>End rent</td>
+                                    <td>Days Total</td>
+                                    <td>Price per day</td> 
+                                    <td>Discount</td> 
+                                    <td>Reason for discount</td> 
+                                    <td>Total price</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td> 
+                                        {dayjs(extendRentData.start_date).format("DD/MM/YYYY")}
+                                    </td>
+                                    <td>
                                         <input 
                                             className='form-control'
-                                            type="number"
-                                            id='discount'
-                                            name='discount'
-                                            max={100}
-                                            value={extendRentData.discount}
+                                            type="date" 
+                                            name='return_date'
+                                            id='return_date'
+                                            value={extendRentData.return_date}
+                                            onChange={handleInput}
+                                            min={extendRentData.start_date}
+                                        />
+                                    </td>
+                                    <td>
+                                        {extendRentData.return_date ? 
+                                        dayjs(extendRentData.return_date).diff(dayjs(extendRentData.start_date), 'day') : ""}
+                                    </td>
+                                    <td>{extendRentData.price_per_day}</td>
+                                    <td>
+                                        <div className="input-group" style={{width: "110px"}}>
+                                            <input 
+                                                className='form-control'
+                                                type="number"
+                                                id='discount'
+                                                name='discount'
+                                                max={100}
+                                                value={extendRentData.discount}
+                                                onChange={handleInput}
+                                            />
+                                            <span className='input-group-text'>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-percent" viewBox="0 0 16 16">
+                                                    <path d="M13.442 2.558a.625.625 0 0 1 0 .884l-10 10a.625.625 0 1 1-.884-.884l10-10a.625.625 0 0 1 .884 0M4.5 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5m7 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
+                                                </svg>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <textarea
+                                            className='form-control' 
+                                            type="reasonForDiscount"
+                                            name='reasonForDiscount'
+                                            id='reasonForDiscount'
+                                            value={extendRentData.reasonForDiscount}
                                             onChange={handleInput}
                                         />
-                                        <span className='input-group-text'>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-percent" viewBox="0 0 16 16">
-                                                <path d="M13.442 2.558a.625.625 0 0 1 0 .884l-10 10a.625.625 0 1 1-.884-.884l10-10a.625.625 0 0 1 .884 0M4.5 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5m7 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
-                                            </svg>
-                                        </span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <textarea
-                                        className='form-control' 
-                                        type="reasonForDiscount"
-                                        name='reasonForDiscount'
-                                        id='reasonForDiscount'
-                                        value={extendRentData.reasonForDiscount}
-                                        onChange={handleInput}
-                                    />
-                                </td>
-                                <td className='fw-bold'>
-                                    {calculateTotalPrice()}$
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                    </td>
+                                    <td className='fw-bold'>
+                                        {calculateTotalPrice()}$
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
                 </div>
                 <div className="card-footer d-flex justify-content-between">

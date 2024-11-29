@@ -1,3 +1,4 @@
+import "../css/home-page.css";
 import React, { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar.Component'
 import Spinner from "../components/Spinner.Component"
@@ -45,10 +46,9 @@ export default function HomePage() {
     }, [])
 
     
-    return (
-    <div className='container'>
+    return <div className='container'>
         <Navbar />
-        <div className='d-flex gap-3 mt-5'>
+        <div className='stat-container mt-5'>
             <div className='card'>
                 <div className='card-body'>
                     <h3 className='display-6'>Number of rented cars this month: 
@@ -111,5 +111,4 @@ export default function HomePage() {
         <LatestRentedCars latestRentedCars={latestRentedCars} />
         <LatestReturnedCars latestReturnedCars = {latestReturnedCars} />
     </div>
-    )
 }
