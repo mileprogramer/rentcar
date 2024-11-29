@@ -123,7 +123,7 @@ function AddCarForm(props) {
             {addedCar && <div className="alert alert-success" role="alert">You successfully added a car</div>}
 
             <div className="row">
-                <div className="form-group col-3">
+                <div className="form-group col-lg-3 col-sm-6">
                     <label htmlFor="brand">Type license</label>
                     <input
                         id="license"
@@ -138,7 +138,7 @@ function AddCarForm(props) {
                     />
                 </div>
 
-                <div className="form-group col-3">
+                <div className="form-group col-lg-3 col-sm-6">
                     <label htmlFor="brand">Type brand</label>
                     <input
                         id="brand"
@@ -150,7 +150,7 @@ function AddCarForm(props) {
                     />
                 </div>
 
-                <div className="form-group col-3">
+                <div className="form-group col-lg-3 col-sm-6">
                     <label htmlFor="brand">Type model</label>
                     <input
                         id="model"
@@ -162,7 +162,7 @@ function AddCarForm(props) {
                     />
                 </div>
 
-                <div className="form-group col-3">
+                <div className="form-group col-lg-3 col-sm-6">
                     <label htmlFor="year">Type year</label>
                     <input
                         id="year"
@@ -177,7 +177,7 @@ function AddCarForm(props) {
 
             <div className='row mt-3'>
 
-                <div className="form-group col-3">
+                <div className="form-group col-lg-3 col-sm-6">
                     <label htmlFor="airConditioner">Air conditioner</label>
                     <select className='form-select' name="airConditioner" id="airConditioner" onChange={(event) => {
                         setInputData({...inputData, "airConditioner":event.target.value})
@@ -186,7 +186,7 @@ function AddCarForm(props) {
                     </select>
                 </div>
 
-                <div className="form-group col-3">
+                <div className="form-group col-lg-3 col-sm-6">
                     <label htmlFor="transmissionType">Transmission type</label>
                     <select className='form-select' name="transmissionType" id="transmissionType" onChange={(event) => {
                         setInputData({...inputData, "transmissionType": event.target.value})
@@ -195,7 +195,7 @@ function AddCarForm(props) {
                     </select>
                 </div>
 
-                <div className="form-group col-3">
+                <div className="form-group col-lg-3 col-sm-6">
                     <label htmlFor="price">Price per day</label>
                     <input
                         id="price"
@@ -207,7 +207,7 @@ function AddCarForm(props) {
                     />
                 </div>
 
-                <div className="form-group col-3">
+                <div className="form-group col-lg-3 col-sm-6">
                     <label htmlFor="price">Car consumption litars/100km</label>
                     <input
                         id="consumption"

@@ -95,7 +95,7 @@ function EditDeletePage(props) {
         <div className='position-relative'>
             <Navbar/>
             <div className="container">
-            <div className="ml-auto" style={{marginRight: "7rem"}}>
+            <div className="ml-auto">
                 <Search
                     clearSearch={clearSearch}
                     search={searchFn}

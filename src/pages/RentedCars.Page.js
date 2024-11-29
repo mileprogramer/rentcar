@@ -123,7 +123,6 @@ function RentedCars(props) {
                     <Search
                         clearSearch={clearSearch}
                         search={searchFn}
-                        widthOfSearch='450' 
                         placeholder={"Type license or the user personal data"}
                     />
                 </div>

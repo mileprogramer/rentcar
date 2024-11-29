@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 
-function Search({clearSearch, placeholder, search, label, widthOfSearch = "300"}) {
+function Search({clearSearch, placeholder, search, label}) {
 
     const [inputSearch, setInputSearch] = useState("");
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(inputSearch);
@@ -34,7 +34,7 @@ function Search({clearSearch, placeholder, search, label, widthOfSearch = "300"}
     }
 
     return (
-        <div className="form-group pe-4 ms-auto" style={{width: widthOfSearch + "px"}}>
+        <div className="form-group pe-4 ms-auto" style={{width: "320px"}}>
             {
                 label && <label htmlFor='search'>{ label }</label> 
             }
