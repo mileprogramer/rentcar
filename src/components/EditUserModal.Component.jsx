@@ -54,56 +54,58 @@ export default function EditUserModal({userData, setModalActive}){
                     {successMsg}
                 </div>: null }
                 <MistakesAlert mistakes = {errors} />
-                <table className="table">
-                    <thead className="table-dark">
-                        <tr>
-                            <td>Card id</td>
-                            <td>First and last name</td>
-                            <td>Phone</td>
-                            <td>Email</td> 
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <input 
-                                    className="form-control"
-                                    type="text" 
-                                    name="cardId" 
-                                    value={inputData.cardId} 
-                                    onChange={handleInput}
-                                />
-                            </td>
-                            <td>
-                                <input 
-                                    className="form-control"
-                                    type="text" 
-                                    name="name" 
-                                    value={inputData.name} 
-                                    onChange={handleInput}
-                                />
-                            </td>
-                            <td>
-                                <input 
-                                    className="form-control"
-                                    type="text" 
-                                    name="phone" 
-                                    value={inputData.phone} 
-                                    onChange={handleInput}
-                                />
-                            </td>
-                            <td>
-                                <input 
-                                    className="form-control"
-                                    type="email" 
-                                    name="email" 
-                                    value={inputData.email} 
-                                    onChange={handleInput}
-                                />
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div className="table-container">
+                    <table className="table">
+                        <thead className="table-dark">
+                            <tr>
+                                <td>Card id</td>
+                                <td>First and last name</td>
+                                <td>Phone</td>
+                                <td>Email</td> 
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <input 
+                                        className="form-control"
+                                        type="text" 
+                                        name="cardId" 
+                                        value={inputData.cardId} 
+                                        onChange={handleInput}
+                                    />
+                                </td>
+                                <td>
+                                    <input 
+                                        className="form-control"
+                                        type="text" 
+                                        name="name" 
+                                        value={inputData.name} 
+                                        onChange={handleInput}
+                                    />
+                                </td>
+                                <td>
+                                    <input 
+                                        className="form-control"
+                                        type="text" 
+                                        name="phone" 
+                                        value={inputData.phone} 
+                                        onChange={handleInput}
+                                    />
+                                </td>
+                                <td>
+                                    <input 
+                                        className="form-control"
+                                        type="email" 
+                                        name="email" 
+                                        value={inputData.email} 
+                                        onChange={handleInput}
+                                    />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <div className="card-footer d-flex justify-content-between">
                     <button 
                         onClick={() => setModalActive(false)}
