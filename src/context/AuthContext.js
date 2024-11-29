@@ -34,7 +34,7 @@ export function AuthProvider ({ children })  {
         setLoading(true)
         try {
             const axiosResponse = await userService.loginAdmin(credentials);
-            setAdmin(() => axiosResponse.data);
+            setAdmin(() => axiosResponse.data.user);
         }
         catch (error) {
             setError(error);
