@@ -9,8 +9,8 @@ import { useAuth } from "../context/AuthContext";
 export default function LoginPage() {
 
     const initialInputData = {
-        username: "adminMile",
-        password: "adminMile",
+        username: "admin@admin",
+        password: "password123",
     };
     const [inputData, setInputData] = useState(initialInputData);
     const handleInput = new HandleInput(setInputData, inputData);

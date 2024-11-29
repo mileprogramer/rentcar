@@ -18,6 +18,10 @@ export function AuthProvider ({ children })  {
         return admin ? true : false;
     }
 
+    function isAdminSuperAdmin() {
+        return admin.role === "super_admin";
+    }
+
     function checkAuthStatus() {
         setLoading(true);
         userService.checkAuthStatus()
@@ -56,7 +60,7 @@ export function AuthProvider ({ children })  {
 
 
     return (
-        <AuthContext.Provider value={{ admin, loginAdmin, logoutAdmin, loading, error, isAdminLogged }}>
+        <AuthContext.Provider value={{ admin, loginAdmin, logoutAdmin, loading, error, isAdminLogged, isAdminSuperAdmin }}>
             {children}
         </AuthContext.Provider>
     );

@@ -1,9 +1,12 @@
+import { useAuth } from "../context/AuthContext";
 import "../css/car-colors.css"
 import CarStatus from '../enums/CarStatus';
 import dayjs from 'dayjs';
 
 function EditDeleteTable({cars, openDeleteModal, openEditModal}) {
     let carStatus = new CarStatus();
+    const {isAdminSuperAdmin} = useAuth();
+
     return (
         <div className="table-container">
             <table className="table table-striped">
@@ -15,7 +18,7 @@ function EditDeleteTable({cars, openDeleteModal, openEditModal}) {
                     <td>Model</td>
                     <td>Last time edited</td>
                     <td>Edit car</td>
-                    <td>Delete car</td>
+                    { isAdminSuperAdmin() ? <td>Delete car</td> : null } 
                 </tr>
                 </thead>
                 <tbody>
@@ -40,7 +43,7 @@ function EditDeleteTable({cars, openDeleteModal, openEditModal}) {
                             }
                         </td>
                         <td>
-                            {car.status !== carStatus.rented && car.status !== carStatus.deleted ?
+                            {isAdminSuperAdmin() && car.status !== carStatus.rented && car.status !== carStatus.deleted ?
                                 <button
                                     onClick={event => openDeleteModal(event) }
                                     name={car.license}
