@@ -9,7 +9,7 @@ function MobileMenu(){
         <>
         {
             openMobileMenu ?
-            <ul id="mobile-menu" className="mobile-navbar navbar-nav">
+            <ul className="mobile-navbar navbar-nav">
                 <svg
                     onClick={() => setOpenMobileMenu(false)} 
                     xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="black" id="close-mobile-menu" className="bi bi-x-square" viewBox="0 0 16 16">
